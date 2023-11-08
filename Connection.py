@@ -1,4 +1,6 @@
-from tkinter import *
+import json
+from asnake.client import ASnakeClient
+
 class Connection:
     server = ""
     username = ""
@@ -10,3 +12,11 @@ class Connection:
     def __str__(self):
         return self.server+self.username+self.password
 
+    def test(self):
+        if self.server == "" or self.username == "" or self.password == "":
+            return False, "Missing Server Configuration"
+        client = self.createsession()
+    def createsession(self):
+        client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
+        client.authorize()
+        return client
