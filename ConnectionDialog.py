@@ -6,6 +6,7 @@ class ConnectionDialog(ttk.Frame):
     server = ""
     username = ""
     password = ""
+    frame = {}
     parent = {}
     def __init__(self, parent):
         self.parent = parent
@@ -14,6 +15,7 @@ class ConnectionDialog(ttk.Frame):
         self.password = StringVar()
         super().__init__()
         connectionWindow = Toplevel(parent)
+        self.frame = connectionWindow
         connectionWindow.title("Configure Connection")
         mainframe = ttk.Frame(connectionWindow, padding="3 3 12 12")
         mainframe.grid(column=0, row=0, sticky="N, W, E, S")
@@ -37,3 +39,4 @@ class ConnectionDialog(ttk.Frame):
     def closeWindow(self):
         self.parent.Connection = (self.server.get(), self.username.get(), self.password.get())
         self.destroy()
+        ttk.Frame.destroy(self.frame)

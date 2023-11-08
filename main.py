@@ -1,5 +1,5 @@
 # This is a sample Python script.
-
+import tkinter
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
@@ -22,11 +22,13 @@ class CollectionsManagerGui(Tk):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
+
+
         ttk.Button(mainframe, text="Configure Connection", width=buttonwidth, command=self.connectionDialog).grid(
             column=1, row=1)
         ttk.Button(mainframe, text="Save Connection", width=buttonwidth).grid(column=2, row=1)
         ttk.Button(mainframe, text="Load Connection", width=buttonwidth).grid(column=3, row=1)
-        ttk.Button(mainframe, text="Test Connection", width=buttonwidth).grid(column=4, row=1)
+        ttk.Button(mainframe, text="Test Connection", width=buttonwidth, command=self.testConnection).grid(column=4, row=1)
         ttk.Button(mainframe, text="Save Query", width=buttonwidth).grid(column=5, row=1)
         ttk.Button(mainframe, text="Load Query", width=buttonwidth).grid(column=6, row=1)
         ttk.Button(mainframe, text="Help", width=buttonwidth).grid(column=7, row=1)
@@ -35,11 +37,13 @@ class CollectionsManagerGui(Tk):
         self.mainloop()
         self.focus_force()
 
+
     def connectionDialog(self):
         ConnectionDialog(self)
         print(self.connection.__str__)
-
-
+    def testConnection(self):
+        test = Connection(self.connection)
+        testconn = test.test()
 if __name__ == "__main__":
     app = CollectionsManagerGui()
     app.mainloop()
