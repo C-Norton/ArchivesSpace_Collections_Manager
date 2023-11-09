@@ -42,7 +42,7 @@ class CollectionsManagerGui(Tk):
         ConnectionDialog(self)
         print(self.connection.__str__)
     def testConnection(self):
-        test = Connection(self.connection)
+        test = Connection(self.connection.get("server"),self.connection.get("username"),self.connection.get("password"))
         testconn = test.test()
 if __name__ == "__main__":
     app = CollectionsManagerGui()
