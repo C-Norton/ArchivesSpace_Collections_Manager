@@ -1,11 +1,10 @@
 # This is a sample Python script.
-import tkinter
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 from tkinter import *
 from tkinter import ttk
-from ConnectionDialog import ConnectionDialog
+from MenuButtons.ConfigureConnection import ConnectionDialog
 from Connection import Connection
 
 class CollectionsManagerGui(Tk):
@@ -40,7 +39,6 @@ class CollectionsManagerGui(Tk):
 
     def connectionDialog(self):
         ConnectionDialog(self)
-        print(self.connection.__str__)
     def testConnection(self):
         test = Connection(self.connection.get("server"),self.connection.get("username"),self.connection.get("password"))
         testconn = test.test()

@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-
+from Connection import Connection
 
 class ConnectionDialog(ttk.Frame):
     server = ""
@@ -37,6 +37,6 @@ class ConnectionDialog(ttk.Frame):
         connectionWindow.grab_set()
 
     def closeWindow(self):
-        self.parent.Connection = (self.server.get(), self.username.get(), self.password.get())
+        self.parent.connection = Connection(self.server.get(), self.username.get(), self.password.get())
         self.destroy()
         ttk.Frame.destroy(self.frame)
