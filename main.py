@@ -6,6 +6,8 @@ from tkinter import *
 from tkinter import ttk
 from MenuButtons.ConfigureConnection import ConnectionDialog
 from Connection import Connection
+from MenuButtons.Help import HelpDialog
+
 
 class CollectionsManagerGui(Tk):
 
@@ -30,7 +32,7 @@ class CollectionsManagerGui(Tk):
         ttk.Button(mainframe, text="Test Connection", width=buttonwidth, command=self.testConnection).grid(column=4, row=1)
         ttk.Button(mainframe, text="Save Query", width=buttonwidth).grid(column=5, row=1)
         ttk.Button(mainframe, text="Load Query", width=buttonwidth).grid(column=6, row=1)
-        ttk.Button(mainframe, text="Help", width=buttonwidth).grid(column=7, row=1)
+        ttk.Button(mainframe, text="Help", width=buttonwidth, command=self.helpButton).grid(column=7, row=1)
         for child in mainframe.winfo_children():
             child.grid_configure(padx=5, pady=5)
         self.mainloop()
@@ -42,6 +44,8 @@ class CollectionsManagerGui(Tk):
     def testConnection(self):
         test = Connection(self.connection.get("server"),self.connection.get("username"),self.connection.get("password"))
         testconn = test.test()
+    def helpButton(self):
+        HelpDialog(self)
 if __name__ == "__main__":
     app = CollectionsManagerGui()
     app.mainloop()
