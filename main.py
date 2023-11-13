@@ -15,7 +15,7 @@ class CollectionsManagerGui(Tk):
     connection = {}
     def __init__(self):
         buttonwidth = 22
-
+        self.connection = Connection("","","")
         super().__init__()
         self = self
         self.title("ArchivesSpace Collections Manager")
