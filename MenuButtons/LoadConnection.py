@@ -7,4 +7,5 @@ class SaveConnection(ttk.Frame):
     connection = {}
     def __init__(self, parent):
         keys = keyring.get_keyring()
-        keys.get_credential("BulkEdit UI")
+        keys = keys.get_credential("BulkEdit UI")
+        username = keys
