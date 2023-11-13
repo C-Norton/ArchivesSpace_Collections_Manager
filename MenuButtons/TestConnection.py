@@ -28,7 +28,7 @@ class TestConnection(ttk.Frame):
                                 "https://github.com/C-Norton/BulkEditUI \n"\
                                 "This issue should include the exact URL in your connection, as well as the following "\
                                 "information \n" + results[2]
-        resultslabel = ttk.Label(self.frame, text=text, wraplength=220).grid(column=1, row=1)
+        ttk.Label(self.frame, text=text, wraplength=220).grid(column=1, row=1)
 
         for child in self.frame.winfo_children():
             child.grid_configure(padx=5, pady=5)

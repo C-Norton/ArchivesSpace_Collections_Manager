@@ -8,6 +8,7 @@ from MenuButtons.ConfigureConnection import ConnectionDialog
 from MenuButtons.TestConnection import TestConnection
 from Connection import Connection
 from MenuButtons.Help import HelpDialog
+from MenuButtons.SaveConnection import SaveConnection
 
 
 class CollectionsManagerGui(Tk):
@@ -28,7 +29,7 @@ class CollectionsManagerGui(Tk):
 
         ttk.Button(mainframe, text="Configure Connection", width=buttonwidth, command=self.connectionDialog).grid(
             column=1, row=1)
-        ttk.Button(mainframe, text="Save Connection", width=buttonwidth).grid(column=2, row=1)
+        ttk.Button(mainframe, text="Save Connection", width=buttonwidth, command=self.saveConnection).grid(column=2, row=1)
         ttk.Button(mainframe, text="Load Connection", width=buttonwidth).grid(column=3, row=1)
         ttk.Button(mainframe, text="Test Connection", width=buttonwidth, command=self.testConnection).grid(column=4, row=1)
         ttk.Button(mainframe, text="Save Query", width=buttonwidth).grid(column=5, row=1)
@@ -47,6 +48,8 @@ class CollectionsManagerGui(Tk):
         TestConnection(self,test)
     def helpButton(self):
         HelpDialog(self)
+    def saveConnection(self):
+        SaveConnection(self, self.connection)
 if __name__ == "__main__":
     app = CollectionsManagerGui()
     app.mainloop()
