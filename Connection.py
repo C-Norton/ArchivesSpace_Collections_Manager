@@ -16,6 +16,7 @@ class Connection:
         if self.server == "" or self.username == "" or self.password == "":
             return False, "Missing Server Configuration"
         client = self.createsession()
+        print("hello world")
     def createsession(self):
         client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
         client.authorize()

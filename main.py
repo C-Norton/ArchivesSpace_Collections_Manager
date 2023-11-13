@@ -5,6 +5,7 @@
 from tkinter import *
 from tkinter import ttk
 from MenuButtons.ConfigureConnection import ConnectionDialog
+from MenuButtons.TestConnection import TestConnection
 from Connection import Connection
 from MenuButtons.Help import HelpDialog
 
@@ -42,8 +43,8 @@ class CollectionsManagerGui(Tk):
     def connectionDialog(self):
         ConnectionDialog(self)
     def testConnection(self):
-        test = Connection(self.connection.get("server"),self.connection.get("username"),self.connection.get("password"))
-        testconn = test.test()
+        test = Connection(self.connection.server,self.connection.username,self.connection.password)
+        TestConnection(self,test)
     def helpButton(self):
         HelpDialog(self)
 if __name__ == "__main__":
