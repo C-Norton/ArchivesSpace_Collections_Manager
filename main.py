@@ -16,10 +16,10 @@ class CollectionsManagerGui(Tk):
     connection = {}
     def __init__(self):
         root = tkinter.Tk()
+        root.geometry("750x200")
         masterFrame = ttk.Frame(root)
-        buttonwidth = 22
-        masterFrame.connection = Connection("","","")
 
+        masterFrame.connection = Connection("","","")
 
         masterFrame.pack(fill="both", expand=True)
 
@@ -27,18 +27,25 @@ class CollectionsManagerGui(Tk):
         menu = ttk.Frame(masterFrame, padding="3 3 12 12")
         menu.pack(side="top",fill='x')
 
-        ttk.Button(menu, text="Configure Connection", command=self.connectionDialog).pack(side="left", fill="both",expand=1)
-        ttk.Button(menu, text="Save Connection", command=self.saveConnection).pack(side="left", fill="both",expand=1)
-        ttk.Button(menu, text="Load Connection").pack(side="left", fill="both",expand=1)
-        ttk.Button(menu, text="Test Connection", command=self.testConnection).pack(side="left", fill="both",expand=1)
-        ttk.Button(menu, text="Save Query").pack(side="left", fill="both",expand=1)
-        ttk.Button(menu, text="Load Query").pack(side="left", fill="both",expand=1)
-        ttk.Button(menu, text="Help", command=self.helpButton).pack(side="left", fill="both",expand=1)
+        # Create top menu
+        Grid.rowconfigure(menu, index=1, weight=1)
+        ttk.Button(menu, text="Configure Connection", command=self.connectionDialog).grid(column=1,row=1,sticky="EW")
+        ttk.Button(menu, text="Save Connection", command=self.saveConnection).grid(column=2,row=1,sticky="EW")
+        ttk.Button(menu, text="Load Connection").grid(column=3,row=1,sticky="EW")
+        ttk.Button(menu, text="Test Connection", command=self.testConnection).grid(column=4,row=1,sticky="EW")
+        ttk.Button(menu, text="Save Query").grid(column=5,row=1,sticky="EW")
+        ttk.Button(menu, text="Load Query").grid(column=6,row=1,sticky="EW")
+        ttk.Button(menu, text="Help", command=self.helpButton).grid(column=7,row=1,sticky="EW")
+
+
+
 
         queryRegion = ttk.Frame(masterFrame,padding="3 3 12 12")
         queryRegion.pack(side="bottom",fill='x')
         ttk.Label(queryRegion,text="foo").grid(column=1,row=1)
-        
+
+        for child in menu.winfo_children():
+            child.grid_configure(padx=5, pady=5)
         for child in queryRegion.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
