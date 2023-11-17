@@ -28,15 +28,19 @@ class CollectionsManagerGui(Tk):
         menu.pack(side="top",fill='x')
 
         # Create top menu
-        Grid.rowconfigure(menu, index=1, weight=1)
-        ttk.Button(menu, text="Configure Connection", command=self.connectionDialog).grid(column=1,row=1,sticky="EW")
-        ttk.Button(menu, text="Save Connection", command=self.saveConnection).grid(column=2,row=1,sticky="EW")
-        ttk.Button(menu, text="Load Connection").grid(column=3,row=1,sticky="EW")
-        ttk.Button(menu, text="Test Connection", command=self.testConnection).grid(column=4,row=1,sticky="EW")
-        ttk.Button(menu, text="Save Query").grid(column=5,row=1,sticky="EW")
-        ttk.Button(menu, text="Load Query").grid(column=6,row=1,sticky="EW")
-        ttk.Button(menu, text="Help", command=self.helpButton).grid(column=7,row=1,sticky="EW")
+        Buttons =[
+        ttk.Button(menu, text="Configure Connection", command=self.connectionDialog).grid(column=0,row=0,sticky="EW"),
+        ttk.Button(menu, text="Save Connection", command=self.saveConnection).grid(column=1,row=0,sticky="EW"),
+        ttk.Button(menu, text="Load Connection").grid(column=2,row=0,sticky="EW"),
+        ttk.Button(menu, text="Test Connection", command=self.testConnection).grid(column=3,row=0,sticky="EW"),
+        ttk.Button(menu, text="Save Query").grid(column=4,row=0,sticky="EW"),
+        ttk.Button(menu, text="Load Query").grid(column=5,row=0,sticky="EW"),
+        ttk.Button(menu, text="Help", command=self.helpButton).grid(column=6,row=0,sticky="EW")]
 
+        Grid.rowconfigure(menu, index=0, weight=1)
+
+        for i in range(len(Buttons)):
+            Grid.columnconfigure(menu, index=i, weight=1)
 
 
 
@@ -45,7 +49,7 @@ class CollectionsManagerGui(Tk):
         ttk.Label(queryRegion,text="foo").grid(column=1,row=1)
 
         for child in menu.winfo_children():
-            child.grid_configure(padx=5, pady=5)
+            child.grid_configure(padx=2, pady=5)
         for child in queryRegion.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
