@@ -65,10 +65,12 @@ class CollectionsManagerGui(Tk):
 
         masterFrame.mainloop()
         masterFrame.focus_force()
-        logging.debug("UI started successfully!")
+        logging.info("UI started successfully!")
 
+    # These functions here serve as connectors to the appropriate class. This can likely be avoided
     def connectionDialog(self):
         ConnectionDialog(self)
+
 
     def testConnection(self):
         test = Connection(self.connection.server, self.connection.username, self.connection.password)
@@ -82,6 +84,6 @@ class CollectionsManagerGui(Tk):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG,format='[%(levelname)s%] %(asctime)s - %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s%] %(asctime)s - %(message)s')
     app = CollectionsManagerGui()
     app.mainloop()
