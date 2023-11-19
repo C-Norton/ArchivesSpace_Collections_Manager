@@ -84,6 +84,6 @@ class CollectionsManagerGui(Tk):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s%] %(asctime)s - %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format=f'[{levelname}] {asctime} - {message}')
     app = CollectionsManagerGui()
     app.mainloop()
