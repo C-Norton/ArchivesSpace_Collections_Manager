@@ -7,14 +7,13 @@ The way these dialogs are handled is pretty crap, it works here, but the amount 
 
 # TODO: address the amount of boilerplate code used in dialogs
 
-class HelpDialog(ttk.Frame):
+class HelpDialog():
     frame = {}
     parent = {}
 
     def __init__(self, parent):
         self.parent = parent
-        super().__init__()
-        self.frame = Toplevel(parent)
+        self.frame = Toplevel()
         self.frame.title("Help")
         self.frame = ttk.Frame(self.frame, padding="3 3 12 12")
         self.frame.grid(column=0, row=0, sticky="N, W, E, S")

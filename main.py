@@ -18,7 +18,7 @@ class CollectionsManagerGui(Tk):
     def __init__(self):
         root = tkinter.Tk()
         root.geometry("750x200")
-        masterFrame = ttk.Frame(root)
+        masterFrame = ttk.Frame()
         logging.debug("Frame Created")
 
         # TODO: Figure out where this SHOULD live

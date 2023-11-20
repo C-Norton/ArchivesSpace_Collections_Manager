@@ -3,7 +3,7 @@ from tkinter import ttk, Toplevel
 from Connection import Connection
 
 
-class TestConnection(ttk.Frame):
+class TestConnection():
     connection = {}
     parent = {}
     frame = {}
@@ -11,8 +11,7 @@ class TestConnection(ttk.Frame):
     def __init__(self, parent, connection):
         self.parent = parent
         self.connection = connection
-        super().__init__()
-        self.frame = Toplevel(parent)
+        self.frame = Toplevel()
         self.frame.title("Test results")
 
         ttk.Button(self.frame, width=70, text="Close", command=self.closeWindow).grid(column=1, row=2)

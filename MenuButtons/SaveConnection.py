@@ -1,15 +1,14 @@
 import keyring
 from tkinter import ttk, Toplevel
 
-class SaveConnection(ttk.Frame):
+class SaveConnection():
     frame = {}
     parent = {}
     connection = {}
     def __init__(self, parent, connection):
         self.parent = parent
         self.connection = connection
-        super().__init__()
-        self.frame = Toplevel(parent)
+        self.frame = Toplevel()
         self.frame.title("Credential Storage")
 
         ttk.Button(self.frame, width=70, text="Close", command=self.closeWindow).grid(column=1, row=2)

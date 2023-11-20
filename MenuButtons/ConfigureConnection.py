@@ -3,7 +3,7 @@ from tkinter import ttk
 from Connection import Connection
 
 
-class ConnectionDialog(ttk.Frame):
+class ConnectionDialog():
     server = ""
     username = ""
     password = ""
@@ -15,8 +15,7 @@ class ConnectionDialog(ttk.Frame):
         self.server = StringVar()
         self.username = StringVar()
         self.password = StringVar()
-        super().__init__()
-        self.frame = Toplevel(parent)
+        self.frame = Toplevel()
         self.frame.title("Configure Connection")
         mainframe = ttk.Frame(self.frame, padding="3 3 12 12")
         mainframe.grid(column=0, row=0, sticky="N, W, E, S")

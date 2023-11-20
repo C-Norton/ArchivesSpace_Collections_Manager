@@ -4,7 +4,7 @@ from tkinter import ttk, Toplevel
 from Connection import Connection
 
 
-class LoadConnection(ttk.Frame):
+class LoadConnection():
     frame = {}
     parent = {}
     credentials = list()
@@ -43,8 +43,7 @@ class LoadConnection(ttk.Frame):
             self.credentials = [self.readCredential(keys)]
         # now time for the window
         self.parent = parent
-        super.__init__()
-        self.frame = Toplevel(parent)
+        self.frame = Toplevel()
         self.frame.title("Credential Management")
     def createCredentialFrame(self):
         if len(self.credentials) == 1:
