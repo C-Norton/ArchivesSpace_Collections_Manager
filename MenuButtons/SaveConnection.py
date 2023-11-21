@@ -3,7 +3,6 @@ from tkinter import ttk, Toplevel
 
 
 def SaveConnection(connection):
-    connection = connection
     frame = Toplevel()
     frame.title("Credential Storage")
     ttk.Button(frame, width=70, text="Close", command=lambda:ttk.Frame.destroy(frame)).grid(column=1, row=2)

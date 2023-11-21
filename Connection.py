@@ -39,3 +39,5 @@ class Connection:
         client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
         client.authorize()
         return client
+    def Query(self,type,endpoint):
+        pass
