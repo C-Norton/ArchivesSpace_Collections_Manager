@@ -9,7 +9,7 @@ This project is still in the early development phases. It is not yet ready for u
 # Running the Project - For End Users
 
 # Running and Debugging the project - For Programmers
-The code entry point is in main.py. You MUST be using CPython, not any other implementation. At the moment, the only _supported_ editor is [JetBrains PyCharm](https://www.jetbrains.com/pycharm/), but it should be trivial to get the project working in your editor of choice.
+The code entry point is in main.py. You MUST be using CPython version 3.12 or higher, not any other implementation or lower version. At the moment, the only _supported_ editor is [JetBrains PyCharm](https://www.jetbrains.com/pycharm/), but it should be trivial to get the project working in your editor of choice.
 # Technologies Used
 [ArchivesSpace Rest API](https://archivesspace.github.io/archivesspace/api/#introduction), [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake), [Keyring](https://pypi.org/project/keyring/),[Python 3.12](https://www.python.org/), [TKinter](https://docs.python.org/3/library/tkinter.html#module-tkinter)
 # Feature Requests and Support

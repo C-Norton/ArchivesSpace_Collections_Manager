@@ -4,6 +4,7 @@ import sys
 import asnake.client.web_client
 from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
+from RequestType import RequestType
 
 
 class Connection:
@@ -40,4 +41,7 @@ class Connection:
         client.authorize()
         return client
     def Query(self,type,endpoint):
-        pass
+        client = self.createsession()
+        match type:
+            case RequestType.GET:
+                pass
