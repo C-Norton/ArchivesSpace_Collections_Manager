@@ -12,7 +12,7 @@ from MenuButtons.Help import HelpDialog
 from MenuButtons.SaveConnection import SaveConnection
 
 
-class CollectionsManagerGui(Tk):
+class CollectionsManagerGui():
     connection = {}
 
     def __init__(self):
