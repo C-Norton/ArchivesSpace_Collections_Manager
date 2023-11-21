@@ -4,7 +4,7 @@ from tkinter import ttk, Toplevel
 from Connection import Connection
 
 
-class LoadConnection():
+class ManageConnections():
     frame = {}
     parent = {}
     credentials = list()

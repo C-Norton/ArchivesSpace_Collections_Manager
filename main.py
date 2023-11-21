@@ -21,8 +21,7 @@ class CollectionsManagerGui():
         masterFrame = ttk.Frame()
         logging.debug("Frame Created")
 
-        # TODO: Figure out where this SHOULD live
-        masterFrame.connection = Connection("", "", "")
+        self.connection = Connection("", "", "")
 
         # Set the properties of our main frame
         masterFrame.pack(fill="both", expand=True)
@@ -36,7 +35,7 @@ class CollectionsManagerGui():
             ttk.Button(menu, text="Configure Connection", command=self.connectionDialog).grid(column=0, row=0,
                                                                                               sticky="EW"),
             ttk.Button(menu, text="Save Connection", command=self.saveConnection).grid(column=1, row=0, sticky="EW"),
-            ttk.Button(menu, text="Load Connection").grid(column=2, row=0, sticky="EW"),
+            ttk.Button(menu, text="Manage Saved Connections").grid(column=2, row=0, sticky="EW"),
             ttk.Button(menu, text="Test Connection", command=self.testConnection).grid(column=3, row=0, sticky="EW"),
             ttk.Button(menu, text="Save Query").grid(column=4, row=0, sticky="EW"),
             ttk.Button(menu, text="Load Query").grid(column=5, row=0, sticky="EW"),
@@ -80,7 +79,7 @@ class CollectionsManagerGui():
         HelpDialog(self)
 
     def saveConnection(self):
-        SaveConnection(self, self.connection)
+        SaveConnection(self.connection)
 
 
 if __name__ == "__main__":
