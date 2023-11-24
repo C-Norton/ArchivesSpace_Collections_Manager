@@ -1,12 +1,12 @@
 import json
 import sys
-
+from dataclasses import dataclass
 import asnake.client.web_client
 from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
 from RequestType import RequestType
 
-
+@dataclass
 class Connection:
     server = ""
     username = ""
