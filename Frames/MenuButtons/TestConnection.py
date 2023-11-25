@@ -1,7 +1,5 @@
 from tkinter import ttk, Toplevel
 
-from Connection import Connection
-
 
 class TestConnection():
     connection = {}

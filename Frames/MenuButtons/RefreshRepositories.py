@@ -1,6 +1,5 @@
-from tkinter import ttk, Toplevel
 from Connection import Connection
-from MenuButtons import TestConnection
+from Frames.MenuButtons import TestConnection
 from RequestType import RequestType
 
 def RefreshRepositories(connection):

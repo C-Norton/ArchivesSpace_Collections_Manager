@@ -1,5 +1,6 @@
-import keyring
 from tkinter import ttk, Toplevel
+
+import keyring
 
 
 def SaveConnection(connection):
