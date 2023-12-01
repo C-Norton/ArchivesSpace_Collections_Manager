@@ -2,18 +2,20 @@ from tkinter import ttk, Toplevel
 
 import keyring
 
+from Connection import Connection
 
-def SaveConnection(connection):
+
+def SaveConnection():
     frame = Toplevel()
     frame.title("Credential Storage")
     ttk.Button(frame, width=70, text="Close", command=lambda:ttk.Frame.destroy(frame)).grid(column=1, row=2)
 
-    if not connection.test()[0]:
+    if not Connection.test()[0]:
         text = "Unable to store connection: This connection is not valid"
     else:
         try:
-            keyring.get_keyring().set_password("BulkEdit UI",connection.username+connection.server
-                                               ,connection.password)
+            keyring.get_keyring().set_password("BulkEdit UI",Connection.username+Connection.server
+                                               ,Connection.password)
             text = "Successfully stored credentials"
         except BaseException as e:
             text = "Unable to store connection: System Keychain configuration is not valid."

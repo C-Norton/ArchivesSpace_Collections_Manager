@@ -1,5 +1,6 @@
 import json
 import sys
+from asnake import *
 from dataclasses import dataclass
 import asnake.client.web_client
 from asnake.client import ASnakeClient
@@ -11,17 +12,19 @@ class Connection:
     server = ""
     username = ""
     password = ""
-
-    def __init__(self, s, u, p):
-        self.server = s
-        self.username = u
-        self.password = p
-
+    def __init__(self, s,u,p):
+        Connection.server = s
+        Connection.username = u
+        Connection.password = p
+    def createsession(self):
+        client = ASnakeClient(baseurl=Connection.server, username=Connection.username, password=Connection.password)
+        client.authorize()
+        return client
     def __str__(self):
-        return self.server + self.username + self.password
+        return Connection.server + Connection.username + Connection.password
 
     def test(self):
-        if self.server == "" or self.username == "" or self.password == "":
+        if Connection.server == "" or Connection.username == "" or Connection.password == "":
             return False, "Missing Server Configuration"
         try:
             client = self.createsession()
@@ -36,12 +39,12 @@ class Connection:
             return False, e, e.__traceback__
         return True, "Your connection is working"
 
-    def createsession(self):
-        client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
-        client.authorize()
-        return client
+
     def Query(self,type,endpoint):
         client = self.createsession()
         match type:
             case RequestType.GET:
+                #return client.get(endpoint)
+                pass
+            case _:
                 pass

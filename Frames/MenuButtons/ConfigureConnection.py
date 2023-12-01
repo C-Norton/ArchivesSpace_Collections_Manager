@@ -9,10 +9,9 @@ class ConnectionDialog():
     username = ""
     password = ""
     frame = {}
-    parent = {}
 
-    def __init__(self, parent):
-        self.parent = parent
+
+    def __init__(self):
         self.server = StringVar()
         self.username = StringVar()
         self.password = StringVar()
@@ -39,6 +38,7 @@ class ConnectionDialog():
         self.frame.grab_set()
 
     def closeWindow(self):
-        self.parent.connection = Connection(self.server.get(), self.username.get(), self.password.get())
-        self.destroy()
+        Connection.server= self.server.get()
+        Connection.username = self.username.get()
+        Connection.password = self.password.get()
         ttk.Frame.destroy(self.frame)

@@ -7,22 +7,16 @@ from tkinter import ttk
 
 import Frames.MenuFrame
 from Connection import Connection
-from Frames.MenuButtons.ConfigureConnection import ConnectionDialog
-from Frames.MenuButtons.Help import HelpDialog
-from Frames.MenuButtons.SaveConnection import SaveConnection
-from Frames.MenuButtons.TestConnection import TestConnection
 
 
-class CollectionsManagerGui():
-    connection = {}
+class MainGui():
+
 
     def __init__(self):
         root = tkinter.Tk()
         root.geometry("750x200")
         masterFrame = ttk.Frame()
         logging.debug("Frame Created")
-
-        self.connection = Connection("", "", "")
 
         # Set the properties of our main frame
         masterFrame.pack(fill="both", expand=True)
@@ -43,23 +37,8 @@ class CollectionsManagerGui():
         masterFrame.focus_force()
         logging.info("UI started successfully!")
 
-    # These functions here serve as connectors to the appropriate class. This can likely be avoided
-    def connectionDialog(self):
-        ConnectionDialog(self)
-
-
-    def testConnection(self):
-        test = Connection(self.connection.server, self.connection.username, self.connection.password)
-        TestConnection(self, test)
-
-    def helpButton(self):
-        HelpDialog(self)
-
-    def saveConnection(self):
-        SaveConnection(self.connection)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    app = CollectionsManagerGui()
-    app.mainloop()
+    app = MainGui()
