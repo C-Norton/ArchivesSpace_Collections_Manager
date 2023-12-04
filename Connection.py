@@ -9,6 +9,7 @@ from RequestType import RequestType
 
 
 #Need to work on understanding staticism in python
+#Effectively, I want this to be a namedTuple, additionally, I'll need a true model class. I think that's a big part of what I'm missing
 @dataclass
 class Connection:
     server = ""
