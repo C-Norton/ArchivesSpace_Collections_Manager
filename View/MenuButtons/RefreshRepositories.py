@@ -1,5 +1,5 @@
-from model.Connection import Connection
-from Frames.MenuButtons import TestConnection
+from Connection import Connection
+from View.MenuButtons import TestConnection
 from RequestType import RequestType
 
 def RefreshRepositories(connection):

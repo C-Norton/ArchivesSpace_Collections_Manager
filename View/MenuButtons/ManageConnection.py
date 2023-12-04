@@ -2,7 +2,7 @@ from tkinter import ttk, Toplevel
 
 import keyring
 
-from model.Connection import Connection
+from Connection import Connection
 
 
 class ManageConnections():

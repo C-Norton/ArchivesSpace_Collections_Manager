@@ -6,6 +6,8 @@ class QueryType(Enum):
     EMPTY = 3
     NOTEMPTY = 4
     STARTSWITH = 5
-    ENDSWITH = 6
-    CONTAINS = 7
-    NOTCONTAINS = 8
+    NOTSTARTSWITH = 6
+    ENDSWITH = 7
+    NOTENDSWITH = 8
+    CONTAINS = 9
+    NOTCONTAINS = 10

@@ -5,7 +5,7 @@ import logging
 import tkinter
 from tkinter import ttk
 
-import Frames.MenuFrame
+import View.MenuFrame
 
 
 class MainGui():
@@ -21,7 +21,7 @@ class MainGui():
         masterFrame.pack(fill="both", expand=True)
         root.title("ArchivesSpace Collections Manager")
 
-        Frames.MenuFrame.drawMenuFrame(ttk.Frame(masterFrame, padding="3 3 12 12"))
+        View.MenuFrame.drawMenuFrame(ttk.Frame(masterFrame, padding="3 3 12 12"))
 
         # Start setting up the lower portion of our window
         queryRegion = ttk.Frame(masterFrame, padding="3 3 12 12")

@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 
-from model.Connection import Connection
+from Connection import Connection
 
 
 class ConnectionDialog():
