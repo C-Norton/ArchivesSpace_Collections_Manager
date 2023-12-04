@@ -7,6 +7,8 @@ from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
 from RequestType import RequestType
 
+
+#Need to work on understanding staticism in python
 @dataclass
 class Connection:
     server = ""
