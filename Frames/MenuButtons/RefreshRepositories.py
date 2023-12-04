@@ -1,4 +1,4 @@
-from Connection import Connection
+from model.Connection import Connection
 from Frames.MenuButtons import TestConnection
 from RequestType import RequestType
 

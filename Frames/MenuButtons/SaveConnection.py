@@ -2,7 +2,7 @@ from tkinter import ttk, Toplevel
 
 import keyring
 
-from Connection import Connection
+from model.Connection import Connection
 
 def SaveConnection():
     frame = Toplevel()

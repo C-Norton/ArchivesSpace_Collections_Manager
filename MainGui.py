@@ -6,7 +6,6 @@ import tkinter
 from tkinter import ttk
 
 import Frames.MenuFrame
-from Connection import Connection
 
 
 class MainGui():

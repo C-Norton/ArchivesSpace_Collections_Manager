@@ -1,3 +1,4 @@
 keyring~=24.3.0
 requests~=2.31.0
 archivessnake~=0.9.1
+mypy~=1.7

@@ -1,7 +1,7 @@
 import logging
 from tkinter import ttk, Grid
 
-from Connection import Connection
+from model.Connection import Connection
 from Frames.MenuButtons.ConfigureConnection import ConnectionDialog
 from Frames.MenuButtons.Help import HelpDialog
 from Frames.MenuButtons.SaveConnection import SaveConnection
