@@ -4,6 +4,8 @@ from tkinter import ttk
 from Controller.ConnectionManager import *
 from Model.DataModel import *
 import View.MenuFrame
+from View import RepoFrame
+
 
 class MasterFrame:
     def __init__(self,main):
@@ -18,7 +20,8 @@ class MasterFrame:
         self.root.title("ArchivesSpace Collections Manager")
 
         View.MenuFrame.drawMenuFrame(ttk.Frame(self.masterFrame, padding="3 3 12 12"))
-
+        self.RepoFrame = RepoFrame.RepoFrame(self)
+        self.RepoFrame.pack(side="bottom",fill="x")
         # Start setting up the lower portion of our window
         queryRegion = ttk.Frame(self.masterFrame, padding="3 3 12 12")
         queryRegion.pack(side="bottom", fill='x')
