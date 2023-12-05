@@ -1,15 +1,12 @@
-from dataclasses import dataclass
 import asnake.client.web_client
-from asnake.client import ASnakeClient
-from requests.exceptions import MissingSchema, ConnectionError
-from RequestType import RequestType
+
 from dataclasses import dataclass
 
 import asnake.client.web_client
 from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
 
-from RequestType import RequestType
+from Controller.RequestType import RequestType
 
 
 @dataclass
