@@ -1,33 +1,34 @@
-import json
-import sys
-from asnake import *
 from dataclasses import dataclass
 import asnake.client.web_client
 from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
 from RequestType import RequestType
+from dataclasses import dataclass
+
+import asnake.client.web_client
+from asnake.client import ASnakeClient
+from requests.exceptions import MissingSchema, ConnectionError
+
+from RequestType import RequestType
 
 
-#Need to work on understanding staticism in python
-#Effectively, I want this to be a namedTuple, additionally, I'll need a true Model class. I think that's a big part of what I'm missing
 @dataclass
 class Connection:
-    server = ""
-    username = ""
-    password = ""
-    def __init__(self, s,u,p):
-        Connection.server = s
-        Connection.username = u
-        Connection.password = p
-    def createsession(self):
-        client = ASnakeClient(baseurl=Connection.server, username=Connection.username, password=Connection.password)
-        client.authorize()
-        return client
+
+    def __init__(self, s, u, p):
+        self.server = s
+        self.username = u
+        self.password = p
+        self.client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
+
+    def createsession(self) -> bool:
+        self.client.authorize()
+
     def __str__(self):
-        return Connection.server + Connection.username + Connection.password
+        return self.server + self.username + self.password
 
     def test(self):
-        if Connection.server == "" or Connection.username == "" or Connection.password == "":
+        if self.server == "" or self.username == "" or self.password == "":
             return False, "Missing Server Configuration"
         try:
             client = self.createsession()
@@ -42,12 +43,11 @@ class Connection:
             return False, e, e.__traceback__
         return True, "Your connection is working"
 
-
-    def Query(self,type,endpoint:str):
+    def Query(self, type, endpoint: str):
         client = self.createsession()
         match type:
             case RequestType.GET:
-                #return client.get(endpoint)
+                # return client.get(endpoint)
                 pass
             case _:
                 pass
