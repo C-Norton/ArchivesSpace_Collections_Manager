@@ -1,6 +1,6 @@
 import json
 
-from Connection import *
+from Controller.Connection import *
 
 
 class ConnectionManager:
@@ -15,7 +15,7 @@ class ConnectionManager:
         return resource.json
     def getRepositoryList(self)-> dict:
         repos = self.connection.Query(RequestType.GET,"/repositories")
-        return dict([(repo.repo_code,repo.json) for repo in repos])
+        return dict([(repo.json["repo_code"],repo.json) for repo in repos])
     def getResourceList(self,repoNumber:int)->dict:
         pass
     def getResourceRecords(self,repoNumber:int,resourcesToGet:list)->dict:

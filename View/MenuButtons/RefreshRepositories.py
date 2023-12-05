@@ -1,6 +1,6 @@
-from Connection import Connection
+from Controller.Connection import Connection
 from View.MenuButtons import TestConnection
-from RequestType import RequestType
+from Controller.RequestType import RequestType
 
 def RefreshRepositories(connection):
     if Connection.test(connection):

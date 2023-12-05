@@ -4,16 +4,18 @@
 import logging
 import tkinter
 from tkinter import ttk
+from Controller.ConnectionManager import *
 
 import View.MenuFrame
 
 
-class MainGui():
+class Main():
 
+    connectionmanager : ConnectionManager = None
 
     def __init__(self):
         root = tkinter.Tk()
-        root.geometry("750x200")
+        root.geometry("950x200")
         masterFrame = ttk.Frame()
         logging.debug("Frame Created")
 
@@ -40,4 +42,4 @@ class MainGui():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    app = MainGui()
+    app = Main()
