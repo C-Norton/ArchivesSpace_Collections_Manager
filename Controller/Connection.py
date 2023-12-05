@@ -19,9 +19,10 @@ class Connection:
         self.server = s
         self.username = u
         self.password = p
-        self.client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
+        self.client = None
 
     def createsession(self) -> bool:
+        self.client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
         self.client.authorize()
 
     def __str__(self):
@@ -31,7 +32,7 @@ class Connection:
         if self.server == "" or self.username == "" or self.password == "":
             return False, "Missing Server Configuration"
         try:
-            client = self.createsession()
+            self.client = self.createsession()
         except asnake.client.web_client.ASnakeAuthError as e:
             return False, "Bad Username or Password"
         except MissingSchema:

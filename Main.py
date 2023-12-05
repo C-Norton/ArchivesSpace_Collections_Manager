@@ -4,39 +4,24 @@
 import logging
 import tkinter
 from tkinter import ttk
-from Controller.ConnectionManager import *
-
-import View.MenuFrame
+import Controller.ConnectionManager as CM
+import Model.DataModel as DM
+import View.MasterFrame as MF
+import Controller.Connection
 
 
 class Main():
 
-    connectionmanager : ConnectionManager = None
-
+    connectionmanager : CM.ConnectionManager = None
+    datamodel : DM.DataModel = None
+    masterframe : MF.MasterFrame = None
     def __init__(self):
-        root = tkinter.Tk()
-        root.geometry("950x200")
-        masterFrame = ttk.Frame()
-        logging.debug("Frame Created")
+        Main.masterframe = MF.MasterFrame(self)
+        Main.connectionmanager = CM.ConnectionManager(Controller.Connection.Connection("","",""))
+        Main.datamodel = DM.DataModel(Main.connectionmanager)
 
-        # Set the properties of our main frame
-        masterFrame.pack(fill="both", expand=True)
-        root.title("ArchivesSpace Collections Manager")
 
-        View.MenuFrame.drawMenuFrame(ttk.Frame(masterFrame, padding="3 3 12 12"))
 
-        # Start setting up the lower portion of our window
-        queryRegion = ttk.Frame(masterFrame, padding="3 3 12 12")
-        queryRegion.pack(side="bottom", fill='x')
-        ttk.Label(queryRegion, text="foo").grid(column=1, row=1)
-
-        for child in queryRegion.winfo_children():
-            child.grid_configure(padx=5, pady=5)
-        logging.debug("UI initialized successfully!")
-
-        masterFrame.mainloop()
-        masterFrame.focus_force()
-        logging.info("UI started successfully!")
 
 
 
