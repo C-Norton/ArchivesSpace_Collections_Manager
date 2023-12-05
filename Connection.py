@@ -43,7 +43,7 @@ class Connection:
         return True, "Your connection is working"
 
 
-    def Query(self,type,endpoint):
+    def Query(self,type,endpoint:str):
         client = self.createsession()
         match type:
             case RequestType.GET:
