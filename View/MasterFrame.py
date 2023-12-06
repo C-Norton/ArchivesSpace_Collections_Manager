@@ -22,14 +22,10 @@ class MasterFrame(ttk.Frame):
         self.root.title("ArchivesSpace Collections Manager")
         self.RepoFrame = RepoFrame.RepoFrame(self)
         self.menuframe = MenuFrame.MenuFrame(self)
+        self.menuframe.pack(side="bottom",fill="x")
         self.RepoFrame.pack(side="bottom",fill="x")
-        # Start setting up the lower portion of our window
-        queryRegion = ttk.Frame(self.masterFrame, padding="3 3 12 12")
-        queryRegion.pack(side="bottom", fill='x')
-        ttk.Label(queryRegion, text="foo").grid(column=1, row=1)
 
-        for child in queryRegion.winfo_children():
-            child.grid_configure(padx=5, pady=5)
+
         logging.debug("UI initialized successfully!")
 
         self.masterFrame.mainloop()

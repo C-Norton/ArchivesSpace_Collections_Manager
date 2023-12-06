@@ -9,8 +9,9 @@ from View.MenuButtons.SaveConnection import SaveConnection
 from View.MenuButtons.TestConnection import TestConnection
 from View.RepoFrame import RepoFrame
 
-class MenuFrame(): #Todo: get inheritance working from ttk.frame
-    def __init__(self, masterframe:MasterFrame):
+class MenuFrame(ttk.Frame):
+    def __init__(self, masterframe: MasterFrame):
+        super().__init__()
         self.masterframe = masterframe
         menu = ttk.Frame(self.masterframe,padding="3 3 12 12")
         menu.pack(side="top", fill='x')
