@@ -9,9 +9,8 @@ from View.MenuButtons.SaveConnection import SaveConnection
 from View.MenuButtons.TestConnection import TestConnection
 from View.RepoFrame import RepoFrame
 
-class MenuFrame(ttk.Frame):
+class MenuFrame(): #Todo: get inheritance working from ttk.frame
     def __init__(self, masterframe:MasterFrame):
-        super().__init__()
         self.masterframe = masterframe
         menu = ttk.Frame(self.masterframe,padding="3 3 12 12")
         menu.pack(side="top", fill='x')
@@ -31,7 +30,7 @@ class MenuFrame(ttk.Frame):
                                                                                   sticky="EW"),
             ttk.Button(menu, text="Save Query").grid(column=4, row=0, sticky="EW"),
             ttk.Button(menu, text="Load Query").grid(column=5, row=0, sticky="EW"),
-            ttk.Button(menu, text="Refresh Repositories", command=refresh()).grid(column=6, row=0, sticky="EW"),
+            ttk.Button(menu, text="Refresh Repositories", command=self.masterframe.RepoFrame.refresh()).grid(column=6, row=0, sticky="EW"),
             ttk.Button(menu, text="Help", command=helpButton).grid(column=7, row=0, sticky="EW")]
 
         logging.debug("buttons created")
