@@ -3,7 +3,7 @@ import logging
 from tkinter import ttk
 from Controller.ConnectionManager import *
 from Model.DataModel import *
-import View.MenuFrame
+from View import MenuFrame
 from View import RepoFrame
 
 
@@ -18,8 +18,7 @@ class MasterFrame:
         # Set the properties of our main frame
         self.masterFrame.pack(fill="both", expand=True)
         self.root.title("ArchivesSpace Collections Manager")
-
-        View.MenuFrame.drawMenuFrame(ttk.Frame(self.masterFrame, padding="3 3 12 12"))
+        self.menuframe = MenuFrame.MenuFrame(self)
         self.RepoFrame = RepoFrame.RepoFrame(self)
         self.RepoFrame.pack(side="bottom",fill="x")
         # Start setting up the lower portion of our window

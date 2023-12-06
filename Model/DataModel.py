@@ -37,5 +37,5 @@ class DataModel:
     def getRepositoryCount(self)->int:
         return len(self.repositories)
 
-    def getListOfRepositoryNames(self): #MAKE SURE THIS INCLUDES THE REPO IDs BUNDLED WITH
-        pass
+    def getRepositories(self): #MAKE SURE THIS INCLUDES THE REPO IDs BUNDLED WITH
+        return [(repo["repo_code"],repo) for repo in self.repositories]
