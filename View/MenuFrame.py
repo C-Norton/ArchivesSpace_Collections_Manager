@@ -30,7 +30,7 @@ class MenuFrame(ttk.Frame):
                                                                                   sticky="EW"),
             ttk.Button(self, text="Save Query").grid(column=4, row=0, sticky="EW"),
             ttk.Button(self, text="Load Query").grid(column=5, row=0, sticky="EW"),
-            ttk.Button(self, text="Refresh Repositories", command=self.masterframe.RepoFrame.refresh()).grid(column=6, row=0, sticky="EW"),
+            ttk.Button(self, text="Refresh Repositories", command=self.masterframe.RepoFrame.refresh).grid(column=6, row=0, sticky="EW"),
             ttk.Button(self, text="Help", command=helpButton).grid(column=7, row=0, sticky="EW")]
 
         logging.debug("buttons created")
