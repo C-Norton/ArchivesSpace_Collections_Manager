@@ -37,6 +37,7 @@ class MenuFrame(ttk.Frame):
 
         # Set up dynamic button resizing
         Grid.rowconfigure(self, index=0, weight=1)
+        self.pack(side="bottom",fill="x")
         for i in range(len(Buttons)):
             Grid.columnconfigure(self, index=i, weight=1)
 

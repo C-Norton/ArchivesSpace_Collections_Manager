@@ -6,6 +6,7 @@ class RepoFrame(ttk.Frame):
     def __init__(self,masterframe:MasterFrame):
         super().__init__(master=masterframe.masterFrame, padding="3 3 12 12")
         self.masterframe = masterframe
+        self.pack(side="bottom",fill="x")
 
 
     def refresh(self):
