@@ -10,9 +10,9 @@ from View.MenuButtons.TestConnection import TestConnection
 from View.RepoFrame import RepoFrame
 
 class MenuFrame(ttk.Frame):
-    def __init__(self, masterframe: MasterFrame):
-        super().__init__(master=masterframe,padding="3 3 12 12")
-        self.masterframe = masterframe
+    def __init__(self, parent: MasterFrame):
+        super().__init__(master=parent,padding="3 3 12 12")
+        self.masterframe = parent
         self.pack(side="top", fill='x')
         logging.debug("Initial frame setup complete")
 
@@ -37,7 +37,7 @@ class MenuFrame(ttk.Frame):
 
         # Set up dynamic button resizing
         Grid.rowconfigure(self, index=0, weight=1)
-        self.pack(side="bottom",fill="x")
+        self.pack(side="top",fill="x")
         for i in range(len(Buttons)):
             Grid.columnconfigure(self, index=i, weight=1)
 

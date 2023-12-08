@@ -2,8 +2,6 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import logging
-import tkinter
-from tkinter import ttk
 import Controller.ConnectionManager as CM
 import Model.DataModel as DM
 import View.MasterFrame as MF

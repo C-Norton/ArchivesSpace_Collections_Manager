@@ -9,12 +9,10 @@ from View import RepoFrame
 
 class MasterFrame(ttk.Frame):
     def __init__(self, main):
-
+        self.root = tkinter.Tk()
         super().__init__()
         self.main = main
-        self.root = tkinter.Tk()
         self.root.geometry("950x200")
-        self.masterFrame = ttk.Frame()
         logging.debug("Frame Created")
 
         # Set the properties of our main frame
@@ -23,10 +21,11 @@ class MasterFrame(ttk.Frame):
         self.RepoFrame = RepoFrame.RepoFrame(self)
         self.menuframe = MenuFrame.MenuFrame(self)
 
-        self.masterFrame.pack(fill="both", expand=True)
+        self.pack(fill="both", expand=True)
 
         logging.debug("UI initialized successfully!")
 
-        self.masterFrame.mainloop()
-        self.masterFrame.focus_force()
+
+        self.mainloop()
+        self.focus_force()
         logging.info("UI started successfully!")

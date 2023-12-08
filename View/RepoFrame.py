@@ -3,9 +3,9 @@ from tkinter import ttk
 
 import View.MasterFrame as MasterFrame
 class RepoFrame(ttk.Frame):
-    def __init__(self,masterframe:MasterFrame):
-        super().__init__(master=masterframe.masterFrame, padding="3 3 12 12")
-        self.masterframe = masterframe
+    def __init__(self,parent:MasterFrame):
+        super().__init__(master=parent, padding="3 3 12 12")
+        self.masterframe = parent
         self.pack(side="bottom",fill="x")
 
 
