@@ -11,39 +11,38 @@ from View.RepoFrame import RepoFrame
 
 class MenuFrame(ttk.Frame):
     def __init__(self, masterframe: MasterFrame):
-        super().__init__()
+        super().__init__(master=masterframe,padding="3 3 12 12")
         self.masterframe = masterframe
-        menu = ttk.Frame(self.masterframe,padding="3 3 12 12")
-        menu.pack(side="top", fill='x')
+        self.pack(side="top", fill='x')
         logging.debug("Initial frame setup complete")
 
-        # Create top menu
+        # Create top self
         Buttons = [
-            ttk.Button(menu, text="Configure Connection", command=connectionDialog).grid(
+            ttk.Button(self, text="Configure Connection", command=connectionDialog).grid(
                 column=0, row=0,
                 sticky="EW"),
-            ttk.Button(menu, text="Save Connection", command=saveConnection).grid(column=1,
+            ttk.Button(self, text="Save Connection", command=saveConnection).grid(column=1,
                                                                                   row=0,
                                                                                   sticky="EW"),
-            ttk.Button(menu, text="Manage Saved Connections").grid(column=2, row=0, sticky="EW"),
-            ttk.Button(menu, text="Test Connection", command=testConnection).grid(column=3,
+            ttk.Button(self, text="Manage Saved Connections").grid(column=2, row=0, sticky="EW"),
+            ttk.Button(self, text="Test Connection", command=testConnection).grid(column=3,
                                                                                   row=0,
                                                                                   sticky="EW"),
-            ttk.Button(menu, text="Save Query").grid(column=4, row=0, sticky="EW"),
-            ttk.Button(menu, text="Load Query").grid(column=5, row=0, sticky="EW"),
-            ttk.Button(menu, text="Refresh Repositories", command=self.masterframe.RepoFrame.refresh()).grid(column=6, row=0, sticky="EW"),
-            ttk.Button(menu, text="Help", command=helpButton).grid(column=7, row=0, sticky="EW")]
+            ttk.Button(self, text="Save Query").grid(column=4, row=0, sticky="EW"),
+            ttk.Button(self, text="Load Query").grid(column=5, row=0, sticky="EW"),
+            ttk.Button(self, text="Refresh Repositories", command=self.masterframe.RepoFrame.refresh()).grid(column=6, row=0, sticky="EW"),
+            ttk.Button(self, text="Help", command=helpButton).grid(column=7, row=0, sticky="EW")]
 
         logging.debug("buttons created")
 
         # Set up dynamic button resizing
-        Grid.rowconfigure(menu, index=0, weight=1)
+        Grid.rowconfigure(self, index=0, weight=1)
         for i in range(len(Buttons)):
-            Grid.columnconfigure(menu, index=i, weight=1)
+            Grid.columnconfigure(self, index=i, weight=1)
 
-        for child in menu.winfo_children():
+        for child in self.winfo_children():
             child.grid_configure(padx=2, pady=5)
-        logging.debug("Main menu created successfully!")
+        logging.debug("Main self created successfully!")
 
 def connectionDialog():
     ConnectionDialog()

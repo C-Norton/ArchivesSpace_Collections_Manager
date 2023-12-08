@@ -18,13 +18,13 @@ class MasterFrame(ttk.Frame):
         logging.debug("Frame Created")
 
         # Set the properties of our main frame
-        self.masterFrame.pack(fill="both", expand=True)
+
         self.root.title("ArchivesSpace Collections Manager")
         self.RepoFrame = RepoFrame.RepoFrame(self)
         self.menuframe = MenuFrame.MenuFrame(self)
         self.menuframe.pack(side="bottom",fill="x")
         self.RepoFrame.pack(side="bottom",fill="x")
-
+        self.masterFrame.pack(fill="both", expand=True)
 
         logging.debug("UI initialized successfully!")
 
