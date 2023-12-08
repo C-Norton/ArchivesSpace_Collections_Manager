@@ -16,9 +16,12 @@ class Main():
     datamodel : DM.DataModel = None
     masterframe : MF.MasterFrame = None
     def __init__(self):
-        Main.masterframe = MF.MasterFrame(self)
+        self.initialized=False
         Main.connectionmanager = CM.ConnectionManager(Controller.Connection.Connection("","",""))
-        Main.datamodel = DM.DataModel(Main.connectionmanager)
+        Main.datamodel = DM.DataModel()
+        Main.masterframe = MF.MasterFrame(self)
+        self.initialized=True
+
 
 
 

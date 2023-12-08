@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk
+
 import View.MasterFrame as MasterFrame
 class RepoFrame(ttk.Frame):
     def __init__(self,masterframe:MasterFrame):
@@ -9,7 +10,7 @@ class RepoFrame(ttk.Frame):
 
 
     def refresh(self):
-        if self.masterframe.main.datamodel:
+        if self.masterframe.main.initialized:
             repos = self.masterframe.main.datamodel.getRepositories()
             checkbuttons = dict()
             i = 0

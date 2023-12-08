@@ -3,6 +3,7 @@ import asnake.client.web_client
 from dataclasses import dataclass
 
 import asnake.client.web_client
+import requests.exceptions
 from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
 
@@ -20,8 +21,11 @@ class Connection:
 
     def createsession(self) -> bool:
         self.client = ASnakeClient(baseurl=self.server, username=self.username, password=self.password)
-        self.client.authorize()
-
+        try:
+            self.client.authorize()
+        except requests.exceptions.MissingSchema:
+            return False
+        return True
     def __str__(self):
         return self.server + self.username + self.password
 

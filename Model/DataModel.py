@@ -31,7 +31,10 @@ Query needs to be a tree
 """
 import Controller.ConnectionManager
 class DataModel:
-    def __init__(self,ConnectionManager : Controller.ConnectionManager.ConnectionManager):
+    def __init__(self):
+        self.repositories = None
+
+    def initializeRepositories(self, ConnectionManager : Controller.ConnectionManager.ConnectionManager):
         self.repositories = ConnectionManager.getRepositoryList()
 
     def getRepositoryCount(self)->int:
