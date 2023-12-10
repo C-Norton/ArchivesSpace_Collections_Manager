@@ -1,11 +1,13 @@
+from __future__ import annotations
 import json
 
 from Controller.Connection import *
 
 
 class ConnectionManager:
-    def __init__(self,connection:Connection):
-        self.connection:Connection = connection
+    def __init__(self,main:Main.Main):
+        self.main = main
+        self.connection:Connection = Connection("","","")
     def getRepository(self, repoNumber:int) -> json:
         repo = self.connection.Query(RequestType.GET,f"/repositories/{repoNumber}")
         return repo.json

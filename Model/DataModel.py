@@ -29,13 +29,17 @@ So what does the dataflow actually look like
 First build a query, A Query consists of QueryType, combined with operations
 Query needs to be a tree
 """
-import Controller.ConnectionManager
+from __future__ import annotations
+
+
+
 class DataModel:
-    def __init__(self):
+    def __init__(self,main:Main.Main):
+        self.main:main=main
         self.repositories = None
 
-    def initializeRepositories(self, ConnectionManager : Controller.ConnectionManager.ConnectionManager):
-        self.repositories = ConnectionManager.getRepositoryList()
+    def initializeRepositories(self):
+        self.repositories = self.main.connectionmanager.getRepositoryList()
 
     def getRepositoryCount(self)->int:
         return len(self.repositories)
