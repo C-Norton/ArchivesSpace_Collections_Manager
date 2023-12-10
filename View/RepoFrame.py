@@ -16,9 +16,10 @@ class RepoFrame(ttk.Frame):
         checkbuttons = dict()
         i = 0
         for repo in repos:
+            repo = repos[f"{repo}"]
             checkvar = tkinter.IntVar()
-            checkbuttons.update({repo[0], (checkvar,
-                                           ttk.Checkbutton(self, text=repo[1]["name"], variable=checkvar,
+            checkbuttons.update({repo["uri"]: (checkvar,
+                                           ttk.Checkbutton(self, text=repo["repo_code"], variable=checkvar,
                                                            onvalue=1, offvalue=0).grid(column=i % 3, row=i // 3))})
             i += 1
         for child in self.winfo_children():
