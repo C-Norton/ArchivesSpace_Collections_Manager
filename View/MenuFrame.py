@@ -50,8 +50,8 @@ class MenuFrame(ttk.Frame):
 
 
     def testConnection(self):
-        test = Connection(Connection.server, Connection.username, Connection.password)
-        TestConnection(test)
+
+        TestConnection(self.masterframe.main.connectionmanager.connection)
 
 
     def helpButton(self):

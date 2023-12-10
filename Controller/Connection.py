@@ -49,7 +49,7 @@ class Connection:
         client = self.createsession()
         match type:
             case RequestType.GET:
-                # return client.get(endpoint)
-                pass
+                return self.client.get(endpoint)
+
             case _:
                 pass
