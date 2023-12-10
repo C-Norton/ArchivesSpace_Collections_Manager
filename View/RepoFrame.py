@@ -11,7 +11,8 @@ class RepoFrame(ttk.Frame):
         self.pack(side="bottom", fill="x")
 
     def refresh(self):
-        repos = self.masterframe.main.datamodel.getRepositories()
+
+        repos = self.masterframe.main.connectionmanager.getRepositoryList()
         checkbuttons = dict()
         i = 0
         for repo in repos:

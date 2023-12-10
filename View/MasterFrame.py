@@ -1,14 +1,15 @@
+from __future__ import annotations
 import tkinter
 import logging
 from tkinter import ttk
-from Controller.ConnectionManager import *
-from Model.DataModel import *
+
+
 from View import MenuFrame
 from View import RepoFrame
 
 
 class MasterFrame(ttk.Frame):
-    def __init__(self, main):
+    def __init__(self, main:Main.Main):
         self.root = tkinter.Tk()
         super().__init__()
         self.main = main
