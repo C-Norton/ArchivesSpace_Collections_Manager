@@ -1,2 +1,6 @@
 class Node:
-    pass
+    def validate(self) -> bool:
+        pass
+
+    def eval(self) -> bool:
+        pass
