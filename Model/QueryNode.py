@@ -3,6 +3,7 @@ from __future__ import annotations
 import Model.DataModel
 from QueryType import *
 import Node
+import Field
 
 """The goal of the Query Node is to determine true or false based off data actively in the archivesspace system"""
 
@@ -14,7 +15,7 @@ class QueryNode(Node.Node):
         self.dataToCompareTo = dataToCompareTo
         self.archivalData = compareField
 
-    def eval(self) -> bool:
+    def eval(self, repo, resource) -> bool:
 
         match self.queryType:
             case QueryType.EQUALS:
