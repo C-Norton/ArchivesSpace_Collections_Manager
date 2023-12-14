@@ -2,5 +2,5 @@ class Node:
     def validate(self) -> bool:
         pass
 
-    def eval(self) -> bool:
+    def eval(self, repo, resource) -> bool:
         pass

@@ -1,18 +1,21 @@
-"""The goal of the Query Node is to determine true or false based off data actively in the archivesspace system"""
-import mypy
-import typing
+from __future__ import annotations
+
+import Model.DataModel
 from QueryType import *
 import Node
+import Field
+
+"""The goal of the Query Node is to determine true or false based off data actively in the archivesspace system"""
 
 
 class QueryNode(Node.Node):
 
-    def __init__(self, queryType: QueryType, archivalData: str, dataToCompareTo: str = None):
+    def __init__(self, datamodel:Model.DataModel.DataModel, queryType: QueryType, compareField: Field, dataToCompareTo: str = None):
         self.queryType = queryType
         self.dataToCompareTo = dataToCompareTo
-        self.archivalData = archivalData
+        self.archivalData = compareField
 
-    def eval(self) -> bool:
+    def eval(self, repo, resource) -> bool:
 
         match self.queryType:
             case QueryType.EQUALS:

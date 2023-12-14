@@ -19,17 +19,17 @@ class OperatorNode(Node.Node):
         return False
 
 
-    def eval(self):
+    def eval(self, repo, resource):
         match self.Operator:
             case OperatorType.OperatorType.NOT:
-                return not self.Children[0].eval()
+                return not self.Children[0].eval( repo, resource)
             case OperatorType.OperatorType.OR:
                 for child in self.Children:
-                    if child.eval():
+                    if child.eval(repo, resource):
                         return True
                 return False
             case OperatorType.OperatorType.AND:
                 for child in self.Children:
-                    if not child.eval():
+                    if not child.eval(repo, resource):
                         return False
                 return True
