@@ -18,8 +18,8 @@ def SaveConnection(connection: Connection):
         try:
             keyring.get_keyring().set_password(
                 "BulkEdit UI",
-                Connection.username + Connection.server,
-                Connection.password,
+                connection.username + connection.server,
+                connection.password,
             )
             text = "Successfully stored credentials"
         except BaseException as e:
