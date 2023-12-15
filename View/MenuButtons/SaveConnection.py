@@ -5,16 +5,14 @@ import keyring
 from Controller.Connection import Connection
 
 
-def SaveConnection():
+def SaveConnection(connection: Connection):
     frame = Toplevel()
     frame.title("Credential Storage")
     ttk.Button(
         frame, width=70, text="Close", command=lambda: ttk.Frame.destroy(frame)
     ).grid(column=1, row=2)
 
-    if not Connection.test(
-        Connection(Connection.server, Connection.username, Connection.password)
-    )[0]:
+    if not Connection.test(connection)[0]:
         text = "Unable to store connection: This connection is not valid"
     else:
         try:

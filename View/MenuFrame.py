@@ -65,6 +65,6 @@ class MenuFrame(ttk.Frame):
         HelpDialog()
 
     def saveConnection(self):
-        SaveConnection()
+        SaveConnection(self.masterframe.main.connectionmanager.connection)
 
     # These functions here serve as connectors to the appropriate class. This can likely be avoided
