@@ -12,24 +12,35 @@ class RepoFrame(ttk.Frame):
         self.checkbuttons = dict()
 
     def refresh(self):
-
         repos = self.masterframe.main.connectionmanager.getRepositoryList()
 
         i = 0
         for repo in repos:
             repo = repos[f"{repo}"]
             checkvar = tkinter.IntVar()
-            self.checkbuttons.update({repo["uri"]: (checkvar,
-                                           ttk.Checkbutton(self, text=repo["repo_code"], variable=checkvar,
-                                                           onvalue=1, offvalue=0).grid(column=i % 3, row=i // 3))})
+            self.checkbuttons.update(
+                {
+                    repo["uri"]: (
+                        checkvar,
+                        ttk.Checkbutton(
+                            self,
+                            text=repo["repo_code"],
+                            variable=checkvar,
+                            onvalue=1,
+                            offvalue=0,
+                        ).grid(column=i % 3, row=i // 3),
+                    )
+                }
+            )
             i += 1
         for child in self.winfo_children():
             child.grid_configure(padx=2, pady=5)
+
     def getSelectedRepos(self):
-        uris:list = list()
+        uris: list = list()
         for repo, checkbutton in self.checkbuttons:
-            checkbutton:ttk.Checkbutton
+            checkbutton: ttk.Checkbutton
             s = None
             checkbutton.getint(s)
             if s:
-                uris+=[repo]
+                uris += [repo]

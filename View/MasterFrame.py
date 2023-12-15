@@ -9,7 +9,7 @@ from View import RepoFrame
 
 
 class MasterFrame(ttk.Frame):
-    def __init__(self, main:Main.Main):
+    def __init__(self, main: Main.Main):
         self.root = tkinter.Tk()
         super().__init__()
         self.main = main
@@ -25,7 +25,6 @@ class MasterFrame(ttk.Frame):
         self.pack(fill="both", expand=True)
 
         logging.debug("UI initialized successfully!")
-
 
         self.mainloop()
         self.focus_force()

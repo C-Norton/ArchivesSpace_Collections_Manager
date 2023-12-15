@@ -6,31 +6,37 @@ from Controller.Connection import *
 
 
 class ConnectionManager:
-    def __init__(self,main:Main.Main):
+    def __init__(self, main: Main.Main):
         self.main = main
-        self.connection:Connection = Connection("","","")
-    def getRepository(self, repoNumber:int) -> json:
-        repo = self.connection.Query(RequestType.GET,f"/repositories/{repoNumber}")
+        self.connection: Connection = Connection("", "", "")
+
+    def getRepository(self, repoNumber: int) -> json:
+        repo = self.connection.Query(RequestType.GET, f"/repositories/{repoNumber}")
         return repo.json
 
-    def getResourceRecord(self, repoNumber:int,resourceNumber:int) -> json:
-        resource = self.connection.Query(RequestType.GET,f"/repositories/{repoNumber}/resources/{resourceNumber}")
+    def getResourceRecord(self, repoNumber: int, resourceNumber: int) -> json:
+        resource = self.connection.Query(
+            RequestType.GET, f"/repositories/{repoNumber}/resources/{resourceNumber}"
+        )
         return resource.json
-    def getRepositoryList(self)-> dict:
+
+    def getRepositoryList(self) -> dict:
         repos = dict()
-        i :int = 1
-        result = self.connection.Query(RequestType.GET,f"/repositories/1").json()
-        while 'error' not in result:
-            repo = {result["uri"]:result}
+        i: int = 1
+        result = self.connection.Query(RequestType.GET, f"/repositories/1").json()
+        while "error" not in result:
+            repo = {result["uri"]: result}
             repos.update(repo)
-            i+=1
+            i += 1
             result = self.connection.Query(RequestType.GET, f"/repositories/{i}").json()
         return repos
-        #return dict([(repo.json["repo_code"],repo.json) for repo in repos])
-    def getResourceList(self,repoNumber:int)->dict:
+        # return dict([(repo.json["repo_code"],repo.json) for repo in repos])
+
+    def getResourceList(self, repoNumber: int) -> dict:
         pass
-    def getResourceRecords(self,repoNumber:int,resourcesToGet:list)->dict:
+
+    def getResourceRecords(self, repoNumber: int, resourcesToGet: list) -> dict:
         resources = dict()
         for resource in resourcesToGet:
-            resources.update({resource,self.getResourceRecord(repoNumber,resource)})
+            resources.update({resource, self.getResourceRecord(repoNumber, resource)})
         return resources

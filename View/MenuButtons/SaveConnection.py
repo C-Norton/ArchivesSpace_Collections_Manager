@@ -4,17 +4,25 @@ import keyring
 
 from Controller.Connection import Connection
 
+
 def SaveConnection():
     frame = Toplevel()
     frame.title("Credential Storage")
-    ttk.Button(frame, width=70, text="Close", command=lambda:ttk.Frame.destroy(frame)).grid(column=1, row=2)
+    ttk.Button(
+        frame, width=70, text="Close", command=lambda: ttk.Frame.destroy(frame)
+    ).grid(column=1, row=2)
 
-    if not Connection.test(Connection(Connection.server,Connection.username,Connection.password))[0]:
+    if not Connection.test(
+        Connection(Connection.server, Connection.username, Connection.password)
+    )[0]:
         text = "Unable to store connection: This connection is not valid"
     else:
         try:
-            keyring.get_keyring().set_password("BulkEdit UI",Connection.username+Connection.server
-                                               ,Connection.password)
+            keyring.get_keyring().set_password(
+                "BulkEdit UI",
+                Connection.username + Connection.server,
+                Connection.password,
+            )
             text = "Successfully stored credentials"
         except BaseException as e:
             text = "Unable to store connection: System Keychain configuration is not valid."

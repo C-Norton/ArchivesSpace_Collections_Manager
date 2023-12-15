@@ -1,11 +1,13 @@
 import Field
+
+
 class SubjectField(Field):
     URI = 0
     TITLE = 1
     EXTERNAL_IDS = 2
     IS_LINKED_TO_PUBLISHED_RECORD = 3
     PUBLISH = 4
-    SLUG =5
+    SLUG = 5
     IS_SLUG_AUTO = 6
     USED_WITHIN_REPOSITORIES = 7
     SOURCE = 8
