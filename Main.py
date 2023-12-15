@@ -8,20 +8,15 @@ import View.MasterFrame as MF
 import Controller.Connection
 
 
-class Main():
+class Main:
+    connectionmanager: CM.ConnectionManager = None
+    datamodel: DM.DataModel = None
+    masterframe: MF.MasterFrame = None
 
-    connectionmanager : CM.ConnectionManager = None
-    datamodel : DM.DataModel = None
-    masterframe : MF.MasterFrame = None
     def __init__(self):
         Main.connectionmanager = CM.ConnectionManager(self)
         Main.datamodel = DM.DataModel(self)
         Main.masterframe = MF.MasterFrame(self)
-
-
-
-
-
 
 
 if __name__ == "__main__":

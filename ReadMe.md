@@ -11,7 +11,7 @@ This project is still not ready for use by end users, even in a test environment
 # Running and Debugging the project - For Programmers
 The code entry point is in MainGui.py. You MUST be using CPython version 3.12 or higher, not any other implementation or lower version. At the moment, the only _supported_ editor is [JetBrains PyCharm](https://www.jetbrains.com/pycharm/), but it should be trivial to get the project working in your editor of choice. "pip install -r requirements.txt" will take care of the dependencies
 # Technologies Used
-[ArchivesSpace Rest API](https://archivesspace.github.io/archivesspace/api/#introduction), [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake), [Keyring](https://pypi.org/project/keyring/),[Python 3.12](https://www.python.org/), [TKinter](https://docs.python.org/3/library/tkinter.html#module-tkinter), [mypy](https://github.com/python/mypy)
+[ArchivesSpace Rest API](https://archivesspace.github.io/archivesspace/api/#introduction), [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake), [Keyring](https://pypi.org/project/keyring/),[Python 3.12](https://www.python.org/), [TKinter](https://docs.python.org/3/library/tkinter.html#module-tkinter), [mypy](https://github.com/python/mypy), [black](https://pypi.org/project/black/)
 # Feature Requests and Support
 At the moment, create an issue on GitHub. I may eventually tie this to a jira queue, but that's a while off still. 
 

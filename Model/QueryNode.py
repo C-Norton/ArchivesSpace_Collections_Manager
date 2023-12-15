@@ -1,40 +1,95 @@
-"""The goal of the Query Node is to determine true or false based off data actively in the archivesspace system"""
-import mypy
-import typing
-from QueryType import *
+from __future__ import annotations
+
+import Field
+import Model.DataModel
 import Node
+from Model import RecordType
+from QueryType import *
+from RecordType import *
+
+"""The goal of the Query Node is to determine true or false based off data actively in the archivesspace system"""
 
 
 class QueryNode(Node.Node):
-
-    def __init__(self, queryType: QueryType, archivalData: str, dataToCompareTo: str = None):
+    def __init__(
+        self,
+        datamodel: Model.DataModel.DataModel,
+        queryType: QueryType,
+        compareField: Field,
+        dataToCompareTo: str = None,
+    ):
         self.queryType = queryType
         self.dataToCompareTo = dataToCompareTo
-        self.archivalData = archivalData
+        self.archivalData = compareField
 
-    def eval(self) -> bool:
+    def eval(self, repo, recordType: RecordType, recordID: int) -> bool:
+        """
+        Record
+        RecordType
+        Repo
+        QueryType
+        Data (optional)
+
+        Then, get the record from the record ID and record type
+        then run through
+
+        """
+
+        recordData = None
+
+        match recordType:
+            case RecordType.Resource:
+                pass
+            case RecordType.ArchivalObject:
+                pass
+            case RecordType.DigitalObject:
+                pass
+            case RecordType.Subject:
+                pass
+            case RecordType.Agent:
+                pass
 
         match self.queryType:
             case QueryType.EQUALS:
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
                 return self.dataToCompareTo == self.archivalData
             case QueryType.NOTEQUALS:
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
                 return not self.dataToCompareTo == self.archivalData
             case QueryType.EMPTY:
+                if self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
                 return self.archivalData == "" or (not self.archivalData)
             case QueryType.NOTEMPTY:
+                if self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
                 return not (self.archivalData == "" or (not self.archivalData))
             case QueryType.STARTSWITH:
-                pass
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
+
             case QueryType.NOTSTARTSWITH:
-                pass
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
+
             case QueryType.ENDSWITH:
-                pass
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
+
             case QueryType.NOTENDSWITH:
-                pass
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
+
             case QueryType.CONTAINS:
-                pass
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
+
             case QueryType.NOTCONTAINS:
-                pass
+                if not self.dataToCompareTo:
+                    raise Exception("InvalidQueryType for datatocompare value")
+
             case _:
                 raise Exception("InvalidQueryType")
 
