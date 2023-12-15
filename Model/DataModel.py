@@ -32,17 +32,16 @@ Query needs to be a tree
 from __future__ import annotations
 
 
-
 class DataModel:
-    def __init__(self,main:Main.Main):
-        self.main:main=main
+    def __init__(self, main: Main.Main):
+        self.main: main = main
         self.repositories = None
 
     def initializeRepositories(self):
         self.repositories = self.main.connectionmanager.getRepositoryList()
 
-    def getRepositoryCount(self)->int:
+    def getRepositoryCount(self) -> int:
         return len(self.repositories)
 
-    def getRepositories(self): #MAKE SURE THIS INCLUDES THE REPO IDs BUNDLED WITH
-        return [(repo["repo_code"],repo) for repo in self.repositories]
+    def getRepositories(self):  # MAKE SURE THIS INCLUDES THE REPO IDs BUNDLED WITH
+        return [(repo["repo_code"], repo) for repo in self.repositories]

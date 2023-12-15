@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class QueryType(Enum):
     EQUALS = 1
     NOTEQUALS = 2
