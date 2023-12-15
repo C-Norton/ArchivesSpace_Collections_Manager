@@ -17,7 +17,7 @@ class Connection:
         self.username = u
         self.password = p
         self.client = None
-
+        self.validated = False
     def createsession(self) -> bool:
         self.client = ASnakeClient(
             baseurl=self.server, username=self.username, password=self.password
@@ -54,7 +54,8 @@ class Connection:
         return True, "Your connection is working"
 
     def Query(self, type, endpoint: str):
-        self.createsession()
+        if not self.validated:
+            self.validated = self.createsession()
         match type:
             case RequestType.GET:
                 return self.client.get(endpoint)

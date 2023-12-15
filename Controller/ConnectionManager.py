@@ -22,8 +22,8 @@ class ConnectionManager:
 
     def getRepositoryList(self) -> dict:
         repos = dict()
-        i: int = 1
-        result = self.connection.Query(RequestType.GET, f"/repositories/1").json()
+        i: int = 2
+        result = self.connection.Query(RequestType.GET, f"/repositories/2").json()
         while "error" not in result:
             repo = {result["uri"]: result}
             repos.update(repo)
