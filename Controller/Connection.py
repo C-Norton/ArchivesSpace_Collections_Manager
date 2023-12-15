@@ -18,6 +18,7 @@ class Connection:
         self.password = p
         self.client = None
         self.validated = False
+
     def createsession(self) -> bool:
         self.client = ASnakeClient(
             baseurl=self.server, username=self.username, password=self.password

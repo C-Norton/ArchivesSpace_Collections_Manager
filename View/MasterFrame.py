@@ -14,6 +14,7 @@ class MasterFrame(ttk.Frame):
         super().__init__()
         self.main = main
         self.root.geometry("950x200")
+        self.root.iconbitmap("Public/Icons/ArchivesSpace_Collections_Manager-32x32.ico")
         logging.debug("Frame Created")
 
         # Set the properties of our main frame

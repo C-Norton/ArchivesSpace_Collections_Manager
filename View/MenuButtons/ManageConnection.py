@@ -5,7 +5,7 @@ import keyring
 from Controller.Connection import Connection
 
 
-class ManageConnections:
+class ManageConnections(ttk.Frame):
     frame = {}
     parent = {}
     credentials = list()
