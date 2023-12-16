@@ -20,9 +20,10 @@ class QueryNode(Node.Node):
     ):
         self.queryType = queryType
         self.dataToCompareTo = dataToCompareTo
-        self.archivalData = compareField
+        self.compareField = compareField
+        self.datamodel = datamodel
 
-    def eval(self, repo, recordType: RecordType, recordID: int) -> bool:
+    def eval(self, repo, recordID: int) -> bool:
         """
         Record
         RecordType
@@ -37,9 +38,11 @@ class QueryNode(Node.Node):
 
         recordData = None
 
-        match recordType:
+        match self.compareField:
             case RecordType.Resource:
-                pass
+                recordData = self.datamodel.main.connectionmanager.getResourceRecord(
+                    repo, recordID
+                )[self.compareField.name]
             case RecordType.ArchivalObject:
                 pass
             case RecordType.DigitalObject:
