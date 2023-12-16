@@ -15,6 +15,7 @@ class ConnectionDialog:
         self.username = StringVar()
         self.password = StringVar()
         self.frame = Toplevel()
+        self.frame.iconbitmap("Public/Icons/ArchivesSpace_Collections_Manager-32x32.ico")
         self.frame.title("Configure Connection")
         mainframe = ttk.Frame(self.frame, padding="3 3 12 12")
         mainframe.grid(column=0, row=0, sticky="N, W, E, S")

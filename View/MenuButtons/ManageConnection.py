@@ -25,12 +25,14 @@ class ManageConnections(ttk.Frame):
         buffer = []
         seencolon = False
         beginning = -1
-        for index, value in reversed(credential.username):
+        for index in range(len(credential.username)):
+            index = len(credential.username)-index-1
+            value = credential.username[index]
             buffer += [value]
-            if buffer[-3:-1] == "//:":
+            if buffer[-3:] == ["/","/",":"]:
                 seencolon = True
             if seencolon and value == "h":
-                beginning = len(credential.username) - index
+                beginning = index
                 break
         return Connection(
             credential.username[beginning:],
@@ -42,7 +44,7 @@ class ManageConnections(ttk.Frame):
         # set up the keyring portion
         # TODO: Implement MVC To move this crap somewhere else
         keys = keyring.get_keyring()
-        keys = keys.get_credential("BulkEdit UI")
+        keys = keys.get_credential("BulkEdit UI","")
         if isinstance(keys, (tuple, list)):
             self.credentials = [self.readCredential(key) for key in keys]
         else:

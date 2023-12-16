@@ -5,6 +5,7 @@ from Controller.Connection import Connection
 import View.MasterFrame as MasterFrame
 from View.MenuButtons.ConfigureConnection import ConnectionDialog
 from View.MenuButtons.Help import HelpDialog
+from View.MenuButtons.ManageConnection import ManageConnections
 from View.MenuButtons.SaveConnection import SaveConnection
 from View.MenuButtons.TestConnection import TestConnection
 from View.RepoFrame import RepoFrame
@@ -25,7 +26,7 @@ class MenuFrame(ttk.Frame):
             ttk.Button(self, text="Save Connection", command=self.saveConnection).grid(
                 column=1, row=0, sticky="EW"
             ),
-            ttk.Button(self, text="Manage Saved Connections").grid(
+            ttk.Button(self, text="Manage Saved Connections", command=self.manageConnections).grid(
                 column=2, row=0, sticky="EW"
             ),
             ttk.Button(self, text="Test Connection", command=self.testConnection).grid(
@@ -66,5 +67,7 @@ class MenuFrame(ttk.Frame):
 
     def saveConnection(self):
         SaveConnection(self.masterframe.main.connectionmanager.connection)
+    def manageConnections(self):
+        ManageConnections(self.masterframe.main.connectionmanager)
 
     # These functions here serve as connectors to the appropriate class. This can likely be avoided
