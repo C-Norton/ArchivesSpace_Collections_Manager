@@ -5,5 +5,5 @@ class Node:
     def validate(self) -> bool:
         pass
 
-    def eval(self, repo, recordType: RecordType, recordID: int) -> bool:
+    def eval(self, repo, recordID: int) -> bool:
         pass
