@@ -1,3 +1,4 @@
+from __future__ import annotations
 from tkinter import ttk, Toplevel
 
 import keyring
@@ -40,7 +41,7 @@ class ManageConnections(ttk.Frame):
             credential.password,
         )
 
-    def __init__(self, parent):
+    def __init__(self, MasterFrame: MasterFrame):
         # set up the keyring portion
         # TODO: Implement MVC To move this crap somewhere else
         keys = keyring.get_keyring()
@@ -50,9 +51,9 @@ class ManageConnections(ttk.Frame):
         else:
             self.credentials = [self.readCredential(keys)]
         # now time for the window
-        self.parent = parent
-        self.frame = Toplevel()
-        self.frame.title("Credential Management")
+        self.frame=Toplevel()
+        ttk.Frame.__init__(self)
+        self.title("Credential Management")
 
     def createCredentialFrame(self):
         if len(self.credentials) == 1:
