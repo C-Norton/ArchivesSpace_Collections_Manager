@@ -26,9 +26,9 @@ class MenuFrame(ttk.Frame):
             ttk.Button(self, text="Save Connection", command=self.saveConnection).grid(
                 column=1, row=0, sticky="EW"
             ),
-            ttk.Button(self, text="Manage Saved Connections", command=self.manageConnections).grid(
-                column=2, row=0, sticky="EW"
-            ),
+            ttk.Button(
+                self, text="Manage Saved Connections", command=self.manageConnections
+            ).grid(column=2, row=0, sticky="EW"),
             ttk.Button(self, text="Test Connection", command=self.testConnection).grid(
                 column=3, row=0, sticky="EW"
             ),
@@ -67,6 +67,7 @@ class MenuFrame(ttk.Frame):
 
     def saveConnection(self):
         SaveConnection(self.masterframe.main.connectionmanager.connection)
+
     def manageConnections(self):
         ManageConnections(self.masterframe.main.connectionmanager)
 
