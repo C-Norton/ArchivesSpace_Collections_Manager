@@ -4,7 +4,7 @@ import tkinter
 from tkinter import ttk, Grid
 
 import Model.ResourceField
-
+import Model.QueryType
 
 # this will need to be a grid type
 class IfBlockFrame(ttk.Frame):
@@ -18,5 +18,9 @@ class IfBlockFrame(ttk.Frame):
 
     def drawIfBlock(self):
         ttk.Label(self,text="If").grid(row=0, column = 0)
-        foo = tkinter.StringVar()
-        ttk.OptionMenu(self,foo,"id_0",*[e.name for e in Model.ResourceField.ResourceField]).grid(row=0,column=1)
+        field = tkinter.StringVar()
+        ttk.OptionMenu(self,field,"id_0",*[e.name for e in Model.ResourceField.ResourceField]).grid(row=0,column=1)
+        querytype = tkinter.StringVar()
+        ttk.OptionMenu(self,querytype,"EQUALS",*[e.name for e in Model.QueryType.QueryType]).grid(row=0,column=2)
+        input = tkinter.StringVar()
+        ttk.Entry(self)
