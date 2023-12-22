@@ -1,7 +1,7 @@
-import Field
+import Model.Field
 
 
-class ResourceField(Field):
+class ResourceField(Model.Field.Field):
     id_0 = 0
     id_1 = 1
     id_2 = 2

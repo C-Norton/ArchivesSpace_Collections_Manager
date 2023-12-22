@@ -65,8 +65,12 @@ class ManageConnections(ttk.Frame):
                 self,
                 text=f"{self.credentials[0].server} - {self.credentials[0].username}",
             ).pack(side="top", fill="both", expand=False)
-            ttk.Button(self,text="Load Credential", command=self.loadCredential).pack(side="top", fill="both", expand=False)
-            ttk.Button(self,text="Delete Credential",command=self.deleteCredential).pack(side="top", fill="both", expand=False)
+            ttk.Button(self, text="Load Credential", command=self.loadCredential).pack(
+                side="top", fill="both", expand=False
+            )
+            ttk.Button(
+                self, text="Delete Credential", command=self.deleteCredential
+            ).pack(side="top", fill="both", expand=False)
         elif len(self.credentials) == 0:
             # WE HAVE NO CREDENTIALS
             ttk.Label(self, text="You currently have no saved connections").pack(
@@ -80,17 +84,21 @@ class ManageConnections(ttk.Frame):
             ttk.OptionMenu(self, clicked, *options).pack(
                 side="top", fill="both", expand=False
             )
-            ttk.Button(self, text="Load Credential", command=self.loadCredential).pack(side="top", fill="both",
-                                                                                       expand=False)
-            ttk.Button(self, text="Delete Credential", command=self.deleteCredential).pack(side="top", fill="both",
-                                                                                           expand=False)
+            ttk.Button(self, text="Load Credential", command=self.loadCredential).pack(
+                side="top", fill="both", expand=False
+            )
+            ttk.Button(
+                self, text="Delete Credential", command=self.deleteCredential
+            ).pack(side="top", fill="both", expand=False)
 
     def loadCredential(self):
-        if len(self.credentials)==1:
-            self.masterframe.main.connectionmanager.connection=self.credentials[0]
+        if len(self.credentials) == 1:
+            self.masterframe.main.connectionmanager.connection = self.credentials[0]
         self.master.destroy()
 
     def deleteCredential(self):
         if len(self.credentials) == 1:
-            keyring.delete_password("BulkEdit UI",self.credentials[0].username+self.credentials[0].server)
+            keyring.delete_password(
+                "BulkEdit UI", self.credentials[0].username + self.credentials[0].server
+            )
         self.master.destroy()

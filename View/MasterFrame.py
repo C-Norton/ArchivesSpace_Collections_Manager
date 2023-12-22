@@ -5,6 +5,7 @@ from tkinter import ttk
 
 
 from View import MenuFrame
+from View import IfBlockFrame
 from View import RepoFrame
 
 
@@ -22,7 +23,7 @@ class MasterFrame(ttk.Frame):
         self.root.title("ArchivesSpace Collections Manager")
         self.RepoFrame = RepoFrame.RepoFrame(self)
         self.menuframe = MenuFrame.MenuFrame(self)
-
+        self.IfBlockFrame = IfBlockFrame.IfBlockFrame(self)
         self.pack(fill="both", expand=True)
 
         logging.debug("UI initialized successfully!")
