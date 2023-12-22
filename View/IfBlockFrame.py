@@ -23,4 +23,4 @@ class IfBlockFrame(ttk.Frame):
         querytype = tkinter.StringVar()
         ttk.OptionMenu(self,querytype,"EQUALS",*[e.name for e in Model.QueryType.QueryType]).grid(row=0,column=2)
         input = tkinter.StringVar()
-        ttk.Entry(self)
+        ttk.Entry(self,textvariable=input, width=35).grid(row=0,column=3)

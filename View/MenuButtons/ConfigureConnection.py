@@ -29,7 +29,7 @@ class ConnectionDialog:
 
         ttk.Entry(mainframe, width=35, textvariable=self.server).grid(column=2, row=1)
         ttk.Entry(mainframe, width=35, textvariable=self.username).grid(column=2, row=2)
-        ttk.Entry(mainframe, width=35, textvariable=self.password).grid(column=2, row=3)
+        ttk.Entry(mainframe, width=35, textvariable=self.password, show="*").grid(column=2, row=3)
         ttk.Button(
             mainframe, width=70, text="Save and Close", command=self.closeWindow
         ).grid(column=1, row=4, columnspan=2)

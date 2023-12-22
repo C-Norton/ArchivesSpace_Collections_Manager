@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tkinter
 from tkinter import ttk, Toplevel
 
 import keyring
@@ -78,10 +79,10 @@ class ManageConnections(ttk.Frame):
             )
         else:
             options = list()
-            self.clicked = str()
+            self.clicked = tkinter.StringVar()
             for credential in self.credentials:
                 options += [f"{credential.server} - {credential.username}"]
-            ttk.OptionMenu(self, clicked, *options).pack(
+            ttk.OptionMenu(self, self.clicked, *options).pack(
                 side="top", fill="both", expand=False
             )
             ttk.Button(self, text="Load Credential", command=self.loadCredential).pack(
