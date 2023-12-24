@@ -34,3 +34,12 @@ class OperatorNode(Node.Node):
                     if not child.eval(repo, recordID):
                         return False
                 return True
+
+        # may want to intersperse extra operatortypes between children, not sure yet. I'm leaning towards the controller
+        # just having a parser function for this. A bit convoluted, but so are the functional requirements so I'm not too
+        # bent out of shape
+
+    def traverse(self, depth, nodes):
+        for child in self.Children:
+            nodes += child.traverse(depth + 1, nodes)
+        return OperatorType, depth

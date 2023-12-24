@@ -11,9 +11,5 @@ class Node:
         pass
 
     @abc.abstractmethod
-    def getWidth(self):
-        pass
-
-    @abc.abstractmethod
-    def getHeight(self):
+    def traverse(self, depth, nodes):
         pass
