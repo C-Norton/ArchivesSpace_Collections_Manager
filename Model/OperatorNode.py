@@ -20,17 +20,26 @@ class OperatorNode(Node.Node):
             return True
         return False
 
-    def eval(self, repo, recordType: RecordType, recordID: int):
+    def eval(self, repo, recordID: int):
         match self.Operator:
             case OperatorType.OperatorType.NOT:
-                return not self.Children[0].eval(repo, recordType, recordID)
+                return not self.Children[0].eval(repo, recordID)
             case OperatorType.OperatorType.OR:
                 for child in self.Children:
-                    if child.eval(repo, recordType, recordID):
+                    if child.eval(repo, recordID):
                         return True
                 return False
             case OperatorType.OperatorType.AND:
                 for child in self.Children:
-                    if not child.eval(repo, recordType, recordID):
+                    if not child.eval(repo, recordID):
                         return False
                 return True
+
+        # may want to intersperse extra operatortypes between children, not sure yet. I'm leaning towards the controller
+        # just having a parser function for this. A bit convoluted, but so are the functional requirements so I'm not too
+        # bent out of shape
+
+    def traverse(self, depth, nodes):
+        for child in self.Children:
+            nodes += child.traverse(depth + 1, nodes)
+        return OperatorType, depth
