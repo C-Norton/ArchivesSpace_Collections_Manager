@@ -40,6 +40,7 @@ class OperatorNode(Node.Node):
         # bent out of shape
 
     def traverse(self, depth, nodes):
+        nodes = []
         for child in self.Children:
             nodes += child.traverse(depth + 1, nodes)
-        return OperatorType, depth
+        return [OperatorType, depth]+nodes
