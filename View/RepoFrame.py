@@ -12,7 +12,7 @@ class RepoFrame(ttk.Frame):
         self.checkbuttons = dict()
 
     def refresh(self):
-        repos = self.masterframe.main.connectionmanager.getRepositoryList()
+        repos = self.masterframe.main.connectionmanager.get_repository_list()
 
         i = 0
         for repo in repos:
@@ -36,7 +36,7 @@ class RepoFrame(ttk.Frame):
         for child in self.winfo_children():
             child.grid_configure(padx=2, pady=5)
 
-    def getSelectedRepos(self):
+    def get_selected_repos(self):
         uris: list = list()
         for repo, checkbutton in self.checkbuttons:
             checkbutton: ttk.Checkbutton

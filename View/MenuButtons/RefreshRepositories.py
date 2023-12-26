@@ -3,7 +3,7 @@ from View.MenuButtons import TestConnection
 from Controller.RequestType import RequestType
 
 
-def RefreshRepositories(connection):
+def refresh_repositories(connection):
     if Connection.test(connection):
         Repositories = Connection.Query(type=RequestType.GET, endpoint="repositories")
     else:

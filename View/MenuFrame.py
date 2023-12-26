@@ -6,7 +6,7 @@ import View.MasterFrame as MasterFrame
 from View.MenuButtons.ConfigureConnection import ConnectionDialog
 from View.MenuButtons.Help import HelpDialog
 from View.MenuButtons.ManageConnection import ManageConnections
-from View.MenuButtons.SaveConnection import SaveConnection
+from View.MenuButtons.SaveConnection import save_connection
 from View.MenuButtons.TestConnection import TestConnection
 from View.RepoFrame import RepoFrame
 
@@ -66,7 +66,7 @@ class MenuFrame(ttk.Frame):
         HelpDialog()
 
     def saveConnection(self):
-        SaveConnection(self.masterframe.main.connectionmanager.connection)
+        save_connection(self.masterframe.main.connectionmanager.connection)
 
     def manageConnections(self):
         ManageConnections(self.masterframe.main.connectionmanager)

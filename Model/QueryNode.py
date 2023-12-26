@@ -40,7 +40,7 @@ class QueryNode(Node.Node):
 
         match self.compareField:
             case RecordType.Resource:
-                recordData = self.datamodel.main.connectionmanager.getResourceRecord(
+                recordData = self.datamodel.main.connectionmanager.get_resource_record(
                     repo, recordID
                 )[self.compareField.name]
             case RecordType.ArchivalObject:
@@ -97,3 +97,8 @@ class QueryNode(Node.Node):
                 raise Exception("InvalidQueryType")
 
         return True
+
+    def traverse(self, depth, nodes):
+        return [
+            (self.compareField.name + self.queryType.name + self.dataToCompareTo, depth)
+        ]

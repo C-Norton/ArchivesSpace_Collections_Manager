@@ -33,7 +33,7 @@ class ConnectionDialog:
             column=2, row=3
         )
         ttk.Button(
-            mainframe, width=70, text="Save and Close", command=self.closeWindow
+            mainframe, width=70, text="Save and Close", command=self.close_window
         ).grid(column=1, row=4, columnspan=2)
 
         for child in mainframe.winfo_children():
@@ -41,7 +41,7 @@ class ConnectionDialog:
         self.frame.focus_set()
         self.frame.grab_set()
 
-    def closeWindow(self):
+    def close_window(self):
         self.masterframe.main.connectionmanager.connection.server = self.server.get()
         self.masterframe.main.connectionmanager.connection.username = (
             self.username.get()

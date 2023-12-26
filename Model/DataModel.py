@@ -37,11 +37,11 @@ class DataModel:
         self.main: main = main
         self.repositories = None
 
-    def initializeRepositories(self):
-        self.repositories = self.main.connectionmanager.getRepositoryList()
+    def initialize_repositories(self):
+        self.repositories = self.main.connectionmanager.get_repository_list()
 
-    def getRepositoryCount(self) -> int:
+    def get_repository_count(self) -> int:
         return len(self.repositories)
 
-    def getRepositories(self):  # MAKE SURE THIS INCLUDES THE REPO IDs BUNDLED WITH
+    def get_repositories(self):  # MAKE SURE THIS INCLUDES THE REPO IDs BUNDLED WITH
         return [(repo["repo_code"], repo) for repo in self.repositories]

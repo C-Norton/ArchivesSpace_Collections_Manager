@@ -19,7 +19,7 @@ class Connection:
         self.client = None
         self.validated = False
 
-    def createsession(self) -> bool:
+    def create_session(self) -> bool:
         self.client = ASnakeClient(
             baseurl=self.server, username=self.username, password=self.password
         )
@@ -36,7 +36,7 @@ class Connection:
         if self.server == "" or self.username == "" or self.password == "":
             return False, "Missing Server Configuration"
         try:
-            self.client = self.createsession()
+            self.client = self.create_session()
         except asnake.client.web_client.ASnakeAuthError as e:
             return False, "Bad Username or Password"
         except MissingSchema:
@@ -56,7 +56,7 @@ class Connection:
 
     def Query(self, type, endpoint: str):
         if not self.validated:
-            self.validated = self.createsession()
+            self.validated = self.create_session()
         match type:
             case RequestType.GET:
                 return self.client.get(endpoint)

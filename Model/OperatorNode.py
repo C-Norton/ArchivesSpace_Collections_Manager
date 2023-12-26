@@ -43,4 +43,4 @@ class OperatorNode(Node.Node):
         nodes = []
         for child in self.Children:
             nodes += child.traverse(depth + 1, nodes)
-        return [OperatorType, depth]+nodes
+        return [self.Operator.name, depth] + nodes

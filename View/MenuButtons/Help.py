@@ -34,7 +34,7 @@ class HelpDialog:
             "under the Mozzila Public License version 2.0",
             wraplength=220,
         ).grid(column=1, row=2)
-        ttk.Button(self.frame, width=70, text="Close", command=self.closeWindow).grid(
+        ttk.Button(self.frame, width=70, text="Close", command=self.close_window).grid(
             column=1, row=3
         )
         for child in self.frame.winfo_children():
@@ -42,6 +42,6 @@ class HelpDialog:
         self.frame.focus_set()
         self.frame.grab_set()
 
-    def closeWindow(self):
+    def close_window(self):
         self.destroy()
         ttk.Frame.destroy(self.frame)

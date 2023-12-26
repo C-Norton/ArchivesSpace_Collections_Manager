@@ -5,7 +5,7 @@ import keyring
 from Controller.Connection import Connection
 
 
-def SaveConnection(connection: Connection):
+def save_connection(connection: Connection):
     frame = Toplevel()
     frame.title("Credential Storage")
     ttk.Button(
