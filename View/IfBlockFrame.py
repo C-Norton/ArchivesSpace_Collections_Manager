@@ -5,6 +5,7 @@ from tkinter import ttk
 
 import Model.QueryType
 import Model.ResourceField
+from Model import OperatorNode
 
 
 # this will need to be a grid type
@@ -50,4 +51,19 @@ class IfBlockFrame(ttk.Frame):
     """
 
     def draw_line(self, row: int, data: tuple, maxdepth: int):
-        pass
+        offset = data[1]
+        if isinstance(data[2], OperatorNode.OperatorNode):
+            pass
+        else:
+            field = tkinter.StringVar()
+            ttk.OptionMenu(
+                self, field, data[0][0].name, *[e.name for e in Model.ResourceField.ResourceField]
+            ).grid(row=row, column=offset)
+            querytype = tkinter.StringVar()
+            ttk.OptionMenu(
+                self, querytype, data[0][1], *[e.name for e in Model.QueryType.QueryType]
+            ).grid(row=row, column=offset+1)
+
+
+
+

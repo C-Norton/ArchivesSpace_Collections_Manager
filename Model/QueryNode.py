@@ -100,5 +100,5 @@ class QueryNode(Node.Node):
 
     def traverse(self, depth, nodes):
         return [
-            (self.compareField.name + self.queryType.name + self.dataToCompareTo, depth)
+            ((self.compareField, self.queryType, self.dataToCompareTo), depth, self)
         ]
