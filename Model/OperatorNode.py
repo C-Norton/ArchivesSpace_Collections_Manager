@@ -1,35 +1,41 @@
-import Node
-import OperatorType
+import Model.Node
+import Model.OperatorType
 from Model.RecordType import RecordType
 
 
-class OperatorNode(Node.Node):
-    def __init__(self, OperatorType: OperatorType.OperatorType, children):
+class OperatorNode(Model.Node.Node):
+    def __init__(self, OperatorType: Model.OperatorType, children):
         self.Operator = OperatorType
         self.Children = children
 
     def validate(self) -> bool:
         for child in self.Children:
-            if not isinstance(child, Node):
+            if not isinstance(child, Model.Node):
                 return False
             if not child.validate():
                 return False
-        if self.Operator == OperatorType.OperatorType.NOT and len(self.Children) == 1:
+        if (
+            self.Operator == Model.OperatorType.OperatorType.NOT
+            and len(self.Children) == 1
+        ):
             return True
-        if self.Operator != OperatorType.OperatorType.NOT and len(self.Children) > 1:
+        if (
+            self.Operator != Model.OperatorType.OperatorType.NOT
+            and len(self.Children) > 1
+        ):
             return True
         return False
 
     def eval(self, repo, recordID: int):
         match self.Operator:
-            case OperatorType.OperatorType.NOT:
+            case Model.OperatorType.NOT:
                 return not self.Children[0].eval(repo, recordID)
-            case OperatorType.OperatorType.OR:
+            case Model.OperatorType.OR:
                 for child in self.Children:
                     if child.eval(repo, recordID):
                         return True
                 return False
-            case OperatorType.OperatorType.AND:
+            case Model.OperatorType.AND:
                 for child in self.Children:
                     if not child.eval(repo, recordID):
                         return False

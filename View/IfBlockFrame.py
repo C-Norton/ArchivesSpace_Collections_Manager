@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import tkinter
+from dataclasses import fields
 from tkinter import ttk
 
 import Model.QueryType
 import Model.ResourceField
-from Model import OperatorNode
+import Model.OperatorNode
 
 
 # this will need to be a grid type
@@ -50,20 +51,38 @@ class IfBlockFrame(ttk.Frame):
     
     """
 
-    def draw_line(self, row: int, data: tuple, maxdepth: int):
+    def draw_line(self, row: int, data: tuple, maxdepth: int, fields: list = None):
         offset = data[1]
-        if isinstance(data[2], OperatorNode.OperatorNode):
+        if isinstance(data[2], Model.OperatorNode):
             pass
         else:
-            field = tkinter.StringVar()
-            ttk.OptionMenu(
-                self, field, data[0][0].name, *[e.name for e in Model.ResourceField.ResourceField]
-            ).grid(row=row, column=offset)
-            querytype = tkinter.StringVar()
-            ttk.OptionMenu(
-                self, querytype, data[0][1], *[e.name for e in Model.QueryType.QueryType]
-            ).grid(row=row, column=offset+1)
+            if fields is None:
+                fields = []
+            elements = []
+            fields.append(tkinter.StringVar())
+            elements.append(
+                ttk.OptionMenu(
+                    self,
+                    fields[0],
+                    data[0][0].name,
+                    *[e.name for e in Model.ResourceField.ResourceField],
+                )
+            )
+            elements[0].grid(row=row, column=offset)
+            fields.append(tkinter.StringVar())
+            elements.append(
+                ttk.OptionMenu(
+                    self,
+                    fields[1],
+                    data[0][1],
+                    *[e.name for e in Model.QueryType.QueryType],
+                )
+            )
+            elements[1].grid(row=row, column=offset + 1)
+        if not (fields[1] == "EMPTY" or fields[1] == "NOTEMPTY"):
+            fields[2] = tkinter.StringVar()
+            elements[2] = ttk.Entry()
 
 
-
-
+def redraw_line(self, elments: list, row: int, maxdepth: int):
+    pass
