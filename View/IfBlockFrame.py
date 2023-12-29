@@ -79,9 +79,9 @@ class IfBlockFrame(ttk.Frame):
                 )
             )
             elements[1].grid(row=row, column=offset + 1)
-        if not (fields[1] == "EMPTY" or fields[1] == "NOTEMPTY"):
-            fields[2] = tkinter.StringVar()
-            elements[2] = ttk.Entry()
+            if not (fields[1] == "EMPTY" or fields[1] == "NOTEMPTY"):
+                fields.append(tkinter.StringVar())
+                elements.append(ttk.Entry())
 
 
 def redraw_line(self, elments: list, row: int, maxdepth: int):
