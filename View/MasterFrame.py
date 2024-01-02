@@ -2,6 +2,7 @@ from __future__ import annotations
 import tkinter
 import logging
 from tkinter import ttk
+import platform
 
 
 from View import MenuFrame
@@ -15,7 +16,10 @@ class MasterFrame(ttk.Frame):
         super().__init__()
         self.main = main
         self.root.geometry("950x200")
-        self.root.iconbitmap("Public/Icons/ArchivesSpace_Collections_Manager-32x32.ico")
+        if platform.system() == "Windows":
+            self.root.iconbitmap("Public/Icons/ArchivesSpace_Collections_Manager-32x32.ico")
+        elif platform.system()=="Linux":
+            self.root.iconphoto(True,tkinter.PhotoImage("Public/Icons/ArchivesSpace_Collections_Manager-32x32.gif"))
         logging.debug("Frame Created")
 
         # Set the properties of our main frame
