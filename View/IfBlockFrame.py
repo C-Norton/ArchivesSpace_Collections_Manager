@@ -4,6 +4,7 @@ import tkinter
 from dataclasses import fields
 from tkinter import ttk
 
+import Model.ResourceField
 import Model.QueryType
 import Model.ResourceField
 import Model.OperatorNode
@@ -21,17 +22,23 @@ class IfBlockFrame(ttk.Frame):
 
     def draw_if_block(self):
         ttk.Label(self, text="If").grid(row=0, column=0)
-        field = tkinter.StringVar()
+        self.field = tkinter.StringVar()
         ttk.OptionMenu(
-            self, field, "id_0", *[e.name for e in Model.ResourceField.ResourceField]
+            self, self.field, "id_0", *[e.name for e in Model.ResourceField.ResourceField]
         ).grid(row=0, column=1)
-        querytype = tkinter.StringVar()
+        self.querytype = tkinter.StringVar()
         ttk.OptionMenu(
-            self, querytype, "EQUALS", *[e.name for e in Model.QueryType.QueryType]
+            self, self.querytype, "EQUALS", *[e.name for e in Model.QueryType.QueryType]
         ).grid(row=0, column=2)
-        input = tkinter.StringVar()
-        ttk.Entry(self, textvariable=input, width=35).grid(row=0, column=3)
+        self.input = tkinter.StringVar()
+        ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
+        ttk.Button(self,text="Add").grid(row=0, column=4, command = self.query_add)
+        ttk.Button(self,text="Submit").grid(row=1, column=0, columnspan=5, command=self.submit_query)
 
+    def submit_query(self):
+        pass
+    def query_add(self):
+        pass
     """
     drawline needs a few items to be drawn
     1, an indentation level of a given number of spaces
