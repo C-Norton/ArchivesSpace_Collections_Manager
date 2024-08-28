@@ -5,7 +5,7 @@ This project was coded in whole by Channing Norton, in collaboration with the Un
 # Who is this project for?
 This project is intended for use by archivists, librarians, and digital content managers in the academic space. This project is only really useful if you are running ArchivesSpace
 # Project Status
-This project is still in the early development phases. It is not yet ready for use or outside contribution. Please check back in early January 2024.
+This project is still in the early development phases. It is not yet ready for use or outside contribution. Please check back in early January 2025.
 # Running the Project - For End Users
 This project is still not ready for use by end users, even in a test environment. When that changes, I will post a commit with a release tag to this repository, so that anyone watching the repo is notified.
 # Running and Debugging the project - For Programmers
@@ -15,7 +15,7 @@ The code entry point is in MainGui.py. You MUST be using CPython version 3.12 or
 # Feature Requests and Support
 At the moment, create an issue on GitHub. I may eventually tie this to a jira queue, but that's a while off still. 
 
-Currently, there are numerous known issues, this software is in a pre-alpha state. Issues will be ignored until the first alpha release, expected in early 2024.
+Currently, there are numerous known issues, this software is in a pre-alpha state. Issues will be ignored until the first alpha release, expected in early 2025.
 # Contributing
 At this time, the project is not ready to receive contributions.
 # License
