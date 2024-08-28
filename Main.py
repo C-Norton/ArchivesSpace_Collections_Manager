@@ -8,6 +8,7 @@ import View.MasterFrame as MF
 import Controller.Connection
 
 
+
 class Main:
     connectionmanager: CM.ConnectionManager = None
     datamodel: DM.DataModel = None
@@ -20,5 +21,7 @@ class Main:
 
 
 if __name__ == "__main__":
+
+
     logging.basicConfig(level=logging.DEBUG)
     app = Main()

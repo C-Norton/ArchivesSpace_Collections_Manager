@@ -1,12 +1,12 @@
 from __future__ import annotations
-import tkinter
+
 import logging
+import os
+import tkinter
 from tkinter import ttk
-import platform
 
-
-from View import MenuFrame
 from View import IfBlockFrame
+from View import MenuFrame
 from View import RepoFrame
 
 
@@ -16,10 +16,14 @@ class MasterFrame(ttk.Frame):
         super().__init__()
         self.main = main
         self.root.geometry("950x200")
-        if platform.system() == "Windows":
-            self.root.iconbitmap("Public/Icons/ArchivesSpace_Collections_Manager-32x32.ico")
-        elif platform.system()=="Linux":
-            self.root.iconphoto(True,tkinter.PhotoImage("Public/Icons/ArchivesSpace_Collections_Manager-32x32.gif"))
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(project_root, "Public", "Icons",
+                                 "ArchivesSpace_Collections_Manager-32x32.ico")
+        try:
+            self.root.iconbitmap(icon_path)
+
+        except Exception as e:
+            print(f"Error setting icon: {e}")
         logging.debug("Frame Created")
 
         # Set the properties of our main frame
