@@ -11,7 +11,6 @@ Operation
     not
     or
     and
-    submit
 FieldType
     IntField
     DateField
