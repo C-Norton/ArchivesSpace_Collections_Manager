@@ -5,9 +5,7 @@ import os
 import tkinter
 from tkinter import ttk
 
-from View import IfBlockFrame
-from View import MenuFrame
-from View import RepoFrame
+from View import IfBlockFrame, QueryFrame, MenuFrame, RepoFrame
 
 
 class MasterFrame(ttk.Frame):
@@ -31,6 +29,7 @@ class MasterFrame(ttk.Frame):
         self.root.title("ArchivesSpace Collections Manager")
         self.RepoFrame = RepoFrame.RepoFrame(self)
         self.menuframe = MenuFrame.MenuFrame(self)
+        self.queryframe = QueryFrame.QueryFrame(self)
         self.IfBlockFrame = IfBlockFrame.IfBlockFrame(self)
         self.pack(fill="both", expand=True)
 

@@ -4,6 +4,8 @@ import tkinter
 from dataclasses import fields
 from tkinter import ttk
 
+from click import command
+
 import Model.ResourceField
 import Model.QueryType
 import Model.ResourceField
@@ -32,8 +34,8 @@ class IfBlockFrame(ttk.Frame):
         ).grid(row=0, column=2)
         self.input = tkinter.StringVar()
         ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
-        ttk.Button(self,text="Add").grid(row=0, column=4, command = self.query_add)
-        ttk.Button(self,text="Submit").grid(row=1, column=0, columnspan=5, command=self.submit_query)
+        ttk.Button(self,text="Add", command = self.query_add).grid(row=0, column=4)
+        ttk.Button(self,text="Submit",command=self.submit_query).grid(row=1, column=0, columnspan=5)
 
     def submit_query(self):
         pass
