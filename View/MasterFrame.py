@@ -21,7 +21,7 @@ class MasterFrame(ttk.Frame):
             self.root.iconbitmap(icon_path)
 
         except Exception as e:
-            print(f"Error setting icon: {e}")
+            logging.debug(f"Error setting icon: {e}")
         logging.debug("Frame Created")
 
         # Set the properties of our main frame

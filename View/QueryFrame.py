@@ -1,3 +1,6 @@
+from tkinter import ttk, Grid
+from View import MasterFrame
+
 class QueryFrame(ttk.Frame):
 
 
@@ -7,7 +10,7 @@ class QueryFrame(ttk.Frame):
         self.pack(side="bottom", fill="x")
         self.width = 1
         self.height = 1
-        self.draw_query_frame()
+        self.draw_query_frame(None)
 
     def draw_query_frame(self, query : str):
         pass

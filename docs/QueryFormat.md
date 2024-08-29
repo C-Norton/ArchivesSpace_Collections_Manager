@@ -42,21 +42,27 @@ REPLACE_NOTE (of type)
 
 Replace and create note will both have an = sign after them specifying the note contents
 
-Note flags: a flag is specified by
+Note flags: a flag is specified by - then the flagname, and equals sign, then the flag value
 
 
-t=type
+-type=
 
-p=persistentID
+-part=single/multi
 
-l=label
+-subtype=
 
-type=type
+-publish=true/false
+
+-content=""
 
 
 All reserved characters (including backslash) can be escaped using backslash \
 
 
-Examples
+Examples:
+
+```
+
+```
 
 ###
