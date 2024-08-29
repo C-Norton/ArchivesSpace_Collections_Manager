@@ -7,6 +7,7 @@ import Model.ActionType
 import Model.QueryType
 import Model.ResourceField
 from View import MasterFrame
+from View.NoteConstructionModalPopup import NoteConstructionModalPopup
 
 
 # this will need to be a grid type
@@ -78,4 +79,4 @@ class IfBlockFrame(ttk.Frame):
         self.draw_if_block()
 
     def define_note(self):
-        pass
+        NoteConstructionModalPopup(self.master_frame)

@@ -18,7 +18,7 @@ class MenuFrame(ttk.Frame):
         self.pack(side="top", fill="x")
         logging.debug("Initial frame setup complete")
 
-        # Create top self
+        # Create top shelf
         Buttons = [
             ttk.Button(
                 self, text="Configure Connection", command=self.connectionDialog
