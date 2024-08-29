@@ -2,13 +2,13 @@ from enum import Enum
 
 
 class QueryType(Enum):
-    EQUALS = 1
-    NOTEQUALS = 2
-    EMPTY = 3
-    NOTEMPTY = 4
-    STARTSWITH = 5
-    NOTSTARTSWITH = 6
-    ENDSWITH = 7
-    NOTENDSWITH = 8
-    CONTAINS = 9
-    NOTCONTAINS = 10
+    Equals = 1
+    Not_Equals = 2
+    Empty = 3
+    Not_Empty = 4
+    Starts_With = 5
+    Not_Starts_With = 6
+    Ends_With = 7
+    Not_Ends_With = 8
+    Contains = 9
+    Not_Contains = 10
