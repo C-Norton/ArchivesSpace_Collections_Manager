@@ -16,7 +16,6 @@ from View.NoteConstructionModalPopup import NoteConstructionModalPopup
 
 # this will need to be a grid type
 class IfBlockFrame(ttk.Frame):
-
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
@@ -37,35 +36,49 @@ class IfBlockFrame(ttk.Frame):
     def draw_if_block(self):
         ttk.Label(self, text="If").grid(row=0, column=0)
 
-        ttk.OptionMenu(self, self.field, self.field.get(),
-            *[e.name for e in Model.ResourceField.ResourceField]).grid(row=0,
-                                                                       column=1)
+        ttk.OptionMenu(
+            self,
+            self.field,
+            self.field.get(),
+            *[e.name for e in Model.ResourceField.ResourceField],
+        ).grid(row=0, column=1)
 
-        ttk.OptionMenu(self, self.query_type, self.query_type.get(),
-            *[e.name for e in Model.QueryType.QueryType]).grid(row=0, column=2)
+        ttk.OptionMenu(
+            self,
+            self.query_type,
+            self.query_type.get(),
+            *[e.name for e in Model.QueryType.QueryType],
+        ).grid(row=0, column=2)
 
-        ttk.Entry(self, textvariable=self.input, width=35).grid(row=0,
-                                                                column=3)
-        ttk.Button(self, text="Add", command=self.query_add).grid(row=0,
-                                                                  column=4)
+        ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
+        ttk.Button(self, text="Add", command=self.query_add).grid(row=0, column=4)
         ttk.Label(self, text="Action").grid(row=1, column=0)
 
-        ttk.OptionMenu(self, self.action, self.action.get(),
-                       *[e.name for e in Model.ActionType.ActionType]).grid(
-            row=1, column=1)
-        ttk.Button(self, text="Submit", command=self.submit_query).grid(row=1,
-                                                                        column= 4,
-                                                                        columnspan=3 if not self.note_layout else 1)
+        ttk.OptionMenu(
+            self,
+            self.action,
+            self.action.get(),
+            *[e.name for e in Model.ActionType.ActionType],
+        ).grid(row=1, column=1)
+        ttk.Button(self, text="Submit", command=self.submit_query).grid(
+            row=1, column=4, columnspan=3 if not self.note_layout else 1
+        )
         if self.note_layout:
-            ttk.Button(self, text="Define Note", command=self.define_note).grid(row=1, column=2,columnspan=2)
+            ttk.Button(self, text="Define Note", command=self.define_note).grid(
+                row=1, column=2, columnspan=2
+            )
 
         def on_action_change(*args):
-            if self.action.get() == "Create_Note" or self.action.get() == "Replace_Note":
+            if (
+                self.action.get() == "Create_Note"
+                or self.action.get() == "Replace_Note"
+            ):
                 self.note_layout = True
                 self.redraw_layout()
             else:
                 self.note_layout = False
                 self.redraw_layout()
+
         self.action.trace("w", on_action_change)
 
     def submit_query(self):

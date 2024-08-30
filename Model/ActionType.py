@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ActionType(Enum):
     Log = 0
     Delete_Record = 1

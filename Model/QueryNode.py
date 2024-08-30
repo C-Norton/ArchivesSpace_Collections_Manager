@@ -13,17 +13,17 @@ from RecordType import *
 class QueryNode(Node.Node):
     def __init__(
         self,
-        datamodel: Model.DataModel.DataModel,
-        queryType: QueryType,
-        compareField: Field,
-        dataToCompareTo: str = None,
+        data_model: Model.DataModel.DataModel,
+        query_type: QueryType,
+        compare_field: Field,
+        data_to_compare_to: str = None,
     ):
-        self.queryType = queryType
-        self.dataToCompareTo = dataToCompareTo
-        self.compareField = compareField
-        self.datamodel = datamodel
+        self.query_type = query_type
+        self.data_to_compare_to = data_to_compare_to
+        self.compare_field = compare_field
+        self.data_model = data_model
 
-    def eval(self, repo, recordID: int) -> bool:
+    def eval(self, repo, record_id: int) -> bool:
         """
         Record
         RecordType
@@ -36,13 +36,15 @@ class QueryNode(Node.Node):
 
         """
 
-        recordData = None
+        record_data = None
 
-        match self.compareField:
+        match self.compare_field:
             case RecordType.Resource:
-                recordData = self.datamodel.main.connectionmanager.get_resource_record(
-                    repo, recordID
-                )[self.compareField.name]
+                record_data = (
+                    self.data_model.main.connection_manager.get_resource_record(
+                        repo, record_id
+                    )[self.compare_field.name]
+                )
             case RecordType.ArchivalObject:
                 pass
             case RecordType.DigitalObject:
@@ -52,53 +54,48 @@ class QueryNode(Node.Node):
             case RecordType.Agent:
                 pass
 
-        match self.queryType:
-            case QueryType.EQUALS:
-                if not self.dataToCompareTo:
+        match self.query_type:
+            case QueryType.Equals:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
-                return self.dataToCompareTo == self.archivalData
-            case QueryType.NOTEQUALS:
-                if not self.dataToCompareTo:
+                return self.data_to_compare_to == self.archivalData
+            case QueryType.Not_Equals:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
-                return not self.dataToCompareTo == self.archivalData
-            case QueryType.EMPTY:
-                if self.dataToCompareTo:
+                return not self.data_to_compare_to == self.archivalData
+            case QueryType.Empty:
+                if self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
                 return self.archivalData == "" or (not self.archivalData)
-            case QueryType.NOTEMPTY:
-                if self.dataToCompareTo:
+            case QueryType.Not_Empty:
+                if self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
                 return not (self.archivalData == "" or (not self.archivalData))
-            case QueryType.STARTSWITH:
-                if not self.dataToCompareTo:
+            case QueryType.Starts_With:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
 
-            case QueryType.NOTSTARTSWITH:
-                if not self.dataToCompareTo:
+            case QueryType.Not_Starts_With:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
 
-            case QueryType.ENDSWITH:
-                if not self.dataToCompareTo:
+            case QueryType.Ends_With:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
 
-            case QueryType.NOTENDSWITH:
-                if not self.dataToCompareTo:
+            case QueryType.Not_Ends_With:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
 
-            case QueryType.CONTAINS:
-                if not self.dataToCompareTo:
+            case QueryType.Contains:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
 
-            case QueryType.NOTCONTAINS:
-                if not self.dataToCompareTo:
+            case QueryType.Not_Contains:
+                if not self.data_to_compare_to:
                     raise Exception("InvalidQueryType for datatocompare value")
 
             case _:
                 raise Exception("InvalidQueryType")
 
         return True
-
-    def traverse(self, depth, nodes):
-        return [
-            ((self.compareField, self.queryType, self.dataToCompareTo), depth, self)
-        ]

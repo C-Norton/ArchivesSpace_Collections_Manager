@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from View import MasterFrame
 
+
 class ConnectionDialog:
     server = ""
     username = ""
@@ -28,12 +29,14 @@ class ConnectionDialog:
         ttk.Label(main_frame, text="API Password", width=30).grid(column=1, row=3)
 
         ttk.Entry(main_frame, width=35, textvariable=self.server).grid(column=2, row=1)
-        ttk.Entry(main_frame, width=35, textvariable=self.username).grid(column=2, row=2)
+        ttk.Entry(main_frame, width=35, textvariable=self.username).grid(
+            column=2, row=2
+        )
         ttk.Entry(main_frame, width=35, textvariable=self.password, show="*").grid(
             column=2, row=3
         )
         ttk.Button(
-            main_frame, width=70, text="Save and Close", command=self.closeWindow
+            main_frame, width=70, text="Save and Close", command=self.close_window
         ).grid(column=1, row=4, columnspan=2)
 
         for child in main_frame.winfo_children():
@@ -41,12 +44,12 @@ class ConnectionDialog:
         self.frame.focus_set()
         self.frame.grab_set()
 
-    def closeWindow(self):
-        self.master_frame.main.connectionmanager.connection.server = self.server.get()
-        self.master_frame.main.connectionmanager.connection.username = (
+    def close_window(self):
+        self.master_frame.main.connection_manager.connection.server = self.server.get()
+        self.master_frame.main.connection_manager.connection.username = (
             self.username.get()
         )
-        self.master_frame.main.connectionmanager.connection.password = (
+        self.master_frame.main.connection_manager.connection.password = (
             self.password.get()
         )
 

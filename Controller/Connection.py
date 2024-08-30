@@ -54,7 +54,7 @@ class Connection:
             return False, e, e.__traceback__
         return True, "Your connection is working"
 
-    def Query(self, type, endpoint: str):
+    def query(self, type, endpoint: str):
         if not self.validated:
             self.validated = self.create_session()
         match type:

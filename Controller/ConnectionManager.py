@@ -11,11 +11,11 @@ class ConnectionManager:
         self.connection: Connection = Connection("", "", "")
 
     def get_repository(self, repoNumber: int) -> json:
-        repo = self.connection.Query(RequestType.GET, f"/repositories/{repoNumber}")
+        repo = self.connection.query(RequestType.GET, f"/repositories/{repoNumber}")
         return repo.json
 
     def get_resource_record(self, repoNumber: int, resourceNumber: int) -> json:
-        resource = self.connection.Query(
+        resource = self.connection.query(
             RequestType.GET, f"/repositories/{repoNumber}/resources/{resourceNumber}"
         )
         return resource.json
@@ -23,12 +23,12 @@ class ConnectionManager:
     def get_repository_list(self) -> dict:
         repos = dict()
         i: int = 2
-        result = self.connection.Query(RequestType.GET, f"/repositories/2").json()
+        result = self.connection.query(RequestType.GET, f"/repositories/2").json()
         while "error" not in result:
             repo = {result["uri"]: result}
             repos.update(repo)
             i += 1
-            result = self.connection.Query(RequestType.GET, f"/repositories/{i}").json()
+            result = self.connection.query(RequestType.GET, f"/repositories/{i}").json()
         return repos
         # return dict([(repo.json["repo_code"],repo.json) for repo in repos])
 

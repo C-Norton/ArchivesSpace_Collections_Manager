@@ -8,20 +8,17 @@ import View.MasterFrame as MF
 import Controller.Connection
 
 
-
 class Main:
-    connectionmanager: CM.ConnectionManager = None
-    datamodel: DM.DataModel = None
-    masterframe: MF.MasterFrame = None
+    connection_manager: CM.ConnectionManager = None
+    data_model: DM.DataModel = None
+    master_frame: MF.MasterFrame = None
 
     def __init__(self):
-        Main.connectionmanager = CM.ConnectionManager(self)
-        Main.datamodel = DM.DataModel(self)
-        Main.masterframe = MF.MasterFrame(self)
+        Main.connection_manager = CM.ConnectionManager(self)
+        Main.data_model = DM.DataModel(self)
+        Main.master_frame = MF.MasterFrame(self)
 
 
 if __name__ == "__main__":
-
-
     logging.basicConfig(level=logging.DEBUG)
     app = Main()

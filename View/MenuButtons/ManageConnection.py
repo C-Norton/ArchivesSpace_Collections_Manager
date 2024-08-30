@@ -26,15 +26,15 @@ class ManageConnections(ttk.Frame):
 
     def read_credential(self, credential):
         buffer = []
-        seencolon = False
+        seen_colon = False
         beginning = -1
         for index in range(len(credential.username)):
             index = len(credential.username) - index - 1
             value = credential.username[index]
             buffer += [value]
             if buffer[-3:] == ["/", "/", ":"]:
-                seencolon = True
-            if seencolon and value == "h":
+                seen_colon = True
+            if seen_colon and value == "h":
                 beginning = index
                 break
         return Connection(
@@ -48,7 +48,7 @@ class ManageConnections(ttk.Frame):
         super().__init__(master=self.master)
         self.master.geometry("500x175")
         self.pack()
-        self.masterframe = masterFrame
+        self.master_frame = masterFrame
         self.master.title("Manage Connections")
         self.checkbuttons = dict()
         keys = keyring.get_keyring()
@@ -94,7 +94,7 @@ class ManageConnections(ttk.Frame):
 
     def load_credential(self):
         if len(self.credentials) == 1:
-            self.masterframe.main.connectionmanager.connection = self.credentials[0]
+            self.master_frame.main.connection_manager.connection = self.credentials[0]
         self.master.destroy()
 
     def delete_credential(self):
