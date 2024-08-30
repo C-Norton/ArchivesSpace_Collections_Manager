@@ -15,8 +15,12 @@ class MasterFrame(ttk.Frame):
         self.main = main
         self.root.geometry("950x200")
         project_root = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(project_root, "Public", "Icons",
-                                 "ArchivesSpace_Collections_Manager-32x32.ico")
+        icon_path = os.path.join(
+            project_root,
+            "Public",
+            "Icons",
+            "ArchivesSpace_Collections_Manager-32x32.ico",
+        )
         try:
             self.root.iconbitmap(icon_path)
 
@@ -27,10 +31,10 @@ class MasterFrame(ttk.Frame):
         # Set the properties of our main frame
 
         self.root.title("ArchivesSpace Collections Manager")
-        self.RepoFrame = RepoFrame.RepoFrame(self)
-        self.menuframe = MenuFrame.MenuFrame(self)
-        self.queryframe = QueryFrame.QueryFrame(self)
-        self.IfBlockFrame = IfBlockFrame.IfBlockFrame(self)
+        self.repo_frame = RepoFrame.RepoFrame(self)
+        self.menu_frame = MenuFrame.MenuFrame(self)
+        self.query_frame = QueryFrame.QueryFrame(self)
+        self.if_block_frame = IfBlockFrame.IfBlockFrame(self)
         self.pack(fill="both", expand=True)
 
         logging.debug("UI initialized successfully!")

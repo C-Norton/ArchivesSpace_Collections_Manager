@@ -4,34 +4,34 @@ from Model.RecordType import RecordType
 
 
 class OperatorNode(Node.Node):
-    def __init__(self, OperatorType: OperatorType.OperatorType, children):
-        self.Operator = OperatorType
-        self.Children = children
+    def __init__(self, operator_type: OperatorType.OperatorType, children):
+        self.operator = operator_type
+        self.children = children
 
     def validate(self) -> bool:
-        for child in self.Children:
+        for child in self.children:
             if not isinstance(child, Node):
                 return False
             if not child.validate():
                 return False
-        if self.Operator == OperatorType.OperatorType.NOT and len(self.Children) == 1:
+        if self.operator == OperatorType.OperatorType.NOT and len(self.children) == 1:
             return True
-        if self.Operator != OperatorType.OperatorType.NOT and len(self.Children) > 1:
+        if self.operator != OperatorType.OperatorType.NOT and len(self.children) > 1:
             return True
         return False
 
-    def eval(self, repo, recordID: int):
-        match self.Operator:
+    def eval(self, repo, record_id: int):
+        match self.operator:
             case OperatorType.OperatorType.NOT:
-                return not self.Children[0].eval(repo, recordID)
+                return not self.children[0].eval(repo, record_id)
             case OperatorType.OperatorType.OR:
-                for child in self.Children:
-                    if child.eval(repo, recordID):
+                for child in self.children:
+                    if child.eval(repo, record_id):
                         return True
                 return False
             case OperatorType.OperatorType.AND:
-                for child in self.Children:
-                    if not child.eval(repo, recordID):
+                for child in self.children:
+                    if not child.eval(repo, record_id):
                         return False
                 return True
 
@@ -40,6 +40,6 @@ class OperatorNode(Node.Node):
         # bent out of shape
 
     def traverse(self, depth, nodes):
-        for child in self.Children:
+        for child in self.children:
             nodes += child.traverse(depth + 1, nodes)
         return OperatorType, depth

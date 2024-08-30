@@ -24,17 +24,17 @@ class ManageConnections(ttk.Frame):
     
     """
 
-    def readCredential(self, credential):
+    def read_credential(self, credential):
         buffer = []
-        seencolon = False
+        seen_colon = False
         beginning = -1
         for index in range(len(credential.username)):
             index = len(credential.username) - index - 1
             value = credential.username[index]
             buffer += [value]
             if buffer[-3:] == ["/", "/", ":"]:
-                seencolon = True
-            if seencolon and value == "h":
+                seen_colon = True
+            if seen_colon and value == "h":
                 beginning = index
                 break
         return Connection(
@@ -48,29 +48,29 @@ class ManageConnections(ttk.Frame):
         super().__init__(master=self.master)
         self.master.geometry("500x175")
         self.pack()
-        self.masterframe = masterFrame
+        self.master_frame = masterFrame
         self.master.title("Manage Connections")
         self.checkbuttons = dict()
         keys = keyring.get_keyring()
         keys = keys.get_credential("BulkEdit UI", "")
         if isinstance(keys, (tuple, list)):
-            self.credentials = [self.readCredential(key) for key in keys]
+            self.credentials = [self.read_credential(key) for key in keys]
         else:
-            self.credentials = [self.readCredential(keys)]
-        self.createCredentialFrame()
+            self.credentials = [self.read_credential(keys)]
+        self.create_credential_frame()
         # now time for the window
 
-    def createCredentialFrame(self):
+    def create_credential_frame(self):
         if len(self.credentials) == 1:
             ttk.Label(
                 self,
                 text=f"{self.credentials[0].server} - {self.credentials[0].username}",
             ).pack(side="top", fill="both", expand=False)
-            ttk.Button(self, text="Load Credential", command=self.loadCredential).pack(
+            ttk.Button(self, text="Load Credential", command=self.load_credential).pack(
                 side="top", fill="both", expand=False
             )
             ttk.Button(
-                self, text="Delete Credential", command=self.deleteCredential
+                self, text="Delete Credential", command=self.delete_credential
             ).pack(side="top", fill="both", expand=False)
         elif len(self.credentials) == 0:
             # WE HAVE NO CREDENTIALS
@@ -85,19 +85,19 @@ class ManageConnections(ttk.Frame):
             ttk.OptionMenu(self, self.clicked, *options).pack(
                 side="top", fill="both", expand=False
             )
-            ttk.Button(self, text="Load Credential", command=self.loadCredential).pack(
+            ttk.Button(self, text="Load Credential", command=self.load_credential).pack(
                 side="top", fill="both", expand=False
             )
             ttk.Button(
-                self, text="Delete Credential", command=self.deleteCredential
+                self, text="Delete Credential", command=self.delete_credential
             ).pack(side="top", fill="both", expand=False)
 
-    def loadCredential(self):
+    def load_credential(self):
         if len(self.credentials) == 1:
-            self.masterframe.main.connectionmanager.connection = self.credentials[0]
+            self.master_frame.main.connection_manager.connection = self.credentials[0]
         self.master.destroy()
 
-    def deleteCredential(self):
+    def delete_credential(self):
         if len(self.credentials) == 1:
             keyring.delete_password(
                 "BulkEdit UI", self.credentials[0].username + self.credentials[0].server

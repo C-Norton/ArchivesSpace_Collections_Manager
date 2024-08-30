@@ -7,18 +7,18 @@ import View.MasterFrame as MasterFrame
 class RepoFrame(ttk.Frame):
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
-        self.masterframe = parent
+        self.master_frame = parent
         self.pack(side="bottom", fill="x")
-        self.checkbuttons = dict()
+        self.check_buttons = dict()
 
     def refresh(self):
-        repos = self.masterframe.main.connectionmanager.getRepositoryList()
+        repos = self.master_frame.main.connection_manager.get_repository_list()
 
         i = 0
         for repo in repos:
             repo = repos[f"{repo}"]
             checkvar = tkinter.IntVar()
-            self.checkbuttons.update(
+            self.check_buttons.update(
                 {
                     repo["uri"]: (
                         checkvar,
@@ -36,9 +36,9 @@ class RepoFrame(ttk.Frame):
         for child in self.winfo_children():
             child.grid_configure(padx=2, pady=5)
 
-    def getSelectedRepos(self):
+    def get_selected_repos(self):
         uris: list = list()
-        for repo, checkbutton in self.checkbuttons:
+        for repo, checkbutton in self.check_buttons:
             checkbutton: ttk.Checkbutton
             s = None
             checkbutton.getint(s)

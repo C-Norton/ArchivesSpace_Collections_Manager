@@ -11,7 +11,7 @@ class TestConnection:
         self.frame = Toplevel()
         self.frame.title("Test results")
 
-        ttk.Button(self.frame, width=70, text="Close", command=self.closeWindow).grid(
+        ttk.Button(self.frame, width=70, text="Close", command=self.close_window).grid(
             column=1, row=2
         )
         text = str()
@@ -34,5 +34,5 @@ class TestConnection:
         self.frame.focus_set()
         self.frame.grab_set()
 
-    def closeWindow(self):
+    def close_window(self):
         ttk.Frame.destroy(self.frame)

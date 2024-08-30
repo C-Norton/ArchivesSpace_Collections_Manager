@@ -37,7 +37,7 @@ class MenuFrame(ttk.Frame):
             ttk.Button(
                 self,
                 text="Refresh Repositories",
-                command=self.masterframe.RepoFrame.refresh,
+                command=self.masterframe.repo_frame.refresh,
             ).grid(column=6, row=0, sticky="EW"),
             ttk.Button(self, text="Help", command=self.helpButton).grid(
                 column=7, row=0, sticky="EW"
@@ -60,15 +60,15 @@ class MenuFrame(ttk.Frame):
         ConnectionDialog(self.masterframe)
 
     def testConnection(self):
-        TestConnection(self.masterframe.main.connectionmanager.connection)
+        TestConnection(self.masterframe.main.connection_manager.connection)
 
     def helpButton(self):
         HelpDialog()
 
     def saveConnection(self):
-        SaveConnection(self.masterframe.main.connectionmanager.connection)
+        SaveConnection(self.masterframe.main.connection_manager.connection)
 
     def manageConnections(self):
-        ManageConnections(self.masterframe.main.connectionmanager)
+        ManageConnections(self.masterframe.main.connection_manager)
 
     # These functions here serve as connectors to the appropriate class. This can likely be avoided
