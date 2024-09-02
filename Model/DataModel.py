@@ -28,6 +28,7 @@ So what does the dataflow actually look like
 First build a query, A Query consists of QueryType, combined with operations
 Query needs to be a tree
 """
+
 from __future__ import annotations
 
 

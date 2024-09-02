@@ -13,3 +13,7 @@ class Node:
     @abc.abstractmethod
     def traverse(self, depth, nodes):
         pass
+
+    @abc.abstractmethod
+    def to_string(self):
+        pass

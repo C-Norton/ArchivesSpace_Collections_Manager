@@ -38,6 +38,7 @@ class MasterFrame(ttk.Frame):
         self.mainloop()
         self.focus_force()
         logging.info("UI started successfully!")
+
     def set_icon(self, icon_path):
         if not os.path.exists(icon_path):
             logging.error(f"Icon file not found: {icon_path}")
