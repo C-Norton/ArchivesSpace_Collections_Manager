@@ -1,6 +1,6 @@
 from requests import Response
 
-from Model.QueryNode import QueryNode
+from Model.Node import Node
 
 
 class QueryManager:
@@ -10,8 +10,8 @@ class QueryManager:
     def place_query(self, query) -> Response:
         return None
 
-    def render_query(self, query) -> str:
-        return "foo"
+    def render_query(self, query: Model.Node) -> str:
+        return query.to_string()
 
     def set_loaded_query(self, query):
         pass

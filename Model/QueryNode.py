@@ -11,6 +11,15 @@ from RecordType import *
 
 
 class QueryNode(Node.Node):
+    def validate(self) -> bool:
+        raise NotImplementedError
+
+    def traverse(self, depth, nodes):
+        raise NotImplementedError
+
+    def to_string(self):
+        raise NotImplementedError
+
     def __init__(
         self,
         data_model: Model.DataModel.DataModel,

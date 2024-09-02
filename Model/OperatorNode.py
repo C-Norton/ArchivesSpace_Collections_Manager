@@ -4,6 +4,9 @@ from Model.RecordType import RecordType
 
 
 class OperatorNode(Node.Node):
+    def to_string(self):
+        raise NotImplementedError
+
     def __init__(self, operator_type: OperatorType.OperatorType, children):
         self.operator = operator_type
         self.children = children
