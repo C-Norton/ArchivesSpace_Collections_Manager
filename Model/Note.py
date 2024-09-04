@@ -26,7 +26,10 @@ class Note:
             case NoteType.Conditions_Governing_Access:
                 self.note["Restriction_Begin"] = (datetime.date, None)
                 self.note["Restriction_End"] = (datetime.date, None)
-                self.note["Local_Access_Restriction_Type"] = (LocalAccessRestrictionType, None,)
+                self.note["Local_Access_Restriction_Type"] = (
+                    LocalAccessRestrictionType,
+                    None,
+                )
 
             case NoteType.Conditions_Governing_Use:
                 self.note["Restriction_Begin"] = (datetime.date, None)
@@ -48,7 +51,7 @@ class Note:
     def to_json(self):
         raise NotImplementedError
 
-    def add_subnote(self, subnote : SubNote):
+    def add_subnote(self, subnote: SubNote):
         if self.note["Is_Multipart"]:
             if self.note["SubNotes"][1] is None:
                 self.note["SubNotes"][1] = []

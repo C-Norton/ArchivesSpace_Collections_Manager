@@ -9,6 +9,7 @@ class OperatorNode(Node.Node):
         for child in self.children:
             string += "{" + child.to_string() + "}"
         return string
+
     def __init__(self, operator_type: OperatorType.OperatorType, children):
         self.operator = operator_type
         self.children = children
