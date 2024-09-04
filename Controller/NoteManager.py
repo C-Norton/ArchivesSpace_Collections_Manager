@@ -12,14 +12,17 @@ def singleton(cls):
         if cls not in instances:
             instances[cls] = cls()  # Create the instance if it doesn't exist
         return instances[cls]  # Return the existing or newly created instance
+
     return getinstance
+
 
 @singleton  # Apply the singleton decorator to the NoteManager class
 class NoteManager:
     """A class to manage notes (implemented as a singleton)."""
 
     def __init__(self):
-        self.activeNote = None
+        self.active_note = None
+
     def set_note(
         self,
         note_type: NoteType,
@@ -30,4 +33,10 @@ class NoteManager:
         has_subtype: bool,
         sub_type: NoteSubType,
     ):
-        self.activeNote = Note(note_type)
+        self.active_note = Note(note_type)
+        self.active_note.note["type"] = (NoteType, note_type)
+        self.active_note.note["publish"] = (bool, publish)
+        self.active_note.note["label"] = (str, label)
+        self.active_note.note["content"] = (str, note_value)
+        self.active_note.note["sub_type"] = (NoteSubType, sub_type)
+        self.active_note.note["persistent_id"] = (str, persistent_id)
