@@ -20,43 +20,43 @@ class Note:
         self.note = dict()
         self.note["publish"] = (bool, False)
         self.note["type"] = type
-        self.note["Persistent_ID"] = (str, None)
-        self.note["Label"] = (str, None)
-        self.note["Is_Multipart"] = Note.is_multipart(type)
+        self.note["persistent_id"] = (str, None)
+        self.note["label"] = (str, None)
+        self.note["is_multipart"] = Note.is_multipart(type)
         match type:
             case NoteType.Abstract:
-                self.note["SubType"] = (NoteSubType, NoteSubType.Abstract)
+                self.note["sub_type"] = (NoteSubType, NoteSubType.Abstract)
             case NoteType.Bibliography:
-                self.note["Items"] = (list, None)
+                self.note["items"] = (list, None)
             case NoteType.Conditions_Governing_Access:
-                self.note["Restriction_Begin"] = (datetime.date, None)
-                self.note["Restriction_End"] = (datetime.date, None)
-                self.note["Local_Access_Restriction_Type"] = (
+                self.note["restriction_begin"] = (datetime.date, None)
+                self.note["restriction_end"] = (datetime.date, None)
+                self.note["local_access_restriction_type"] = (
                     LocalAccessRestrictionType,
                     None,
                 )
 
             case NoteType.Conditions_Governing_Use:
-                self.note["Restriction_Begin"] = (datetime.date, None)
-                self.note["Restriction_End"] = (datetime.date, None)
+                self.note["restriction_begin"] = (datetime.date, None)
+                self.note["restriction_end"] = (datetime.date, None)
             case NoteType.Materials_Specific_Details:
-                self.note["SubType"] = (
+                self.note["sub_type"] = (
                     NoteSubType,
                     NoteSubType.Materials_Specific_Details,
                 )
             case NoteType.Physical_Description:
-                self.note["SubType"] = (NoteSubType, NoteSubType.Physical_Description)
+                self.note["sub_type"] = (NoteSubType, NoteSubType.Physical_Description)
             case NoteType.Physical_Facet:
-                self.note["SubType"] = (NoteSubType, NoteSubType.Physical_Facet)
+                self.note["sub_type"] = (NoteSubType, NoteSubType.Physical_Facet)
             case NoteType.Physical_Location:
-                self.note["SubType"] = (NoteSubType, NoteSubType.Physical_Location)
+                self.note["sub_type"] = (NoteSubType, NoteSubType.Physical_Location)
             case _:
                 pass
 
-        if self.note["Is_Multipart"]:
-            self.note["SubNotes"] = (list, None)
-        elif not self.note["Is_Multipart"]:
-            self.note["Content"] = (str, None)
+        if self.note["is_multipart"]:
+            self.note["sub_notes"] = (list, None)
+        elif not self.note["is_multipart"]:
+            self.note["content"] = (str, None)
 
     def validate(self):
         raise NotImplementedError
