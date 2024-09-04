@@ -9,7 +9,9 @@ from datetime import datetime
 
 from Model.LocalAccessRestrictionType import LocalAccessRestrictionType
 from Model.ModelValidityError import ModelValidityError
+from Model.NoteSubType import NoteSubType
 from Model.NoteType import NoteType
+from Model.SubNote import SubNote
 
 
 class Note:
@@ -22,7 +24,10 @@ class Note:
         self.note["Label"] = (str, None)
         self.note["Is_Multipart"] = Note.is_multipart(type)
         match type:
-
+            case NoteType.Abstract:
+                self.note["SubType"] = (NoteSubType, NoteSubType.Abstract)
+            case NoteType.Bibliography:
+                self.note["Items"] = (list, None)
             case NoteType.Conditions_Governing_Access:
                 self.note["Restriction_Begin"] = (datetime.date, None)
                 self.note["Restriction_End"] = (datetime.date, None)
@@ -34,9 +39,17 @@ class Note:
             case NoteType.Conditions_Governing_Use:
                 self.note["Restriction_Begin"] = (datetime.date, None)
                 self.note["Restriction_End"] = (datetime.date, None)
-            case NoteType.Index:
-                # NOTE: NO SUBTYPE?
-                pass
+            case NoteType.Materials_Specific_Details:
+                self.note["SubType"] = (
+                    NoteSubType,
+                    NoteSubType.Materials_Specific_Details,
+                )
+            case NoteType.Physical_Description:
+                self.note["SubType"] = (NoteSubType, NoteSubType.Physical_Description)
+            case NoteType.Physical_Facet:
+                self.note["SubType"] = (NoteSubType, NoteSubType.Physical_Facet)
+            case NoteType.Physical_Location:
+                self.note["SubType"] = (NoteSubType, NoteSubType.Physical_Location)
             case _:
                 pass
 
@@ -49,7 +62,8 @@ class Note:
         raise NotImplementedError
 
     def to_json(self):
-        raise NotImplementedError
+        if not self.validate():
+            raise ModelValidityError(f"Note {self} failed validity check")
 
     def add_subnote(self, subnote: SubNote):
         if self.note["Is_Multipart"]:
@@ -58,6 +72,22 @@ class Note:
             self.note["SubNotes"][1].append(subnote)
         else:
             raise ModelValidityError("Attempting to add SubNote to single part note")
+
+    @staticmethod
+    def has_subtype(type: NoteType) -> bool:
+        match type:
+            case NoteType.Abstract:
+                return True
+            case NoteType.Materials_Specific_Details:
+                return True
+            case NoteType.Physical_Description:
+                return True
+            case NoteType.Physical_Facet:
+                return True
+            case NoteType.Physical_Location:
+                return True
+            case _:
+                return False
 
     @staticmethod
     def is_multipart(type: NoteType) -> bool:
