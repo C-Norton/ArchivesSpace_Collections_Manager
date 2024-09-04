@@ -1,12 +1,14 @@
 import Node
 import OperatorType
-from Model.RecordType import RecordType
 
 
 class OperatorNode(Node.Node):
     def to_string(self):
-        raise NotImplementedError
-
+        string = "$"
+        string += self.operator.name
+        for child in self.children:
+            string += "{" + child.to_string() + "}"
+        return string
     def __init__(self, operator_type: OperatorType.OperatorType, children):
         self.operator = operator_type
         self.children = children
@@ -38,9 +40,7 @@ class OperatorNode(Node.Node):
                         return False
                 return True
 
-        # may want to intersperse extra operatortypes between children, not sure yet. I'm leaning towards the controller
-        # just having a parser function for this. A bit convoluted, but so are the functional requirements so I'm not too
-        # bent out of shape
+        # may want to intersperse extra operatortypes between children, not sure yet. I'm leaning towards the controller  # just having a parser function for this. A bit convoluted, but so are the functional requirements so I'm not too  # bent out of shape
 
     def traverse(self, depth, nodes):
         for child in self.children:
