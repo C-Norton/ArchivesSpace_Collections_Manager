@@ -1,5 +1,5 @@
-import Node
-import OperatorType
+import Model.Node as Node
+import Model.OperatorType as OperatorType
 
 
 class OperatorNode(Node.Node):
@@ -11,6 +11,7 @@ class OperatorNode(Node.Node):
         return string
 
     def __init__(self, operator_type: OperatorType.OperatorType, children):
+        super().__init__()
         self.operator = operator_type
         self.children = children
 

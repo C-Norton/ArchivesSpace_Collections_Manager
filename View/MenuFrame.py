@@ -1,20 +1,18 @@
 import logging
 from tkinter import ttk, Grid
 
-from Controller.Connection import Connection
 import View.MasterFrame as MasterFrame
 from View.MenuButtons.ConfigureConnection import ConnectionDialog
 from View.MenuButtons.Help import HelpDialog
 from View.MenuButtons.ManageConnection import ManageConnections
-from View.MenuButtons.SaveConnection import SaveConnection
+from View.MenuButtons.SaveConnection import save_connection
 from View.MenuButtons.TestConnection import TestConnection
-from View.RepoFrame import RepoFrame
 
 
 class MenuFrame(ttk.Frame):
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
-        self.masterframe = parent
+        self.master_frame = parent
         self.pack(side="top", fill="x")
         logging.debug("Initial frame setup complete")
 
@@ -37,7 +35,7 @@ class MenuFrame(ttk.Frame):
             ttk.Button(
                 self,
                 text="Refresh Repositories",
-                command=self.masterframe.repo_frame.refresh,
+                command=self.master_frame.repo_frame.refresh,
             ).grid(column=6, row=0, sticky="EW"),
             ttk.Button(self, text="Help", command=self.helpButton).grid(
                 column=7, row=0, sticky="EW"
@@ -57,18 +55,18 @@ class MenuFrame(ttk.Frame):
         logging.debug("Main self created successfully!")
 
     def connectionDialog(self):
-        ConnectionDialog(self.masterframe)
+        ConnectionDialog(self.master_frame)
 
     def testConnection(self):
-        TestConnection(self.masterframe.main.connection_manager.connection)
+        TestConnection(self.master_frame.main.connection_manager.connection)
 
     def helpButton(self):
-        HelpDialog()
+        HelpDialog(self.master_frame)
 
     def saveConnection(self):
-        SaveConnection(self.masterframe.main.connection_manager.connection)
+        save_connection(self.master_frame.main.connection_manager.connection)
 
     def manageConnections(self):
-        ManageConnections(self.masterframe.main.connection_manager)
+        ManageConnections(self.master_frame.main.connection_manager)
 
     # These functions here serve as connectors to the appropriate class. This can likely be avoided
