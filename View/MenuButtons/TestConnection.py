@@ -1,5 +1,7 @@
 from tkinter import ttk, Toplevel
 
+from View.Util.FrameUtils import FrameUtils
+
 
 class TestConnection:
     connection = {}
@@ -10,7 +12,7 @@ class TestConnection:
         self.connection = connection
         self.frame = Toplevel()
         self.frame.title("Test results")
-
+        FrameUtils.set_icon(self.frame)
         ttk.Button(self.frame, width=70, text="Close", command=self.close_window).grid(
             column=1, row=2
         )

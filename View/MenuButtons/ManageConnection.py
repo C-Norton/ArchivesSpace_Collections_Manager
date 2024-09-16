@@ -6,6 +6,7 @@ from tkinter import ttk, Toplevel
 import keyring
 
 from Controller.Connection import Connection
+from View.Util.FrameUtils import FrameUtils
 
 
 class ManageConnections(ttk.Frame):
@@ -45,11 +46,13 @@ class ManageConnections(ttk.Frame):
 
     def __init__(self, masterFrame: MasterFrame):
         self.master = Toplevel()
+
         super().__init__(master=self.master)
         self.master.geometry("500x175")
         self.pack()
         self.master_frame = masterFrame
         self.master.title("Manage Connections")
+        FrameUtils.set_icon(self.master)
         self.checkbuttons = dict()
         keys = keyring.get_keyring()
         keys = keys.get_credential("BulkEdit UI", "")

@@ -7,12 +7,14 @@ from Model.Note import Note
 from Model.NoteSubType import NoteSubType
 from Model.NoteType import NoteType
 from View import MasterFrame
+from View.Util.FrameUtils import FrameUtils
 
 
 class NoteConstructionModalPopup:
     def __init__(self, MasterFrame: MasterFrame):
         self.master_frame = MasterFrame
         self.frame = Toplevel()
+        FrameUtils.set_icon(self.frame)
         self.frame.geometry("450x600")
         self.frame.title("Construct Note")
         self.frame.columnconfigure(0, weight=1)
@@ -31,6 +33,7 @@ class NoteConstructionModalPopup:
         self.frame.focus_set()
         self.frame.grab_set()
 
+
     def draw_note_definition_menu(self):
         ttk.Label(self.frame, text="Define Note").grid(row=0, column=0)
         ttk.Label(self.frame, text="Note Type").grid(row=1, column=0)
@@ -43,7 +46,8 @@ class NoteConstructionModalPopup:
         ttk.Label(self.frame, text="Note Content (required)").grid(
             row=2, column=0, columnspan=2
         )
-        Text(self.frame).grid(row=3, column=0, columnspan=2)
+        self.note_value = Text(self.frame)
+        self.note_value.grid(row=3, column=0, columnspan=2)
         ttk.Checkbutton(self.frame, text="Publish?", variable=self.publish).grid(
             row=4, column=0, columnspan=2
         )
@@ -92,19 +96,26 @@ class NoteConstructionModalPopup:
 
     def validate(self) -> bool:
         if Model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
-            if self.note_value.get() != "":
+            if self.note_value.get('1.0', 'end-1c').strip() != "":
                 return True
 
         return False
 
     def submit(self):
-        note_manager = NoteManager()
-        note_manager.set_note(
-            Model.NoteType.NoteType[self.note_type.get()],
-            self.note_value.get(),
-            self.publish.get(),
-            self.label.get(),
-            self.persistent_id.get(),
-            self.has_subtype,
-            Model.NoteSubType.NoteSubType[self.sub_type.get()],
-        )
+        if self.validate():
+            note_manager = NoteManager()
+            note_manager.set_note(
+                Model.NoteType.NoteType[self.note_type.get()],
+                self.note_value.get('1.0', 'end-1c').strip(),
+                self.publish.get(),
+                self.label.get(),
+                self.persistent_id.get(),
+                self.has_subtype,
+                Model.NoteSubType.NoteSubType[self.sub_type.get()],
+            )
+            self.frame.destroy()
+        else:
+            FrameUtils.modal_message_popup(self.frame,"Invalid note or Unsupported note type")
+
+    def close(self):
+        self.frame.destroy()

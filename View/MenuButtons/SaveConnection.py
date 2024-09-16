@@ -3,11 +3,14 @@ from tkinter import ttk, Toplevel
 import keyring
 
 from Controller.Connection import Connection
+from View.Util.FrameUtils import FrameUtils
 
 
 def save_connection(connection: Connection):
     frame = Toplevel()
     frame.title("Credential Storage")
+
+    FrameUtils.set_icon(frame)
     ttk.Button(
         frame, width=70, text="Close", command=lambda: ttk.Frame.destroy(frame)
     ).grid(column=1, row=2)

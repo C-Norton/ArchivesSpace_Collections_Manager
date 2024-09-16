@@ -2,6 +2,7 @@ from __future__ import annotations
 from tkinter import *
 from tkinter import ttk
 from View import MasterFrame
+from View.Util.FrameUtils import FrameUtils
 
 
 class ConnectionDialog:
@@ -16,6 +17,7 @@ class ConnectionDialog:
         self.username = StringVar()
         self.password = StringVar()
         self.frame = Toplevel()
+        FrameUtils.set_icon(self.frame)
         self.frame.title("Configure Connection")
         main_frame = ttk.Frame(self.frame, padding="3 3 12 12")
         main_frame.grid(column=0, row=0, sticky="N, W, E, S")

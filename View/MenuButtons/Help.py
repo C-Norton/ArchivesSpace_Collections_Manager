@@ -1,5 +1,7 @@
 from tkinter import ttk, Toplevel
 
+from View.Util.FrameUtils import FrameUtils
+
 """
 The way these dialogs are handled is pretty crap, it works here, but the amount of boilerplate doesn't scale.
 """
@@ -16,6 +18,7 @@ class HelpDialog:
         self.parent = parent
         self.frame = Toplevel()
         self.frame.title("Help")
+        FrameUtils.set_icon(self.frame)
         self.frame = ttk.Frame(self.frame, padding="3 3 12 12")
         self.frame.grid(column=0, row=0, sticky="N, W, E, S")
         self.frame.columnconfigure(0, weight=1)
