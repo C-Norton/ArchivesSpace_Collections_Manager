@@ -40,3 +40,5 @@ class NoteManager:
         self.active_note.note["content"] = (str, note_value)
         self.active_note.note["sub_type"] = (NoteSubType, sub_type)
         self.active_note.note["persistent_id"] = (str, persistent_id)
+    def get_note(self):
+        return self.active_note

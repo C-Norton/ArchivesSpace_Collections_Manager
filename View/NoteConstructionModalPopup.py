@@ -9,7 +9,10 @@ from Model.NoteType import NoteType
 from View import MasterFrame
 from View.Util.FrameUtils import FrameUtils
 
+"""
+TODO:Make it so that when a note is already defined, that note data is loaded
 
+"""
 class NoteConstructionModalPopup:
     def __init__(self, MasterFrame: MasterFrame):
         self.master_frame = MasterFrame
@@ -19,10 +22,11 @@ class NoteConstructionModalPopup:
         self.frame.title("Construct Note")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
+        self.note_manager = NoteManager()
 
         self.note_type = StringVar()
         self.note_type.set("Abstract")
-        self.note_value = StringVar()
+        self.note_content = Text(self.frame)
         self.publish = BooleanVar()
         self.publish.set(False)
         self.label = StringVar()
@@ -30,6 +34,13 @@ class NoteConstructionModalPopup:
         self.has_subtype = None
         self.sub_type = StringVar()
         self.draw_note_definition_menu()
+        if self.note_manager.get_note() is not None:
+            self.note_type.set(self.note_manager.get_note()["type"][1].name)
+            self.publish.set(self.note_manager.get_note()["publish"][1])
+            self.label.set(self.note_manager.get_note()["label"][1])
+            self.persistent_id.set(self.note_manager.get_note()["persistent_id"][1])
+            self.sub_type.set(self.note_manager.get_note()["sub_type"][1])
+            self.has_subtype= (Note.has_subtype(NoteType[self.note_type.get()]))
         self.frame.focus_set()
         self.frame.grab_set()
 
@@ -43,11 +54,12 @@ class NoteConstructionModalPopup:
             self.note_type.get(),
             *[e.name for e in Model.NoteType.NoteType]
         ).grid(row=1, column=1)
+
         ttk.Label(self.frame, text="Note Content (required)").grid(
             row=2, column=0, columnspan=2
         )
-        self.note_value = Text(self.frame)
-        self.note_value.grid(row=3, column=0, columnspan=2)
+        self.note_content = Text(self.frame)
+        self.note_content.grid(row=3, column=0, columnspan=2)
         ttk.Checkbutton(self.frame, text="Publish?", variable=self.publish).grid(
             row=4, column=0, columnspan=2
         )
@@ -87,16 +99,16 @@ class NoteConstructionModalPopup:
         pass  # this won't be needed until multipart notes and the oddballs are addressed
 
     def redraw_layout(self):
-        # Clear the existing widgets in the frame
         for widget in self.frame.winfo_children():
             widget.destroy()
-
-        # Redraw the entire layout
         self.draw_note_definition_menu()
+        # Re-populate fields if necessary
+        if self.note_manager.get_note() is not None:
+            self.note_content.insert("1.0", self.note_manager.get_note()["content"][1])
 
     def validate(self) -> bool:
         if Model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
-            if self.note_value.get('1.0', 'end-1c').strip() != "":
+            if self.note_content.get('1.0', 'end-1c').strip() != "":
                 return True
 
         return False
@@ -106,7 +118,7 @@ class NoteConstructionModalPopup:
             note_manager = NoteManager()
             note_manager.set_note(
                 Model.NoteType.NoteType[self.note_type.get()],
-                self.note_value.get('1.0', 'end-1c').strip(),
+                self.note_content.get('1.0', 'end-1c').strip(),
                 self.publish.get(),
                 self.label.get(),
                 self.persistent_id.get(),

@@ -148,3 +148,7 @@ class Note:
                 return True
             case NoteType.Separated_Materials:
                 return True
+
+
+    def __getitem__(self, item):
+        return self.note[item]
