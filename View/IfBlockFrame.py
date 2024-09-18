@@ -91,7 +91,12 @@ class IfBlockFrame(ttk.Frame):
         pass
 
     def query_add(self):
-        pass
+        """
+        The goal of query add is to
+        - Notify the Query Controller of the new QueryNode
+        - Update the UI to  reflect the new query node
+        """
+        
 
     def redraw_layout(self):
         # Clear the existing widgets in the frame

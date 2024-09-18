@@ -23,26 +23,29 @@ class ManageConnections(ttk.Frame):
     
     return the credential split up based off that
     
+    EDIT: Turns out this means of doing things is actually somewhat standard. Seriously?
+    
     """
 
     def read_credential(self, credential):
         buffer = []
         seen_colon = False
         beginning = -1
-        for index in range(len(credential.username)):
-            index = len(credential.username) - index - 1
-            value = credential.username[index]
-            buffer += [value]
-            if buffer[-3:] == ["/", "/", ":"]:
-                seen_colon = True
-            if seen_colon and value == "h":
-                beginning = index
-                break
-        return Connection(
-            credential.username[beginning:],
-            credential.username[0:beginning],
-            credential.password,
-        )
+        if credential.username is not None:
+            for index in range(len(credential.username)):
+                index = len(credential.username) - index - 1
+                value = credential.username[index]
+                buffer += [value]
+                if buffer[-3:] == ["/", "/", ":"]:
+                    seen_colon = True
+                if seen_colon and value == "h":
+                    beginning = index
+                    break
+            return Connection(
+                credential.username[beginning:],
+                credential.username[0:beginning],
+                credential.password,
+            )
 
     def __init__(self, masterFrame: MasterFrame):
         self.master = Toplevel()
