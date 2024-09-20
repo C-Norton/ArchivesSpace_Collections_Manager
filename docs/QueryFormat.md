@@ -12,11 +12,13 @@ Every atom (Clause) will be enclosed in parens if it is an API query
 
 Every Boolean Operator will be prefixed with $
 
+Every QueryType will be prefixed with &
+
 Boolean clauses will be enclosed in curly braces {}
 
 Every queryType (begins with/ endswith .etc) will be enclosed with []
 
-Every fieldtype will be prefixed with %
+Every ResourceField will be prefixed with %
 
 Every recordtype will be prefixed with #
 
@@ -61,8 +63,58 @@ All reserved characters (including backslash) can be escaped using backslash \
 
 Examples:
 
-```
 
+Lev wishes to add a Statement on Offensive Materials to all finding aids save some exceptions
 ```
+For all finding aids except those detailed below, add the following note:
 
-###
+Type = Scope and Contents
+Label = Statement on Offensive Materials
+Publish? = yes
+Content = This collection may contain materials, items, or language which researchers may find offensive and objectionable. Researchers with questions or concerns should contact the department at rbscp@library.rochester.edu. 
+Exceptions
+A.A31 (already done)
+A.M85
+A.P23
+A.P24
+A.W22
+A.W23
+A.W25
+A.W66
+D.122
+D.184
+D.185
+D.231
+D.236
+D.237
+D.258
+D.287
+D.307
+D.325
+D.332
+D.346
+D.358
+D.383
+D.386
+D.472
+D.48
+D.486
+D.49
+D.500
+D.504
+D.528
+D.541
+D.553
+D.58
+D.602
+D.608
+D.612
+D.620
+D.623
+D.624
+D.626
+D.640
+```
+This would take the form
+### QUERY
+IF {{%identifier {$NOT &EQUALS "A.A31"}}$AND {%identifier {$NOT &EQUALS "A.M85" }}} THEN

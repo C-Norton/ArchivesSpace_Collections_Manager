@@ -9,6 +9,7 @@ from tkinter import ttk
 import Model.ActionType
 import Model.QueryType
 import Model.ResourceField
+from Controller.QueryManager import QueryManager
 from View import MasterFrame
 from View.NoteConstructionModalPopup import NoteConstructionModalPopup
 import Model.ActionType
@@ -96,7 +97,9 @@ class IfBlockFrame(ttk.Frame):
         - Notify the Query Controller of the new QueryNode
         - Update the UI to  reflect the new query node
         """
-        
+        query_manager = QueryManager()
+        QueryManager.construct_from_string()
+        query_manager.set_loaded_query()
 
     def redraw_layout(self):
         # Clear the existing widgets in the frame
