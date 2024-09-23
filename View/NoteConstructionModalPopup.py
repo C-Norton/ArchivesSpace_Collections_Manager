@@ -11,7 +11,7 @@ from View.Util.FrameUtils import FrameUtils
 
 """
 TODO:Make it so that when a note is already defined, that note data is loaded
-
+this is in progress, but may have some bugs
 """
 
 

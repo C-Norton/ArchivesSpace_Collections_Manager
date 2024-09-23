@@ -23,6 +23,10 @@ from View.NoteConstructionModalPopup import NoteConstructionModalPopup
 
 # this will need to be a grid type
 class IfBlockFrame(ttk.Frame):
+    """
+    Ifblockframe might be due for a rename. The goal is to draw the section of the UI that requests conditions from the
+    user. we may need to split drawline into its own class to represent each line of a query statement.
+    """
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent

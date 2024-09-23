@@ -10,6 +10,8 @@ from View.MenuButtons.TestConnection import TestConnection
 
 
 class MenuFrame(ttk.Frame):
+    """This is the set of buttons at the top row of the UI. I'd love for some stylization here, overall the code works
+    well, most of the buttons work at this time, but the query related ones do not"""
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
