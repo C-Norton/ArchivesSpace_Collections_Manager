@@ -12,6 +12,8 @@ from View.Util.FrameUtils import FrameUtils
 """
 TODO:Make it so that when a note is already defined, that note data is loaded
 this is in progress, but may have some bugs
+
+todo: It's crashing when you set it to notetype bibliography, let's figure out why.
 """
 
 

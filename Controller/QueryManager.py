@@ -33,7 +33,8 @@ class QueryManager:
         self.loaded_query = None
 
     def place_query(self, query) -> Response:
-        return None
+        """todo"""
+        raise NotImplementedError
 
     def render_query(self, query: Node) -> str:
         return query.to_string()
