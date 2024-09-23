@@ -7,6 +7,12 @@ from View.Util.FrameUtils import FrameUtils
 
 
 def save_connection(connection: Connection):
+    """
+    This function checks the connection, and saves it to the system keyring if, and only if it is valid. If it's not
+    valid, it pops up an error message explaining why it will not save it.
+    :param connection: see Connection.py
+    :return: None
+    """
     frame = Toplevel()
     frame.title("Credential Storage")
 

@@ -2,19 +2,22 @@ from tkinter import ttk, Toplevel
 
 from View.Util.FrameUtils import FrameUtils
 
-"""
-The way these dialogs are handled is pretty crap, it works here, but the amount of boilerplate doesn't scale.
-"""
-
-
-# TODO: address the amount of boilerplate code used in dialogs
-
 
 class HelpDialog:
+    """
+    The way these dialogs are handled is pretty crap, it works here, but the amount of boilerplate doesn't scale.
+    TODO: address the amount of boilerplate code used in dialogs
+    TODO: Spruce up this window a bit
+    """
+
     frame = {}
     parent = {}
 
     def __init__(self, parent):
+
+        """
+        :param parent: likely the master_frame
+        """
         self.parent = parent
         self.frame = Toplevel()
         self.frame.title("Help")

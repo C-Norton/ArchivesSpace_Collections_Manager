@@ -10,24 +10,32 @@ from View.Util.FrameUtils import FrameUtils
 
 
 class ManageConnections(ttk.Frame):
+    """
+        This logic is cursed
+        Read the username. It contains both a username, and a server
+        (apparently this is actually a standard use of credential manager)
+        Reading from the END (in case the username has :// in it), look for the first (or last if you will) instance of
+        '://'
+
+        return the credential split up based off that
+
+        EDIT: Turns out this means of doing things is actually somewhat standard. Seriously?
+
+        """
+
     frame = {}
     parent = {}
     credentials = list()
 
-    """
-    This logic is cursed
-    Read the username. It contains both a username, and a server
-    (apparently this is actually a standard use of credential manager)
-    Reading from the END (in case the username has :// in it), look for the first (or last if you will) instance of 
-    '://'
-    
-    return the credential split up based off that
-    
-    EDIT: Turns out this means of doing things is actually somewhat standard. Seriously?
-    
-    """
-
     def read_credential(self, credential):
+        """
+        My editor informs me that this can be made static. Consider doing so
+        :param credential: Credential from the keychain
+        :return: a plaintext username, server, password combo stored in a new Connection class
+        TODO: Additional cross-platform testing. This is known not to work on Linux Debian with Gnome_Keyring package.
+        No clue how it's handled on mac. Mac support in particular is important for the archivesspace community
+        TODO: Handle no credentials better.
+        """
         buffer = []
         seen_colon = False
         beginning = -1

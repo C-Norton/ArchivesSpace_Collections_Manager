@@ -4,6 +4,11 @@ from View.Util.FrameUtils import FrameUtils
 
 
 class TestConnection:
+    """
+    This class manages the dialog box for testing a connection. Per the comment in Help, I'd really like to genericize
+    these popups and clean up the code. That said, test connection does some additional logic to actually, well, test
+    the connection. So this is a challenge, but one that should be resolved through reducing coupling.
+    """
     connection = {}
     parent = {}
     frame = {}

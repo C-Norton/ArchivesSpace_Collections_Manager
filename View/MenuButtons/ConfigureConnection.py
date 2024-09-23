@@ -6,6 +6,11 @@ from View.Util.FrameUtils import FrameUtils
 
 
 class ConnectionDialog:
+    """
+    Connectiondialog draws a dialog box, and displays it to the user. This box has 3 text fields, and a submit button.
+    These fields set the server, username, and password used by the API.
+    todo: Add more testing, logging, and error handling, Consider adding a cancel button
+    """
     server = ""
     username = ""
     password = ""

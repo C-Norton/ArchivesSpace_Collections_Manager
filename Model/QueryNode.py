@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-import Field
-import Model.DataModel
-import Node
-from Model import RecordType
-from QueryType import *
-from RecordType import *
+from Model import *
 
 
 class QueryNode(Node.Node):
