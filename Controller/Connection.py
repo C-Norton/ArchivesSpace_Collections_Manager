@@ -12,6 +12,18 @@ from Controller.RequestType import RequestType
 
 @dataclass
 class Connection:
+    """
+    A Connection is a small class used to pass around connection information to an archivesspace server, as well as the
+    API object it creates. It provides its own methods for validation. It is the only class that should be interacting
+    with the API directly.
+
+    TODO: Add a mechanism for representing server timeout, and force revalidation if a connection has not been used
+    Within 300 seconds.
+
+    TODO: Complete Query for different types
+
+    TODO: Add a ratelimit to avoid overloading the archivesspace server and getting API errors. Make it dynamic (opt)
+    """
     def __init__(self, s, u, p):
         self.server = s
         self.username = u
@@ -20,6 +32,11 @@ class Connection:
         self.validated = False
 
     def create_session(self) -> bool:
+        """
+        Create session starts a server session using this connection. This is not necessary to call from outside this
+        class, but it won't hurt anything
+        :return: True if the connection was created successfully, False otherwise
+        """
         self.client = ASnakeClient(
             baseurl=self.server, username=self.username, password=self.password
         )
@@ -33,6 +50,10 @@ class Connection:
         return self.server + self.username + self.password
 
     def test(self):
+        """
+        Test Validates if a connection's info is ok.
+        :return: true if the connection is valid, false otherwise
+        """
         if self.server == "" or self.username == "" or self.password == "":
             return False, "Missing Server Configuration"
         try:
@@ -54,10 +75,16 @@ class Connection:
             return False, e, e.__traceback__
         return True, "Your connection is working"
 
-    def Query(self, type, endpoint: str):
+    def query(self, http_request_type, endpoint: str):
+        """
+        Actually makes a query of the archives_space server
+        :param http_request_type: does what it says on the tin
+        :param endpoint: it's not this classes job to tell you what to query, go talk to query
+        :return:
+        """
         if not self.validated:
             self.validated = self.create_session()
-        match type:
+        match http_request_type:
             case RequestType.GET:
                 return self.client.get(endpoint)
 
