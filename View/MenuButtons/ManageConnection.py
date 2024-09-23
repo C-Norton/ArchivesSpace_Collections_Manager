@@ -11,17 +11,17 @@ from View.Util.FrameUtils import FrameUtils
 
 class ManageConnections(ttk.Frame):
     """
-        This logic is cursed
-        Read the username. It contains both a username, and a server
-        (apparently this is actually a standard use of credential manager)
-        Reading from the END (in case the username has :// in it), look for the first (or last if you will) instance of
-        '://'
+    This logic is cursed
+    Read the username. It contains both a username, and a server
+    (apparently this is actually a standard use of credential manager)
+    Reading from the END (in case the username has :// in it), look for the first (or last if you will) instance of
+    '://'
 
-        return the credential split up based off that
+    return the credential split up based off that
 
-        EDIT: Turns out this means of doing things is actually somewhat standard. Seriously?
+    EDIT: Turns out this means of doing things is actually somewhat standard. Seriously?
 
-        """
+    """
 
     frame = {}
     parent = {}

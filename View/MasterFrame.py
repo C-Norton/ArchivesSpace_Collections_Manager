@@ -12,6 +12,7 @@ class MasterFrame(ttk.Frame):
     """
     Masterframe draws the main application window. Grid layout
     """
+
     def __init__(self, main: Main.Main):
         logging.debug("Initializing MasterFrame")
         self.root = tkinter.Tk()

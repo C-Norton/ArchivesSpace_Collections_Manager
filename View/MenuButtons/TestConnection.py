@@ -9,6 +9,7 @@ class TestConnection:
     these popups and clean up the code. That said, test connection does some additional logic to actually, well, test
     the connection. So this is a challenge, but one that should be resolved through reducing coupling.
     """
+
     connection = {}
     parent = {}
     frame = {}

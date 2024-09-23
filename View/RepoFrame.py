@@ -6,6 +6,7 @@ import View.MasterFrame as MasterFrame
 
 class RepoFrame(ttk.Frame):
     """This frame adds checkboxes for each repository other than the base system repository."""
+
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent

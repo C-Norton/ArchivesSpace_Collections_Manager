@@ -10,6 +10,7 @@ class FrameUtils:
     """
     This is part of the refactor used to make UI behavior more portable and reduce boilerplate
     """
+
     @staticmethod
     def set_icon(root):
         logging.debug("Entering set_icon method")

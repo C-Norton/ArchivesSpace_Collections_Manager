@@ -11,6 +11,7 @@ class ConnectionDialog:
     These fields set the server, username, and password used by the API.
     todo: Add more testing, logging, and error handling, Consider adding a cancel button
     """
+
     server = ""
     username = ""
     password = ""

@@ -14,7 +14,6 @@ class HelpDialog:
     parent = {}
 
     def __init__(self, parent):
-
         """
         :param parent: likely the master_frame
         """

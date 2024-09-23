@@ -6,6 +6,7 @@ class QueryFrame(ttk.Frame):
     """
     This is a breakout of individual query segments. It's still a work in progress
     """
+
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.masterframe = parent
