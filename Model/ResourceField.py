@@ -2,6 +2,10 @@ import Model.Field
 
 
 class ResourceField(Model.Field.Field):
+    """
+    All the different fields in a resource
+    """
+
     id_0 = 0
     id_1 = 1
     id_2 = 2

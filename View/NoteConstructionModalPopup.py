@@ -13,6 +13,8 @@ from View.Util.FrameUtils import FrameUtils
 TODO:Make it so that when a note is already defined, that note data is loaded
 
 """
+
+
 class NoteConstructionModalPopup:
     def __init__(self, MasterFrame: MasterFrame):
         self.master_frame = MasterFrame
@@ -40,10 +42,9 @@ class NoteConstructionModalPopup:
             self.label.set(self.note_manager.get_note()["label"][1])
             self.persistent_id.set(self.note_manager.get_note()["persistent_id"][1])
             self.sub_type.set(self.note_manager.get_note()["sub_type"][1])
-            self.has_subtype= (Note.has_subtype(NoteType[self.note_type.get()]))
+            self.has_subtype = Note.has_subtype(NoteType[self.note_type.get()])
         self.frame.focus_set()
         self.frame.grab_set()
-
 
     def draw_note_definition_menu(self):
         ttk.Label(self.frame, text="Define Note").grid(row=0, column=0)
@@ -108,7 +109,7 @@ class NoteConstructionModalPopup:
 
     def validate(self) -> bool:
         if Model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
-            if self.note_content.get('1.0', 'end-1c').strip() != "":
+            if self.note_content.get("1.0", "end-1c").strip() != "":
                 return True
 
         return False
@@ -118,7 +119,7 @@ class NoteConstructionModalPopup:
             note_manager = NoteManager()
             note_manager.set_note(
                 Model.NoteType.NoteType[self.note_type.get()],
-                self.note_content.get('1.0', 'end-1c').strip(),
+                self.note_content.get("1.0", "end-1c").strip(),
                 self.publish.get(),
                 self.label.get(),
                 self.persistent_id.get(),
@@ -127,7 +128,9 @@ class NoteConstructionModalPopup:
             )
             self.frame.destroy()
         else:
-            FrameUtils.modal_message_popup(self.frame,"Invalid note or Unsupported note type")
+            FrameUtils.modal_message_popup(
+                self.frame, "Invalid note or Unsupported note type"
+            )
 
     def close(self):
         self.frame.destroy()

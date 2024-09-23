@@ -50,8 +50,9 @@ class FrameUtils:
                     logging.error(f"Failed to set icon using all methods: {e}")
 
         logging.debug("Exiting set_icon method")
+
     @staticmethod
-    def modal_message_popup(root,message,title="Warning",button_text="OK"):
+    def modal_message_popup(root, message, title="Warning", button_text="OK"):
         popup = tkinter.Toplevel(root)
         FrameUtils.set_icon(popup)
         popup.title(title)

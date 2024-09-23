@@ -21,6 +21,14 @@ def singleton(cls):
 
 @singleton  # Apply the sin
 class QueryManager:
+    """
+    The job of QueryManager to turn QueryNodes into queries, and pass them to the ConnectionManager, manager their
+    responses, and return all this to the user.
+
+    todo: There's a lot of stubcode here. We also need querystrings up and running for parsing, a lot of the code for
+    which will likely be done here.
+    """
+
     def __init__(self):
         self.loaded_query = None
 
@@ -30,7 +38,7 @@ class QueryManager:
     def render_query(self, query: Node) -> str:
         return query.to_string()
 
-    def set_loaded_query(self, query : QueryNode):
+    def set_loaded_query(self, query: QueryNode):
         self.loaded_query = query
 
     def add_query_line(
@@ -48,5 +56,6 @@ class QueryManager:
 
     def get_loaded_query(self) -> QueryNode:
         return self.loaded_query
-    def construct_from_string(self, query:str):
+
+    def construct_from_string(self, query: str):
         pass

@@ -7,6 +7,7 @@ from tkinter import ttk
 from View import IfBlockFrame, QueryFrame, MenuFrame, RepoFrame
 from View.Util.FrameUtils import FrameUtils
 
+
 class MasterFrame(ttk.Frame):
     def __init__(self, main: Main.Main):
         logging.debug("Initializing MasterFrame")
@@ -33,6 +34,5 @@ class MasterFrame(ttk.Frame):
         self.mainloop()
         self.focus_force()
         logging.info("UI started successfully!")
-
 
         logging.debug(f"Icon path used: {icon_path}")

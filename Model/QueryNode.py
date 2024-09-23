@@ -7,10 +7,13 @@ from Model import RecordType
 from QueryType import *
 from RecordType import *
 
-"""The goal of the Query Node is to determine true or false based off data actively in the archivesspace system"""
-
 
 class QueryNode(Node.Node):
+    """
+    The goal of the Query Node is to determine true or false based off data actively in the archivesspace system.
+
+    """
+
     def validate(self) -> bool:
         raise NotImplementedError
 

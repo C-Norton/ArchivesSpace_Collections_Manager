@@ -3,6 +3,12 @@ import Model.OperatorType as OperatorType
 
 
 class OperatorNode(Node.Node):
+    """An operator node is a node for a boolean operation within the tree. It will have one or two children, depending
+    on if it's a not.
+
+    todo: consider dropping NOT support, as it makes things more complicated, and individual statements can be NOTTED
+    """
+
     def to_string(self):
         string = "$"
         string += self.operator.name
@@ -28,6 +34,12 @@ class OperatorNode(Node.Node):
         return False
 
     def eval(self, repo, record_id: int):
+        """
+        we may want to intersperse extra operatortypes between children, not sure yet. Leaning towards the controller
+        just having a parser function for this. A bit convoluted, but so are the functional requirements, so I'm not too
+        bent out of shape
+        """
+
         match self.operator:
             case OperatorType.OperatorType.NOT:
                 return not self.children[0].eval(repo, record_id)
@@ -41,8 +53,6 @@ class OperatorNode(Node.Node):
                     if not child.eval(repo, record_id):
                         return False
                 return True
-
-        # may want to intersperse extra operatortypes between children, not sure yet. I'm leaning towards the controller  # just having a parser function for this. A bit convoluted, but so are the functional requirements so I'm not too  # bent out of shape
 
     def traverse(self, depth, nodes):
         for child in self.children:

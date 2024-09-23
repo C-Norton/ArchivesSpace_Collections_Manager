@@ -2,6 +2,10 @@ from enum import Enum
 
 
 class QueryType(Enum):
+    """
+    These represent all the different match (or inverse match) types a query can hold.
+    """
+
     Equals = 1
     Not_Equals = 2
     Empty = 3

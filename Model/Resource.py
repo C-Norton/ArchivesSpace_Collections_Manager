@@ -1,12 +1,13 @@
-"""
-The goal of the resource class is to unpack the JSON data we get from archivessnake into a more usable format, allow
-it to be updated, then validate and repack it before submitting it back to archivessnake
-"""
-
 import json
 
 
 class Resource:
+    """
+    The goal of the resource class is to unpack the JSON data we get from archivessnake into a more usable format, allow
+    it to be updated, then validate and repack it before submitting it back to archivessnake
+    todo: Convert keys to enums
+    """
+
     def __init__(self):
         self.data = dict()
         self.data["id_0"] = ""

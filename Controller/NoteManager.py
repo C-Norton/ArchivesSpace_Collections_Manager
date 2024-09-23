@@ -33,6 +33,7 @@ class NoteManager:
         has_subtype: bool,
         sub_type: NoteSubType,
     ):
+        """A note is functionally a key-enforced dictionary"""
         self.active_note = Note(note_type)
         self.active_note.note["type"] = (NoteType, note_type)
         self.active_note.note["publish"] = (bool, publish)
@@ -40,5 +41,7 @@ class NoteManager:
         self.active_note.note["content"] = (str, note_value)
         self.active_note.note["sub_type"] = (NoteSubType, sub_type)
         self.active_note.note["persistent_id"] = (str, persistent_id)
+
     def get_note(self):
+        """does what it says on the tin"""
         return self.active_note

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+"""***DO NOT DELETE. USED AS AN INTERFACE***"""
+
 import abc
 
 
 class Node:
+    """Node base class for the various types of node used in construction of a query"""
+
     @abc.abstractmethod
     def validate(self) -> bool:
         pass

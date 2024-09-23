@@ -7,7 +7,7 @@ import requests.exceptions
 from asnake.client import ASnakeClient
 from requests.exceptions import MissingSchema, ConnectionError
 
-from Controller.RequestType import RequestType
+from Controller.HttpRequestType import HttpRequestType
 
 
 @dataclass
@@ -23,7 +23,10 @@ class Connection:
     TODO: Complete Query for different types
 
     TODO: Add a ratelimit to avoid overloading the archivesspace server and getting API errors. Make it dynamic (opt)
+
+    TODO: Add logging to this file
     """
+
     def __init__(self, s, u, p):
         self.server = s
         self.username = u
@@ -79,13 +82,15 @@ class Connection:
         """
         Actually makes a query of the archives_space server
         :param http_request_type: does what it says on the tin
-        :param endpoint: it's not this classes job to tell you what to query, go talk to query
-        :return:
+        :param endpoint: it's not this classes job to tell you what to query, go talk to QueryManager
+        :return: the result of the API Query
+
+        todo: complete this for different HTTP request types, and automatically manage a 429 error (too many requests)
         """
         if not self.validated:
             self.validated = self.create_session()
         match http_request_type:
-            case RequestType.GET:
+            case HttpRequestType.GET:
                 return self.client.get(endpoint)
 
             case _:

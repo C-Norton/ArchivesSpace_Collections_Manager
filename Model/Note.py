@@ -1,10 +1,3 @@
-"""
-A note is a dictionary of Key-Value pairs with some required fields.
-
-
-Look up builder or Factory, as they will likely be useful here, and its a great time to use a design pattern!
-"""
-
 from datetime import datetime
 
 from Model.LocalAccessRestrictionType import LocalAccessRestrictionType
@@ -15,6 +8,12 @@ from Model.SubNote import SubNote
 
 
 class Note:
+    """
+    A note is a dictionary of Key-Value pairs with some required fields.
+
+
+    Look up builder or Factory, as they will likely be useful here, and it's a great time to use a design pattern!
+    """
 
     def __init__(self, type: NoteType):
         self.note = dict()
@@ -148,7 +147,6 @@ class Note:
                 return True
             case NoteType.Separated_Materials:
                 return True
-
 
     def __getitem__(self, item):
         return self.note[item]
