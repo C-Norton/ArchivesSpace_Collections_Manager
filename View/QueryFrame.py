@@ -16,15 +16,18 @@ class QueryFrame(ttk.Frame):
         self.height = 1
         self.draw_query_frame(None)
 
-    def draw_query_frame(self, query: str, depth :int):
+    def draw_query_frame(self, query: str, depth: int):
         for i in range(depth):
             label = ttk.Label(self, text="    ")
             label.pack(side="left", fill="x")
         label = ttk.Label(self, text=query)
         label.pack(side="left", fill="x")
-        operator = ttk.OptionMenu(self.frame, self.master_frame.operators, *["AND", "OR"])
+        operator = ttk.OptionMenu(
+            self.frame, self.master_frame.operators, *["AND", "OR"]
+        )
         operator.pack(side="left", fill="x")
-        remove = ttk.Button(self.frame,name="Remove",command=self.remove)
+        remove = ttk.Button(self.frame, name="Remove", command=self.remove)
         remove.pack(side="left", fill="x")
+
     def remove(self):
         pass
