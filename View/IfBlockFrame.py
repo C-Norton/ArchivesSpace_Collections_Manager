@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 import tkinter
-from tkinter import ttk
-from tkinter import ttk
-from dataclasses import fields
+
 from tkinter import ttk
 
 import Model.ActionType
 import Model.QueryType
 import Model.ResourceField
 from Controller.QueryManager import QueryManager
-from View import MasterFrame
-from View.NoteConstructionModalPopup import NoteConstructionModalPopup
+
 import Model.ActionType
 import Model.QueryType
 import Model.ResourceField
