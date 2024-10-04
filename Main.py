@@ -7,6 +7,7 @@ import Model.DataModel as DM
 import View.MasterFrame as MF
 import Controller.Connection
 
+import faulthandler
 
 class Main:
     connection_manager: CM.ConnectionManager = None
@@ -21,4 +22,5 @@ class Main:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
+    faulthandler.enable()
     app = Main()

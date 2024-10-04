@@ -1,3 +1,4 @@
+import logging
 from tkinter import Text
 from tkinter import ttk, Toplevel, StringVar, BooleanVar
 
@@ -102,13 +103,22 @@ class NoteConstructionModalPopup:
         pass  # this won't be needed until multipart notes and the oddballs are addressed
 
     def redraw_layout(self):
+
+        insert =  self.note_content.get("1.0", "end-1c")
+
+
         for widget in self.frame.winfo_children():
+            logging.debug("NoteConstructionModalPopup: Destroying widget: "+ widget.widgetName + widget.__str__())
             widget.destroy()
         self.draw_note_definition_menu()
         # Re-populate fields if necessary
-        if self.note_manager.get_note() is not None:
-            self.note_content.insert("1.0", self.note_manager.get_note()["content"][1])
 
+        logging.debug("Repopulating fields")
+        if insert != "":
+            try:
+                self.note_content.insert("1.0", self.note_manager.get_note()["content"][1])
+            except Exception as e:
+                logging.warning(e.__str__())
     def validate(self) -> bool:
         if Model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
             if self.note_content.get("1.0", "end-1c").strip() != "":
