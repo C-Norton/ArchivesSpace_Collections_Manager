@@ -13,7 +13,6 @@ import Model.ActionType
 import Model.QueryType
 import Model.ResourceField
 from View import MasterFrame
-import Model.ResourceField
 import Model.OperatorNode
 from View.NoteConstructionModalPopup import NoteConstructionModalPopup
 

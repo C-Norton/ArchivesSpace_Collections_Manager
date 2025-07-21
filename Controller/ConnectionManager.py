@@ -1,10 +1,14 @@
 from __future__ import annotations
 import json
 import logging
+
+from requests import Response
+
 from Controller.Connection import *
+from Controller.Interfaces import IQueryService
 
 
-class ConnectionManager:
+class ConnectionManager(IQueryService):
     """
     Connection manager is a friendly frontend to the connection class that adds in both tracking of an active connection
     as well as common tasks. It should also parse the data out. Most of this code is fairly theorhetical at the moment,
@@ -14,9 +18,14 @@ class ConnectionManager:
     todo: Add lots of logging
     """
 
-    def __init__(self, main: Main.Main):
-        self.main = main
-        self.connection: Connection = Connection("", "", "")
+    def execute_query(self, query) -> Response:
+        return Response()
+
+    def validate_query(self, query) -> bool:
+        return True
+
+    def __init__(self, server: str = "", username: str = "", password: str = ""):
+        self.connection = Connection("", "", "")
 
     def get_repository(self, repo_number: int) -> json:
         """
@@ -45,7 +54,7 @@ class ConnectionManager:
         )
         return resource.json
 
-    def get_repository_list(self) -> dict:
+    def get_repositories(self) -> dict:
         """
         Get a list of all repository names and URIs. This code is used by the refresh repositories button.
         repository IDs start counting at 1, but 1 is always the "Archivesspace" repository, which is a system repo for
@@ -56,7 +65,7 @@ class ConnectionManager:
         """
         repos = dict()
         i: int = 2
-        result = self.connection.query(HttpRequestType.GET, f"/repositories/2").json()
+        result = self.connection.query(HttpRequestType.GET, "/repositories/2").json()
         while "error" not in result:
             repo = {result["uri"]: result}
             repos.update(repo)

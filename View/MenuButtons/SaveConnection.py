@@ -31,7 +31,7 @@ def save_connection(connection: Connection):
                 connection.password,
             )
             text = "Successfully stored credentials"
-        except BaseException as e:
+        except BaseException:
             text = "Unable to store connection: System Keychain configuration is not valid."
     ttk.Label(frame, text=text, wraplength=220).grid(column=1, row=1)
 

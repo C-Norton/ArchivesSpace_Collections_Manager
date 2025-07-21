@@ -56,7 +56,7 @@ class NoteConstructionModalPopup:
             self.frame,
             self.note_type,
             self.note_type.get(),
-            *[e.name for e in Model.NoteType.NoteType]
+            *[e.name for e in Model.NoteType.NoteType],
         ).grid(row=1, column=1)
 
         ttk.Label(self.frame, text="Note Content (required)").grid(
@@ -82,7 +82,7 @@ class NoteConstructionModalPopup:
                 self.frame,
                 self.sub_type,
                 self.sub_type.get(),
-                *[e.name for e in NoteSubType]
+                *[e.name for e in NoteSubType],
             ).grid(row=7, column=1)
 
         else:
@@ -103,12 +103,14 @@ class NoteConstructionModalPopup:
         pass  # this won't be needed until multipart notes and the oddballs are addressed
 
     def redraw_layout(self):
-
-        insert =  self.note_content.get("1.0", "end-1c")
-
+        insert = self.note_content.get("1.0", "end-1c")
 
         for widget in self.frame.winfo_children():
-            logging.debug("NoteConstructionModalPopup: Destroying widget: "+ widget.widgetName + widget.__str__())
+            logging.debug(
+                "NoteConstructionModalPopup: Destroying widget: "
+                + widget.widgetName
+                + widget.__str__()
+            )
             widget.destroy()
         self.draw_note_definition_menu()
         # Re-populate fields if necessary
@@ -116,9 +118,12 @@ class NoteConstructionModalPopup:
         logging.debug("Repopulating fields")
         if insert != "":
             try:
-                self.note_content.insert("1.0", self.note_manager.get_note()["content"][1])
+                self.note_content.insert(
+                    "1.0", self.note_manager.get_note()["content"][1]
+                )
             except Exception as e:
                 logging.warning(e.__str__())
+
     def validate(self) -> bool:
         if Model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
             if self.note_content.get("1.0", "end-1c").strip() != "":

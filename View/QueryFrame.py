@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import ttk, Grid
+from tkinter import ttk
 from View import MasterFrame
 
 
@@ -17,7 +17,7 @@ class QueryFrame(ttk.Frame):
         self.height = 1
         self.operator = tkinter.StringVar()
         self.operator.set("AND")
-        self.draw_query_frame(None,0)
+        self.draw_query_frame(None, 0)
 
     def draw_query_frame(self, query: str, depth: int):
         for i in range(depth):
@@ -25,9 +25,7 @@ class QueryFrame(ttk.Frame):
             label.pack(side="left", fill="x")
         label = ttk.Label(self, text=query)
         label.pack(side="left", fill="x")
-        operator = ttk.OptionMenu(
-            self.frame,self.operator, *["AND", "OR"]
-        )
+        operator = ttk.OptionMenu(self.frame, self.operator, *["AND", "OR"])
         operator.pack(side="left", fill="x")
         remove = ttk.Button(self.frame, name="remove", command=self.remove)
         remove.pack(side="left", fill="x")

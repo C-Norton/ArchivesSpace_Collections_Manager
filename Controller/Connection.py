@@ -1,17 +1,23 @@
+import logging
 import asnake.client.web_client
 
 from dataclasses import dataclass
 
-import asnake.client.web_client
 import requests.exceptions
 from asnake.client import ASnakeClient
-from requests.exceptions import MissingSchema, ConnectionError
-
+from time import sleep
+from Controller.ConnectionExceptions import (
+    ConfigurationError,
+    NetworkError,
+    ServerError,
+    AuthenticationError,
+)
 from Controller.HttpRequestType import HttpRequestType
+from Controller.Interfaces import IConnection
 
 
 @dataclass
-class Connection:
+class Connection(IConnection):
     """
     A Connection is a small class used to pass around connection information to an archivesspace server, as well as the
     API object it creates. It provides its own methods for validation. It is the only class that should be interacting
@@ -27,10 +33,10 @@ class Connection:
     TODO: Add logging to this file
     """
 
-    def __init__(self, s, u, p):
-        self.server = s
-        self.username = u
-        self.password = p
+    def __init__(self, s: str, u: str, p: str):
+        self.server: str = s
+        self.username: str = u
+        self.password: str = p
         self.client = None
         self.validated = False
 
@@ -45,40 +51,68 @@ class Connection:
         )
         try:
             self.client.authorize()
-        except requests.exceptions.MissingSchema:
+        except requests.exceptions.MissingSchema as e:
+            logging.error(e)
             return False
         return True
 
     def __str__(self):
         return self.server + self.username + self.password
 
-    def test(self):
+    def test_connection(self) -> None:
         """
-        Test Validates if a connection's info is ok.
-        :return: true if the connection is valid, false otherwise
-        """
-        if self.server == "" or self.username == "" or self.password == "":
-            return False, "Missing Server Configuration"
-        try:
-            self.client = self.create_session()
-        except asnake.client.web_client.ASnakeAuthError as e:
-            return False, "Bad Username or Password"
-        except MissingSchema:
-            return (
-                False,
-                "Bad URL Structure. Ensure your URL has https:// at the beginning",
-            )
-        except ConnectionError:
-            return (
-                False,
-                "Could not connect to server. Ensure your URL is correct, and that your IP is whitelisted "
-                "for the API",
-            )
-        except BaseException as e:
-            return False, e, e.__traceback__
-        return True, "Your connection is working"
+        Test connection validity. Raises appropriate exception on failure.
 
-    def query(self, http_request_type, endpoint: str):
+        Raises:
+            ConfigurationError: Missing server/username/password
+            AuthenticationError: Invalid credentials
+            NetworkError: Connection failed after retries
+            ServerError: Server returned an error
+        """
+        # Validate configuration first
+        if not all([self.server.strip(), self.username.strip(), self.password.strip()]):
+            raise ConfigurationError("Connection configuration is incomplete")
+
+        # Retry logic with exponential backoff
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                self.client = self.create_session()
+                # Test that we actually got a working client
+                self._verify_connection()
+                return  # Success!
+
+            except asnake.client.web_client.ASnakeAuthError as e:
+                # Don't retry auth errors - they won't get better
+                raise AuthenticationError("Invalid username or password") from e
+
+            except (
+                requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout,
+            ) as e:
+                if attempt == max_attempts - 1:  # Last attempt
+                    raise NetworkError(
+                        f"Connection failed after {max_attempts} attempts"
+                    ) from e
+                # Wait before retry (exponential backoff)
+                sleep(2**attempt)
+
+            except Exception as e:
+                # Unexpected errors shouldn't be retried
+                raise ServerError(f"Unexpected error: {e}") from e
+
+    def _verify_connection(self) -> None:
+        """Verify the client connection actually works"""
+        if not self.client:
+            raise NetworkError("Failed to create client session")
+
+        # Actually test the connection with a simple API call
+        try:
+            self.client.get("version")
+        except Exception as e:
+            raise NetworkError("Connection test failed") from e
+
+    def query(self, http_request_type: HttpRequestType, endpoint: str):
         """
         Actually makes a query of the archives_space server
         :param http_request_type: does what it says on the tin
