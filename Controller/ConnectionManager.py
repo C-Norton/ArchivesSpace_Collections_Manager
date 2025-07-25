@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import logging
+from json import JSONDecodeError
 
 from requests import Response
 
@@ -30,7 +31,6 @@ class ConnectionManager(IQueryService):
     def get_repository(self, repo_number: int) -> json:
         """
         Does what it says on the tin.
-        todo: Add error handling
         :param repo_number: which repository are we getting information for?
         :return: json representing the repository
         https://archivesspace.github.io/archivesspace/doc/repository_schema.html
@@ -38,7 +38,13 @@ class ConnectionManager(IQueryService):
         repo = self.connection.query(
             HttpRequestType.GET, f"/repositories/{repo_number}"
         )
-        return repo.json
+
+        try:
+            json.loads(repo.json)
+            return repo.json
+        except JSONDecodeError as e:
+            logging.error(f"Error decoding JSON: {e}")
+            return "{}"
 
     def get_resource_record(self, repo_number: int, resource_number: int) -> json:
         """
@@ -74,7 +80,6 @@ class ConnectionManager(IQueryService):
                 HttpRequestType.GET, f"/repositories/{i}"
             ).json()
         return repos
-        # return dict([(repo.json["repo_code"],repo.json) for repo in repos])
 
     def get_resource_list(self, repo_number: int) -> dict:
         """
@@ -94,7 +99,7 @@ class ConnectionManager(IQueryService):
         resources = dict()
         for resource in resources_to_get:
             resources.update(
-                {resource, self.get_resource_record(repo_number, resource)}
+                {resource: self.get_resource_record(repo_number, resource)}  # Fixed: colon instead of comma
             )
         return resources
 
@@ -116,8 +121,8 @@ class ConnectionManager(IQueryService):
             # Construct the URL for the specific resource
             url = f"/repositories/{repo_number}/resources/{resource_number}"
 
-            # Make the PUT request to update the resource
-            response = self.client.put(url, json=resource_record)
+            # Make the PUT request to update the resource - Fixed: use self.connection.client
+            response = self.connection.client.put(url, json=resource_record)
 
             # Check if the update was successful based on the response status code
             if (
