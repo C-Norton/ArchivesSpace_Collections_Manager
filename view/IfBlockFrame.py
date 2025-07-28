@@ -4,16 +4,16 @@ import tkinter
 
 from tkinter import ttk
 
-import Model.ActionType
-import Model.QueryType
-import Model.ResourceField
-from Controller.QueryManager import QueryManager
+import model.ActionType
+import model.QueryType
+import model.ResourceField
+from controller.QueryManager import QueryManager
 
-import Model.ActionType
-import Model.QueryType
-import Model.ResourceField
+import model.ActionType
+import model.QueryType
+import model.ResourceField
 from View import MasterFrame
-import Model.OperatorNode
+import model.OperatorNode
 from View.NoteConstructionModalPopup import NoteConstructionModalPopup
 
 
@@ -48,14 +48,14 @@ class IfBlockFrame(ttk.Frame):
             self,
             self.field,
             self.field.get(),
-            *[e.name for e in Model.ResourceField.ResourceField],
+            *[e.name for e in model.ResourceField.ResourceField],
         ).grid(row=0, column=1)
 
         ttk.OptionMenu(
             self,
             self.query_type,
             self.query_type.get(),
-            *[e.name for e in Model.QueryType.QueryType],
+            *[e.name for e in model.QueryType.QueryType],
         ).grid(row=0, column=2)
 
         ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
@@ -66,7 +66,7 @@ class IfBlockFrame(ttk.Frame):
             self,
             self.action,
             self.action.get(),
-            *[e.name for e in Model.ActionType.ActionType],
+            *[e.name for e in model.ActionType.ActionType],
         ).grid(row=1, column=1)
         ttk.Button(self, text="Submit", command=self.submit_query).grid(
             row=1, column=4, columnspan=3 if not self.note_layout else 1
@@ -134,7 +134,7 @@ class IfBlockFrame(ttk.Frame):
 
     def draw_line(self, row: int, data: tuple, maxdepth: int, fields: list = None):
         offset = data[1]
-        if isinstance(data[2], Model.OperatorNode):
+        if isinstance(data[2], model.OperatorNode):
             pass
         else:
             if fields is None:
@@ -146,7 +146,7 @@ class IfBlockFrame(ttk.Frame):
                     self,
                     fields[0],
                     data[0][0].name,
-                    *[e.name for e in Model.ResourceField.ResourceField],
+                    *[e.name for e in model.ResourceField.ResourceField],
                 )
             )
             elements[0].grid(row=row, column=offset)
@@ -156,7 +156,7 @@ class IfBlockFrame(ttk.Frame):
                     self,
                     fields[1],
                     data[0][1],
-                    *[e.name for e in Model.QueryType.QueryType],
+                    *[e.name for e in model.QueryType.QueryType],
                 )
             )
             elements[1].grid(row=row, column=offset + 1)

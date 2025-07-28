@@ -5,8 +5,8 @@ from json import JSONDecodeError
 
 from requests import Response
 
-from Controller.Connection import *
-from Controller.Interfaces import IQueryService
+from controller.Connection import *
+from controller.Interfaces import IQueryService
 
 
 class ConnectionManager(IQueryService):

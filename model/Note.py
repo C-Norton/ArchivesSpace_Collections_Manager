@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from Model.LocalAccessRestrictionType import LocalAccessRestrictionType
-from Model.ModelValidityError import ModelValidityError
-from Model.NoteSubType import NoteSubType
-from Model.NoteType import NoteType
-from Model.SubNote import SubNote
+from model.LocalAccessRestrictionType import LocalAccessRestrictionType
+from model.ModelValidityError import ModelValidityError
+from model.NoteSubType import NoteSubType
+from model.NoteType import NoteType
+from model.SubNote import SubNote
 
 
 class Note:

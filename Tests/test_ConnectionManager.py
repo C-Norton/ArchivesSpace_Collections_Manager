@@ -6,10 +6,10 @@ from requests import Response
 from requests.exceptions import ConnectionError, Timeout
 
 # Import the classes we're testing
-from Controller.ConnectionManager import ConnectionManager
-from Controller.Connection import Connection
-from Controller.HttpRequestType import HttpRequestType
-from Controller.Interfaces import IQueryService
+from controller.ConnectionManager import ConnectionManager
+from controller.Connection import Connection
+from controller.HttpRequestType import HttpRequestType
+from controller.Interfaces import IQueryService
 
 
 @pytest.fixture

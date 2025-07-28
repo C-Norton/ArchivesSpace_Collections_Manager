@@ -5,7 +5,7 @@ from tkinter import ttk, Toplevel
 
 import keyring
 
-from Controller.Connection import Connection
+from controller.Connection import Connection
 from View.Util.FrameUtils import FrameUtils
 
 

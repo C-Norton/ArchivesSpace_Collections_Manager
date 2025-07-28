@@ -1,9 +1,9 @@
 from requests import Response
 
-from Model.Node import Node
-from Model.Note import Note
-from Model.NoteType import NoteType
-from Model.QueryNode import QueryNode
+from model.Node import Node
+from model.Note import Note
+from model.NoteType import NoteType
+from model.QueryNode import QueryNode
 
 
 def singleton(cls):

@@ -2,11 +2,11 @@ import logging
 from tkinter import Text
 from tkinter import ttk, Toplevel, StringVar, BooleanVar
 
-import Model.NoteType
-from Controller.NoteManager import NoteManager
-from Model.Note import Note
-from Model.NoteSubType import NoteSubType
-from Model.NoteType import NoteType
+import model.NoteType
+from controller.NoteManager import NoteManager
+from model.Note import Note
+from model.NoteSubType import NoteSubType
+from model.NoteType import NoteType
 from View import MasterFrame
 from View.Util.FrameUtils import FrameUtils
 
@@ -56,7 +56,7 @@ class NoteConstructionModalPopup:
             self.frame,
             self.note_type,
             self.note_type.get(),
-            *[e.name for e in Model.NoteType.NoteType],
+            *[e.name for e in model.NoteType.NoteType],
         ).grid(row=1, column=1)
 
         ttk.Label(self.frame, text="Note Content (required)").grid(
@@ -73,7 +73,7 @@ class NoteConstructionModalPopup:
         ttk.Label(self.frame, text="Persistent ID").grid(row=6, column=0)
         ttk.Entry(self.frame, textvariable=self.persistent_id).grid(row=6, column=1)
         self.has_subtype = Note.has_subtype(
-            Model.NoteType.NoteType[self.note_type.get()]
+            model.NoteType.NoteType[self.note_type.get()]
         )
         if self.has_subtype:
             ttk.Label(self.frame, text="SubType").grid(row=7, column=0)
@@ -125,7 +125,7 @@ class NoteConstructionModalPopup:
                 logging.warning(e.__str__())
 
     def validate(self) -> bool:
-        if Model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
+        if model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
             if self.note_content.get("1.0", "end-1c").strip() != "":
                 return True
 
@@ -135,13 +135,13 @@ class NoteConstructionModalPopup:
         if self.validate():
             note_manager = NoteManager()
             note_manager.set_note(
-                Model.NoteType.NoteType[self.note_type.get()],
+                model.NoteType.NoteType[self.note_type.get()],
                 self.note_content.get("1.0", "end-1c").strip(),
                 self.publish.get(),
                 self.label.get(),
                 self.persistent_id.get(),
                 self.has_subtype,
-                Model.NoteSubType.NoteSubType[self.sub_type.get()],
+                model.NoteSubType.NoteSubType[self.sub_type.get()],
             )
             self.frame.destroy()
         else:

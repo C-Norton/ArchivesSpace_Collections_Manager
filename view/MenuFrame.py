@@ -2,13 +2,56 @@ import logging
 from tkinter import ttk, Grid
 
 import View.MasterFrame as MasterFrame
-from View.MenuButtons.ConfigureConnection import ConnectionDialog
-from View.MenuButtons.Help import HelpDialog
-from View.MenuButtons.ManageConnection import ManageConnections
-from View.MenuButtons.SaveConnection import save_connection
-from View.MenuButtons.TestConnection import TestConnection
+from View.menu_buttons.ConfigureConnection import ConnectionDialog
+from View.menu_buttons.Help import HelpDialog
+from View.menu_buttons.ManageConnection import ManageConnections
+from View.menu_buttons.SaveConnection import save_connection
+from View.menu_buttons.TestConnection import TestConnection
 
+class UpdatedMenuFrame(ttk.Frame):
+    """
+    Example showing how MenuFrame would be updated to use the new button system.
+    """
 
+    def __init__(self, parent):
+        super().__init__(master=parent, padding="3 3 12 12")
+        self.master_frame = parent
+        self.pack(side="top", fill="x")
+
+        # Create button instances
+        self.configure_conn_btn = ConfigureConnectionButton(self.master_frame)
+        self.save_conn_btn = SaveConnectionButton(self.master_frame)
+        self.manage_conn_btn = ManageConnectionsButton(self.master_frame)
+        self.test_conn_btn = TestConnectionButton(self.master_frame)
+        self.help_btn = HelpButton(self.master_frame)
+
+        # TODO: When mediator pattern is implemented, set mediator for all buttons:
+        # mediator = SomeMediator()
+        # for button in [self.configure_conn_btn, self.save_conn_btn, ...]:
+        #     button.set_mediator(mediator)
+
+        # Create UI buttons that trigger the actions
+        buttons = [
+            ttk.Button(self, text="Configure Connection",
+                       command=self.configure_conn_btn.show_dialog),
+            ttk.Button(self, text="Save Connection",
+                       command=self.save_conn_btn.execute_and_show_result),
+            ttk.Button(self, text="Manage Saved Connections",
+                       command=self.manage_conn_btn.execute_and_show_result),
+            ttk.Button(self, text="Test Connection",
+                       command=self.test_conn_btn.execute_and_show_result),
+            ttk.Button(self, text="Save Query"),  # TODO: Implement
+            ttk.Button(self, text="Load Query"),  # TODO: Implement
+            ttk.Button(self, text="Refresh Repositories",
+                       command=self.master_frame.repo_frame.refresh),
+            ttk.Button(self, text="Help",
+                       command=self.help_btn.execute_and_show_result),
+        ]
+
+        # Grid layout
+        for i, button in enumerate(buttons):
+            button.grid(column=i, row=0, sticky="EW", padx=2, pady=5)
+            self.columnconfigure(i, weight=1)
 class MenuFrame(ttk.Frame):
     """This is the set of buttons at the top row of the UI. I'd love for some stylization here, overall the code works
     well, most of the buttons work at this time, but the query related ones do not"""

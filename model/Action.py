@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from Model.ActionType import ActionType
-from Model.Note import Note
+from model.ActionType import ActionType
+from model.Note import Note
 
 
 @dataclass

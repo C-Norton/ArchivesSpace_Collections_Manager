@@ -6,14 +6,14 @@ from dataclasses import dataclass
 import requests.exceptions
 from asnake.client import ASnakeClient
 from time import sleep
-from Controller.ConnectionExceptions import (
+from controller.ConnectionExceptions import (
     ConfigurationError,
     NetworkError,
     ServerError,
     AuthenticationError,
 )
-from Controller.HttpRequestType import HttpRequestType
-from Controller.Interfaces import IConnection
+from controller.HttpRequestType import HttpRequestType
+from controller.Interfaces import IConnection
 
 
 @dataclass
@@ -22,7 +22,7 @@ class Connection(IConnection):
     A Connection is a small class used to pass around connection information to an archivesspace server, as well as the
     API object it creates. It provides its own methods for validation. It is the only class that should be interacting
     with the API directly.
-
+    TODO: add or fix connection.test
     TODO: Add a mechanism for representing server timeout, and force revalidation if a connection has not been used
     Within 300 seconds.
 

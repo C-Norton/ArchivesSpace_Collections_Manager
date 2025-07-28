@@ -1,6 +1,6 @@
-from Controller.Connection import Connection
-from View.MenuButtons import TestConnection
-from Controller.HttpRequestType import HttpRequestType
+from controller.Connection import Connection
+from View.menu_buttons import TestConnection
+from controller.HttpRequestType import HttpRequestType
 
 
 def refresh_repositories(connection):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from Model import *
+from model import *
 
 
 class QueryNode(Node.Node):
