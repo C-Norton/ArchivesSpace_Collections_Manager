@@ -1,5 +1,5 @@
-from controller.Connection import Connection
-from View.menu_buttons import TestConnection
+from controller.connection import Connection
+from view.menu_buttons import TestConnection
 from controller.HttpRequestType import HttpRequestType
 
 

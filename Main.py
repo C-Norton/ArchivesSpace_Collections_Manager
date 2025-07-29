@@ -1,9 +1,11 @@
 import logging
 
 import model.DataModel as DM
-import View.MasterFrame as MF
+import view.MasterFrame as MF
 
 import faulthandler
+
+
 
 
 class Main:
@@ -12,11 +14,12 @@ class Main:
     master_frame: MF.MasterFrame = None
 
     def __init__(self):
-        from controller import ConnectionManager as CM
+        from controller.connection_manager import ConnectionManager
 
-        Main.connection_manager = CM.ConnectionManager()
         Main.data_model = DM.DataModel(self)
-        Main.master_frame = MF.MasterFrame(self)
+        Main.connection_manager = ConnectionManager(self)
+
+        Main.master_frame = MF.MasterFrame(Main.connection_manager)
 
 
 if __name__ == "__main__":

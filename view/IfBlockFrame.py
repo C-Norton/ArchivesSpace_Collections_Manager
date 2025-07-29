@@ -12,9 +12,9 @@ from controller.QueryManager import QueryManager
 import model.ActionType
 import model.QueryType
 import model.ResourceField
-from View import MasterFrame
+from view import MasterFrame
 import model.OperatorNode
-from View.NoteConstructionModalPopup import NoteConstructionModalPopup
+from view.NoteConstructionModalPopup import NoteConstructionModalPopup
 
 
 # this will need to be a grid type
@@ -95,7 +95,7 @@ class IfBlockFrame(ttk.Frame):
     def query_add(self):
         """
         The goal of query add is to
-        - Notify the Query Controller of the new QueryNode
+        - Notify the Query controller of the new QueryNode
         - Update the UI to  reflect the new query node
         """
         query_manager = QueryManager()

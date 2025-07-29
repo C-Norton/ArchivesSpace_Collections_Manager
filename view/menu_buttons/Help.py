@@ -1,6 +1,6 @@
 from tkinter import ttk, Toplevel
 
-from View.Util.FrameUtils import FrameUtils
+from view.util.FrameUtils import FrameUtils
 
 
 class HelpDialog:

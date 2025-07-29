@@ -1,9 +1,11 @@
 from tkinter import ttk, Toplevel
 
 import keyring
+import keyring.errors
 
-from controller.Connection import Connection
-from View.Util.FrameUtils import FrameUtils
+from controller.connection import Connection
+from controller.connection_exceptions import AuthenticationError, NetworkError, ServerError
+from view.util.FrameUtils import FrameUtils
 
 
 def save_connection(connection: Connection):
@@ -20,19 +22,25 @@ def save_connection(connection: Connection):
     ttk.Button(
         frame, width=70, text="Close", command=lambda: ttk.Frame.destroy(frame)
     ).grid(column=1, row=2)
-
-    if not Connection.test(connection)[0]:
-        text = "Unable to store connection: This connection is not valid"
+    text = "Your connection has been saved."
+    try:
+        Connection.test_connection(connection)
+    except AuthenticationError as e:
+        text = f"Unable to store connection: Bad username or password.\n{e}"
+    except NetworkError as e:
+        text = f"Unable to store connection: Network error.\n{e}"
+    except ServerError as e:
+        text = f"Unable to store connection: Server error.\n{e}"
     else:
         try:
             keyring.get_keyring().set_password(
-                "BulkEdit UI",
+                "ArchivesSpace Collections Manager",
                 connection.username + connection.server,
                 connection.password,
             )
             text = "Successfully stored credentials"
-        except BaseException:
-            text = "Unable to store connection: System Keychain configuration is not valid."
+        except keyring.errors.KeyringError as e:
+            text = f"Unable to store connection: System Keychain configuration is not valid.\n{e}"
     ttk.Label(frame, text=text, wraplength=220).grid(column=1, row=1)
 
     for child in frame.winfo_children():

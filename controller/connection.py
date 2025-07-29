@@ -6,18 +6,17 @@ from dataclasses import dataclass
 import requests.exceptions
 from asnake.client import ASnakeClient
 from time import sleep
-from controller.ConnectionExceptions import (
+from controller.connection_exceptions import (
     ConfigurationError,
     NetworkError,
     ServerError,
     AuthenticationError,
 )
 from controller.HttpRequestType import HttpRequestType
-from controller.Interfaces import IConnection
 
 
 @dataclass
-class Connection(IConnection):
+class Connection:
     """
     A Connection is a small class used to pass around connection information to an archivesspace server, as well as the
     API object it creates. It provides its own methods for validation. It is the only class that should be interacting

@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import ttk
 
-import View.MasterFrame as MasterFrame
+import view.MasterFrame as MasterFrame
 
 
 class RepoFrame(ttk.Frame):

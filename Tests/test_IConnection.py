@@ -4,7 +4,7 @@ import asnake.client.web_client
 from abc import ABC, abstractmethod
 
 # Import your custom exceptions
-from controller.ConnectionExceptions import (
+from controller.connection_exceptions import (
     ConfigurationError,
     AuthenticationError,
     NetworkError,
@@ -12,7 +12,7 @@ from controller.ConnectionExceptions import (
 )
 
 # Import your Connection implementation
-from controller.Connection import Connection
+from controller.connection import Connection
 
 
 class IConnection(ABC):

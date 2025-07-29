@@ -1,19 +1,20 @@
 import logging
 from tkinter import ttk, Grid
 
-import View.MasterFrame as MasterFrame
-from View.menu_buttons.ConfigureConnection import ConnectionDialog
-from View.menu_buttons.Help import HelpDialog
-from View.menu_buttons.ManageConnection import ManageConnections
-from View.menu_buttons.SaveConnection import save_connection
-from View.menu_buttons.TestConnection import TestConnection
+import view.MasterFrame as MasterFrame
+from controller.connection_manager import ConnectionManager
+from view.menu_buttons.ConfigureConnection import ConnectionDialog
+from view.menu_buttons.Help import HelpDialog
+from view.menu_buttons.ManageConnection import ManageConnections
+from view.menu_buttons.SaveConnection import save_connection
+from view.menu_buttons.TestConnection import TestConnection
 
 class UpdatedMenuFrame(ttk.Frame):
     """
     Example showing how MenuFrame would be updated to use the new button system.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, connection_manager:ConnectionManager):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         self.pack(side="top", fill="x")
@@ -56,9 +57,10 @@ class MenuFrame(ttk.Frame):
     """This is the set of buttons at the top row of the UI. I'd love for some stylization here, overall the code works
     well, most of the buttons work at this time, but the query related ones do not"""
 
-    def __init__(self, parent: MasterFrame):
+    def __init__(self, parent: MasterFrame,connection_manager:ConnectionManager):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
+        self.connection_manager = connection_manager
         self.pack(side="top", fill="x")
         logging.debug("Initial frame setup complete")
 
@@ -101,7 +103,7 @@ class MenuFrame(ttk.Frame):
         logging.debug("Main self created successfully!")
 
     def connectionDialog(self):
-        ConnectionDialog(self.master_frame)
+        ConnectionDialog(self.master_frame,self.connection_manager)
 
     def testConnection(self):
         TestConnection(self.master_frame.main.connection_manager.connection)
@@ -110,7 +112,7 @@ class MenuFrame(ttk.Frame):
         HelpDialog(self.master_frame)
 
     def saveConnection(self):
-        save_connection(self.master_frame.main.connection_manager.connection)
+        save_connection(self.connection_manager.connection)
 
     def manageConnections(self):
         ManageConnections(self.master_frame.main.connection_manager)

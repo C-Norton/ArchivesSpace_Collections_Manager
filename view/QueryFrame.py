@@ -1,6 +1,6 @@
 import tkinter
 from tkinter import ttk
-from View import MasterFrame
+from view import MasterFrame
 
 
 class QueryFrame(ttk.Frame):

@@ -7,8 +7,8 @@ from controller.NoteManager import NoteManager
 from model.Note import Note
 from model.NoteSubType import NoteSubType
 from model.NoteType import NoteType
-from View import MasterFrame
-from View.Util.FrameUtils import FrameUtils
+from view import MasterFrame
+from view.util.FrameUtils import FrameUtils
 
 """
 TODO:Make it so that when a note is already defined, that note data is loaded

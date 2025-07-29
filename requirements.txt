@@ -1,9 +1,9 @@
-keyring
-requests
+keyring~=24.3.1
+requests~=2.31.0
 archivessnake
 mypy
 tk
-pillow
+pillow~=11.3.0
 ruff
-pytest
+pytest~=8.4.1
 pytest_mock

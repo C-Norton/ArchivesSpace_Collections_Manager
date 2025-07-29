@@ -1,8 +1,10 @@
 from __future__ import annotations
 from tkinter import *
 from tkinter import ttk
-from View import MasterFrame
-from View.Util.FrameUtils import FrameUtils
+
+from controller.connection_manager import ConnectionManager
+from view import MasterFrame
+from view.util.FrameUtils import FrameUtils
 
 
 class ConnectionDialog:
@@ -17,8 +19,9 @@ class ConnectionDialog:
     password = ""
     frame = {}
 
-    def __init__(self, MasterFrame: MasterFrame):
-        self.master_frame = MasterFrame
+    def __init__(self, master_frame: MasterFrame,connection_manager:ConnectionManager):
+        self.master_frame = master_frame
+        self.connection_manager = connection_manager
         self.server = StringVar()
         self.username = StringVar()
         self.password = StringVar()
@@ -53,12 +56,5 @@ class ConnectionDialog:
         self.frame.grab_set()
 
     def close_window(self):
-        self.master_frame.main.connection_manager.connection.server = self.server.get()
-        self.master_frame.main.connection_manager.connection.username = (
-            self.username.get()
-        )
-        self.master_frame.main.connection_manager.connection.password = (
-            self.password.get()
-        )
-
-        ttk.Frame.destroy(self.frame)
+        self.connection_manager.set_connection(self.server.get(), self.username.get(), self.password.get())
+        self.frame.destroy()

@@ -5,8 +5,8 @@ from tkinter import ttk, Toplevel
 
 import keyring
 
-from controller.Connection import Connection
-from View.Util.FrameUtils import FrameUtils
+from controller.connection import Connection
+from view.util.FrameUtils import FrameUtils
 
 
 class ManageConnections(ttk.Frame):

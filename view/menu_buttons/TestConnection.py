@@ -1,6 +1,9 @@
 from tkinter import ttk, Toplevel
 
-from View.Util.FrameUtils import FrameUtils
+import asnake.client.web_client
+
+from controller.connection_exceptions import AuthenticationError, NetworkError, ServerError
+from view.util.FrameUtils import FrameUtils
 
 
 class TestConnection:
@@ -23,18 +26,18 @@ class TestConnection:
             column=1, row=2
         )
         text = str()
-        results = self.connection.test()
-        if results[0]:
-            text = "Connection successful! Your connection is ready to use."
-        elif isinstance(results[1], str):
-            text = "Connection failed for the following reason: \n" + results[1]
+        try:
+            self.connection.test_connection()
+        except AuthenticationError as e:
+            text = "Connection failed due to a bad username or password."
+        except asnake.client.web_client.ASnakeAuthError as e:
+            text = "Connection failed due to a bad username or password."
+        except NetworkError as e:
+            text = "Connection failed due to a network error. Are you sure you have the correct API address?"
+        except ServerError as e:
+            text = "Connection failed due to an unknown error."
         else:
-            text = (
-                "Connection failed for an unknown reason. Please open a GitHub issue at"
-                "https://github.com/C-Norton/BulkEditUI \n"
-                "This issue should include the exact URL in your connection, as well as the following "
-                "information \n" + results[2]
-            )
+            text = "Connection successful! Your connection is ready to use."
         ttk.Label(self.frame, text=text, wraplength=220).grid(column=1, row=1)
 
         for child in self.frame.winfo_children():

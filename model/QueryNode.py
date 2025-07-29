@@ -20,7 +20,7 @@ class QueryNode(Node.Node):
 
     def __init__(
         self,
-        data_model: Model.DataModel.DataModel,
+        data_model: model.DataModel.DataModel,
         query_type: QueryType,
         compare_field: Field,
         data_to_compare_to: str = None,
