@@ -39,21 +39,73 @@ class Connection:
         self.client = None
         self.validated = False
 
-    def create_session(self) -> bool:
+
+    def create_session(self) -> ASnakeClient:
         """
-        Create session starts a server session using this connection. This is not necessary to call from outside this
-        class, but it won't hurt anything
-        :return: True if the connection was created successfully, False otherwise
+        Create and return an authenticated ASnake client session.
+
+        Returns:
+            ASnakeClient: Authenticated client ready for API calls
+
+        Raises:
+            ConfigurationError: Invalid server URL or missing configuration
+            AuthenticationError: Invalid credentials
+            NetworkError: Network connectivity issues
+            ServerError: Server-side errors or unexpected issues
         """
-        self.client = ASnakeClient(
-            baseurl=self.server, username=self.username, password=self.password
-        )
+        logging.debug(f"Creating session for {self.username}@{self.server}")
+
         try:
-            self.client.authorize()
+            # Create the client
+            client = ASnakeClient(
+                baseurl=self.server, username=self.username, password=self.password
+            )
+
+            # Attempt authorization
+            logging.debug("Attempting authorization...")
+            client.authorize()
+            logging.debug("Authorization successful")
+
+            # Store the client and mark as validated
+            self.client = client
+            self.validated = True
+
+            return client
+
         except requests.exceptions.MissingSchema as e:
-            logging.error(e)
-            return False
-        return True
+            logging.error(f"Invalid server URL format: {e}")
+            raise ConfigurationError(f"Invalid server URL: {self.server}") from e
+
+        except requests.exceptions.InvalidURL as e:
+            logging.error(f"Malformed server URL: {e}")
+            raise ConfigurationError(f"Malformed server URL: {self.server}") from e
+
+        except asnake.client.web_client.ASnakeAuthError as e:
+            logging.error(f"Authentication failed: {e}")
+            raise AuthenticationError("Invalid username or password") from e
+
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ReadTimeout,
+            requests.exceptions.Timeout,
+        ) as e:
+            logging.error(f"Network error: {e}")
+            raise NetworkError(f"Failed to connect to server: {e}") from e
+
+        except requests.exceptions.HTTPError as e:
+            logging.error(f"HTTP error: {e}")
+            if hasattr(e.response, "status_code"):
+                if 400 <= e.response.status_code < 500:
+                    raise AuthenticationError(f"Client error: {e}") from e
+                else:
+                    raise ServerError(f"Server error: {e}") from e
+            else:
+                raise ServerError(f"HTTP error: {e}") from e
+
+        except Exception as e:
+            logging.error(f"Unexpected error during session creation: {e}")
+            raise ServerError(f"Unexpected error: {e}") from e
 
     def __str__(self):
         return self.server + self.username + self.password

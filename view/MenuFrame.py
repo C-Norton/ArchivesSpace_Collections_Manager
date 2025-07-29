@@ -106,7 +106,7 @@ class MenuFrame(ttk.Frame):
         ConnectionDialog(self.master_frame,self.connection_manager)
 
     def testConnection(self):
-        TestConnection(self.master_frame.main.connection_manager.connection)
+        TestConnection(self.connection_manager.connection)
 
     def helpButton(self):
         HelpDialog(self.master_frame)
@@ -115,6 +115,6 @@ class MenuFrame(ttk.Frame):
         save_connection(self.connection_manager.connection)
 
     def manageConnections(self):
-        ManageConnections(self.master_frame.main.connection_manager)
+        ManageConnections(self.connection_manager)
 
     # These functions here serve as connectors to the appropriate class. This can likely be avoided
