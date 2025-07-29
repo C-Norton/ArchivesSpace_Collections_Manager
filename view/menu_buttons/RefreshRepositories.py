@@ -11,7 +11,7 @@ def refresh_repositories(connection):
     :return:
     TODO: What if a user tries with no saved connection. Add logging and error handling
     """
-    if Connection.test(connection):
+    if connection.test_connection():
         repositories = Connection.query(
             http_request_type=HttpRequestType.GET, endpoint="repositories"
         )

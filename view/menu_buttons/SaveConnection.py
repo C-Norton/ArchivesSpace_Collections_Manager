@@ -24,7 +24,7 @@ def save_connection(connection: Connection):
     ).grid(column=1, row=2)
     text = "Your connection has been saved."
     try:
-        Connection.test_connection(connection)
+        connection.test_connection()
     except AuthenticationError as e:
         text = f"Unable to store connection: Bad username or password.\n{e}"
     except NetworkError as e:
