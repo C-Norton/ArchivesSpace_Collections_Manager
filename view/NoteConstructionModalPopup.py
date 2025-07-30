@@ -2,11 +2,11 @@ import logging
 from tkinter import Text
 from tkinter import ttk, Toplevel, StringVar, BooleanVar
 
-import model.NoteType
+import model.note_type
 from controller.NoteManager import NoteManager
-from model.Note import Note
-from model.NoteSubType import NoteSubType
-from model.NoteType import NoteType
+from model.note import Note
+from model.note_sub_type import NoteSubType
+from model.note_type import NoteType
 from view import MasterFrame
 from view.util.FrameUtils import FrameUtils
 

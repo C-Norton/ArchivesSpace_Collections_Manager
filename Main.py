@@ -1,6 +1,6 @@
 import logging
 
-import model.DataModel as DM
+import model.data_model as DM
 import view.MasterFrame as MF
 
 import faulthandler

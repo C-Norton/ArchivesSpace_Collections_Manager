@@ -1,5 +1,5 @@
-import model.Node as Node
-import model.OperatorType as OperatorType
+import model.node as Node
+import model.operator_type as OperatorType
 
 
 class OperatorNode(Node.Node):

@@ -1,6 +1,6 @@
-from model.Note import Note
-from model.NoteSubType import NoteSubType
-from model.NoteType import NoteType
+from model.note import Note
+from model.note_sub_type import NoteSubType
+from model.note_type import NoteType
 
 
 def singleton(cls):

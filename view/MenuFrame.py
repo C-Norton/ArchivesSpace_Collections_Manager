@@ -1,11 +1,12 @@
 import logging
+import tkinter
 from tkinter import ttk, Grid
 
 import view.MasterFrame as MasterFrame
 from controller.connection_manager import ConnectionManager
 from view.menu_buttons.ConfigureConnection import ConnectionDialog
 from view.menu_buttons.Help import HelpDialog
-from view.menu_buttons.ManageConnection import ManageConnections
+from view.menu_buttons.ManageConnections import ManageConnections
 from view.menu_buttons.SaveConnection import save_connection
 from view.menu_buttons.TestConnection import TestConnection
 
@@ -115,6 +116,6 @@ class MenuFrame(ttk.Frame):
         save_connection(self.connection_manager.connection)
 
     def manageConnections(self):
-        ManageConnections(self.connection_manager)
-
+        connection_management_pane = ManageConnections(self.master_frame,self.connection_manager)
+        connection_management_pane.on_click()
     # These functions here serve as connectors to the appropriate class. This can likely be avoided

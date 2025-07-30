@@ -1,4 +1,4 @@
-import model.Field
+import model.field
 
 
 class ResourceField(model.Field.Field):

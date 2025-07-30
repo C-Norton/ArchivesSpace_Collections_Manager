@@ -4,16 +4,16 @@ import tkinter
 
 from tkinter import ttk
 
-import model.ActionType
-import model.QueryType
-import model.ResourceField
+import model.action_type
+import model.query_type
+import model.resource_field
 from controller.QueryManager import QueryManager
 
-import model.ActionType
-import model.QueryType
-import model.ResourceField
+import model.action_type
+import model.query_type
+import model.resource_field
 from view import MasterFrame
-import model.OperatorNode
+import model.operator_node
 from view.NoteConstructionModalPopup import NoteConstructionModalPopup
 
 
@@ -51,7 +51,7 @@ class IfBlockFrame(ttk.Frame):
             *[e.name for e in model.ResourceField.ResourceField],
         ).grid(row=0, column=1)
 
-        ttk.OptionMenu(
+        ttk.OptionMenu( #TODO: replace with ComboBox with scrollbar
             self,
             self.query_type,
             self.query_type.get(),

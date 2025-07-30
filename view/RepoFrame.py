@@ -14,7 +14,7 @@ class RepoFrame(ttk.Frame):
         self.check_buttons = dict()
 
     def refresh(self):
-        repos = self.master_frame.main.connection_manager.get_repository_list()
+        repos = self.master_frame.connection_manager.get_repository_list()
 
         i = 0
         for repo in repos:
