@@ -1,8 +1,6 @@
 import logging
 import asnake.client.web_client
 
-from dataclasses import dataclass
-
 import requests.exceptions
 from asnake.client import ASnakeClient
 from time import sleep
@@ -15,7 +13,7 @@ from controller.connection_exceptions import (
 from controller.HttpRequestType import HttpRequestType
 
 
-@dataclass
+
 class Connection:
     """
     A Connection is a small class used to pass around connection information to an archivesspace server, as well as the
@@ -113,12 +111,6 @@ class Connection:
     def test_connection(self) -> None:
         """
         Test connection validity. Raises appropriate exception on failure.
-
-        Raises:
-            ConfigurationError: Missing server/username/password
-            AuthenticationError: Invalid credentials
-            NetworkError: Connection failed after retries
-            ServerError: Server returned an error
         """
         # Validate configuration first
         if not all([self.server.strip(), self.username.strip(), self.password.strip()]):
@@ -129,7 +121,6 @@ class Connection:
         for attempt in range(max_attempts):
             try:
                 self.client = self.create_session()
-                # Test that we actually got a working client
                 self._verify_connection()
                 return  # Success!
 
@@ -140,6 +131,9 @@ class Connection:
             except (
                 requests.exceptions.ConnectionError,
                 requests.exceptions.Timeout,
+                requests.exceptions.ConnectTimeout,
+                requests.exceptions.ReadTimeout,
+                requests.exceptions.HTTPError,
             ) as e:
                 if attempt == max_attempts - 1:  # Last attempt
                     raise NetworkError(
@@ -148,8 +142,27 @@ class Connection:
                 # Wait before retry (exponential backoff)
                 sleep(2**attempt)
 
+            except (
+                requests.exceptions.RequestException,  # Base class for requests exceptions
+                requests.exceptions.TooManyRedirects,
+                requests.exceptions.URLRequired,
+                requests.exceptions.InvalidURL,
+                requests.exceptions.MissingSchema,
+            ) as e:
+                # Configuration/URL-related errors - don't retry
+                raise ConfigurationError(f"Invalid server configuration: {e}") from e
+
+            except (
+                OSError,  # Network-level issues (DNS, socket errors)
+                ConnectionRefusedError,
+                ConnectionResetError,
+            ) as e:
+                if attempt == max_attempts - 1:
+                    raise NetworkError(f"Network error: {e}") from e
+                sleep(2**attempt)
+
             except Exception as e:
-                # Unexpected errors shouldn't be retried
+                # Only catch truly unexpected errors
                 raise ServerError(f"Unexpected error: {e}") from e
 
     def _verify_connection(self) -> None:
@@ -173,7 +186,7 @@ class Connection:
         todo: complete this for different HTTP request types, and automatically manage a 429 error (too many requests)
         """
         if not self.validated:
-            self.validated = self.create_session()
+            raise AuthenticationError("Connection not validated")
         match http_request_type:
             case HttpRequestType.GET:
                 return self.client.get(endpoint)
