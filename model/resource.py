@@ -55,9 +55,6 @@ class Resource:
         self.data["ark_name"] = json
         self.data["metadata_rights_declarations"] = []
 
-    def __init__(self, data):
-        pass
-
     @classmethod
     def from_dict(cls, data):
         data = data
