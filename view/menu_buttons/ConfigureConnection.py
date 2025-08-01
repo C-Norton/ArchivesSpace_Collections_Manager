@@ -19,7 +19,9 @@ class ConnectionDialog:
     password = ""
     frame = {}
 
-    def __init__(self, master_frame: MasterFrame,connection_manager:ConnectionManager):
+    def __init__(
+        self, master_frame: MasterFrame, connection_manager: ConnectionManager
+    ):
         self.master_frame = master_frame
         self.connection_manager = connection_manager
         self.server = StringVar()
@@ -56,5 +58,7 @@ class ConnectionDialog:
         self.frame.grab_set()
 
     def close_window(self):
-        self.connection_manager.set_connection(self.server.get(), self.username.get(), self.password.get())
+        self.connection_manager.set_connection(
+            self.server.get(), self.username.get(), self.password.get()
+        )
         self.frame.destroy()

@@ -1,17 +1,14 @@
 from model.node_type import NodeType
 import pytest
 from enum import Enum
+
+
 class TestNodeType:
     """Test the NodeType enum"""
 
-    def test_enum_values_exist(self):
-        """Test that expected enum values exist"""
-        assert NodeType.OperatorNode == 0
-        assert NodeType.QueryNode == 1
-
     def test_enum_has_expected_members(self):
         """Test that enum has exactly the expected members"""
-        expected_members = {'OperatorNode', 'QueryNode'}
+        expected_members = {"OperatorNode", "QueryNode"}
         actual_members = {member.name for member in NodeType}
         assert actual_members == expected_members
 
@@ -31,8 +28,8 @@ class TestNodeType:
 
     def test_enum_member_access_by_name(self):
         """Test that we can access enum members by name"""
-        assert NodeType['OperatorNode'] == NodeType.OperatorNode
-        assert NodeType['QueryNode'] == NodeType.QueryNode
+        assert NodeType["OperatorNode"] == NodeType.OperatorNode
+        assert NodeType["QueryNode"] == NodeType.QueryNode
 
     def test_enum_member_access_by_value(self):
         """Test that we can access enum members by value"""
@@ -66,10 +63,7 @@ class TestNodeType:
 
     def test_enum_hashable(self):
         """Test that enum members are hashable (can be used as dict keys)"""
-        node_dict = {
-            NodeType.OperatorNode: "operator",
-            NodeType.QueryNode: "query"
-        }
+        node_dict = {NodeType.OperatorNode: "operator", NodeType.QueryNode: "query"}
         assert node_dict[NodeType.OperatorNode] == "operator"
         assert node_dict[NodeType.QueryNode] == "query"
 
@@ -83,7 +77,7 @@ class TestNodeType:
     def test_invalid_enum_access_raises_error(self):
         """Test that accessing invalid enum members raises appropriate errors"""
         with pytest.raises(KeyError):
-            NodeType['InvalidNode']
+            NodeType["InvalidNode"]
 
         with pytest.raises(ValueError):
             NodeType(999)

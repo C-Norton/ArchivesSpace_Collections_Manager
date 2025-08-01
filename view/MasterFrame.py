@@ -15,7 +15,7 @@ class MasterFrame(ttk.Frame):
     Masterframe draws the main application window. Grid layout
     """
 
-    def __init__(self,connection_manager: ConnectionManager):
+    def __init__(self, connection_manager: ConnectionManager):
         logging.debug("Initializing MasterFrame")
         self.root = tkinter.Tk()
         logging.debug(f"Created root: {self.root}")
@@ -29,7 +29,7 @@ class MasterFrame(ttk.Frame):
 
         self.root.title("ArchivesSpace Collections Manager")
         self.repo_frame = RepoFrame.RepoFrame(self)
-        self.menu_frame = MenuFrame.MenuFrame(self,self.connection_manager)
+        self.menu_frame = MenuFrame.MenuFrame(self, self.connection_manager)
         self.query_frame = QueryFrame.QueryFrame(self)
         self.if_block_frame = IfBlockFrame.IfBlockFrame(self)
         self.pack(fill="both", expand=True)

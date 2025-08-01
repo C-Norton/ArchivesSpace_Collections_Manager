@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class UiEvent(Enum):
     CONNECTION_CHANGED = "connection_changed"
     REPOSITORY_LOADED = "repository_loaded"

@@ -3,7 +3,7 @@ import asnake.client.web_client
 
 import requests.exceptions
 from asnake.client import ASnakeClient
-from time import sleep
+import time
 from controller.connection_exceptions import (
     ConfigurationError,
     NetworkError,
@@ -89,7 +89,7 @@ class Connection:
             requests.exceptions.Timeout,
         ) as e:
             logging.error(f"Network error: {e}")
-            raise NetworkError(f"Failed to connect to server: {e}") from e
+            raise NetworkError(f"Connection to server failed after 3 attempts: {e}") from e
 
         except requests.exceptions.HTTPError as e:
             logging.error(f"HTTP error: {e}")
@@ -110,13 +110,11 @@ class Connection:
 
     def test_connection(self) -> None:
         """
-        Test connection validity. Raises appropriate exception on failure.
+        Test connection validity with automatic retry for network errors.
+        Raises appropriate exception on failure.
         """
-        # Validate configuration first
-        if not all([self.server.strip(), self.username.strip(), self.password.strip()]):
-            raise ConfigurationError("Connection configuration is incomplete")
+        self._validate_connection_config()
 
-        # Retry logic with exponential backoff
         max_attempts = 3
         for attempt in range(max_attempts):
             try:
@@ -124,46 +122,80 @@ class Connection:
                 self._verify_connection()
                 return  # Success!
 
-            except asnake.client.web_client.ASnakeAuthError as e:
-                # Don't retry auth errors - they won't get better
-                raise AuthenticationError("Invalid username or password") from e
-
-            except (
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectTimeout,
-                requests.exceptions.ReadTimeout,
-                requests.exceptions.HTTPError,
-            ) as e:
-                if attempt == max_attempts - 1:  # Last attempt
-                    raise NetworkError(
-                        f"Connection failed after {max_attempts} attempts"
-                    ) from e
-                # Wait before retry (exponential backoff)
-                sleep(2**attempt)
-
-            except (
-                requests.exceptions.RequestException,  # Base class for requests exceptions
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.URLRequired,
-                requests.exceptions.InvalidURL,
-                requests.exceptions.MissingSchema,
-            ) as e:
-                # Configuration/URL-related errors - don't retry
-                raise ConfigurationError(f"Invalid server configuration: {e}") from e
-
-            except (
-                OSError,  # Network-level issues (DNS, socket errors)
-                ConnectionRefusedError,
-                ConnectionResetError,
-            ) as e:
-                if attempt == max_attempts - 1:
-                    raise NetworkError(f"Network error: {e}") from e
-                sleep(2**attempt)
+            except (ConfigurationError, AuthenticationError):
+                # These errors won't improve with retries
+                raise
 
             except Exception as e:
-                # Only catch truly unexpected errors
-                raise ServerError(f"Unexpected error: {e}") from e
+                self._handle_connection_error(e, attempt, max_attempts)
+
+    def _validate_connection_config(self) -> None:
+        """Validate that required connection configuration is present."""
+        if not all([self.server.strip(), self.username.strip(), self.password.strip()]):
+            raise ConfigurationError("Connection configuration is incomplete")
+
+    def _handle_connection_error(
+        self, error: Exception, attempt: int, max_attempts: int
+    ) -> None:
+        """
+        Handle connection errors with appropriate retry logic.
+
+        Args:
+            error: The exception that occurred
+            attempt: Current attempt number (0-based)
+            max_attempts: Total number of attempts allowed
+        """
+        logging.debug(f"_handle_connection_error called with: {type(error)}, attempt={attempt}")
+        is_final_attempt = attempt == max_attempts - 1
+        logging.debug(f"is_final_attempt: {is_final_attempt}")
+
+        # Network errors that should be retried
+        retryable_network_errors = (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ReadTimeout,
+            requests.exceptions.HTTPError,
+            OSError,
+            ConnectionRefusedError,
+            ConnectionResetError,
+            NetworkError,
+        )
+
+        # Configuration errors that should not be retried
+        config_errors = (
+            requests.exceptions.TooManyRedirects,
+            requests.exceptions.URLRequired,
+            requests.exceptions.InvalidURL,
+            requests.exceptions.MissingSchema,
+            requests.exceptions.RequestException,  # Base class for other config issues
+        )
+
+        # Handle configuration errors (no retry)
+        if isinstance(error, config_errors):
+            raise ConfigurationError(
+                f"Invalid server configuration: {error}"
+            ) from error
+
+        # Handle retryable network errors
+        if isinstance(error, retryable_network_errors):
+            logging.debug(f"Error is retryable network error")
+            if is_final_attempt:
+                logging.debug(f"Final attempt, re-raising")
+                if isinstance(error, NetworkError):
+                    raise  # Re-raise original NetworkError
+                else:
+                    raise NetworkError(
+                        f"Connection failed after {max_attempts} attempts"
+                    ) from error
+            else:
+                # Wait before retry with exponential backoff
+                logging.debug(f"Not final attempt, sleeping {2**attempt} seconds")
+                time.sleep(2**attempt)
+                return
+
+        # Handle unexpected errors
+        raise ServerError(f"Unexpected error: {error}") from error
 
     def _verify_connection(self) -> None:
         """Verify the client connection actually works"""

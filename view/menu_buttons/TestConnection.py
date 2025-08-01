@@ -2,7 +2,11 @@ from tkinter import ttk, Toplevel
 
 import asnake.client.web_client
 
-from controller.connection_exceptions import AuthenticationError, NetworkError, ServerError
+from controller.connection_exceptions import (
+    AuthenticationError,
+    NetworkError,
+    ServerError,
+)
 from view.util.FrameUtils import FrameUtils
 
 
@@ -28,13 +32,13 @@ class TestConnection:
         text = str()
         try:
             self.connection.test_connection()
-        except AuthenticationError as e:
+        except AuthenticationError:
             text = "Connection failed due to a bad username or password."
-        except asnake.client.web_client.ASnakeAuthError as e:
+        except asnake.client.web_client.ASnakeAuthError:
             text = "Connection failed due to a bad username or password."
-        except NetworkError as e:
+        except NetworkError:
             text = "Connection failed due to a network error. Are you sure you have the correct API address?"
-        except ServerError as e:
+        except ServerError:
             text = "Connection failed due to an unknown error."
         else:
             text = "Connection successful! Your connection is ready to use."

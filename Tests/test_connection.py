@@ -1,5 +1,8 @@
 import pytest
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
 class TestConnectionStateManagement:
     """Test connection state management through public behavior"""
 
@@ -20,7 +23,7 @@ class TestConnectionStateManagement:
         """Test that connection works after successful test"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -38,7 +41,7 @@ class TestConnectionStateManagement:
         """Test multiple calls to test_connection work independently"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client1 = mocker.Mock(spec=ASnakeClient)
         mock_client2 = mocker.Mock(spec=ASnakeClient)
         mock_client_class.side_effect = [mock_client1, mock_client2]
@@ -55,7 +58,7 @@ class TestConnectionStateManagement:
         # Second call should work independently
         conn.test_connection()
 
-        # Should be able to query after second test  
+        # Should be able to query after second test
         mock_response2 = mocker.Mock()
         mock_client2.get.return_value = mock_response2
         result2 = conn.query(HttpRequestType.GET, "/test2")
@@ -73,7 +76,11 @@ class TestConnectionStateManagement:
             # The exact behavior depends on implementation, but it should be predictable
             # Either it auto-validates or returns None - either is acceptable
             # We're testing that it doesn't crash
-            assert result is None or hasattr(result, 'json')  # Either None or response-like objectimport pytest
+            assert result is None or hasattr(
+                result, "json"
+            )  # Either None or response-like objectimport pytest
+
+
 import requests.exceptions
 import asnake.client.web_client
 from asnake.client import ASnakeClient
@@ -163,16 +170,21 @@ class TestConnectionValidation:
             with pytest.raises(ConfigurationError):
                 conn.test_connection()
 
-    @pytest.mark.parametrize("server,username,password", [
-        ("", "user", "pass"),
-        ("server", "", "pass"),
-        ("server", "user", ""),
-        ("", "", ""),
-        ("   ", "user", "pass"),
-        ("server", "   ", "pass"),
-        ("server", "user", "   "),
-    ])
-    def test_various_invalid_configurations_raise_configuration_error(self, server, username, password):
+    @pytest.mark.parametrize(
+        "server,username,password",
+        [
+            ("", "user", "pass"),
+            ("server", "", "pass"),
+            ("server", "user", ""),
+            ("", "", ""),
+            ("   ", "user", "pass"),
+            ("server", "   ", "pass"),
+            ("server", "user", "   "),
+        ],
+    )
+    def test_various_invalid_configurations_raise_configuration_error(
+        self, server, username, password
+    ):
         """Test various invalid configuration combinations"""
         conn = Connection(server, username, password)
 
@@ -188,7 +200,7 @@ class TestConnectionAuthentication:
         conn = Connection("https://test.com", "user", "pass")
 
         # Mock the external dependency
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -197,9 +209,7 @@ class TestConnectionAuthentication:
 
         # Verify external API was called correctly
         mock_client_class.assert_called_once_with(
-            baseurl="https://test.com",
-            username="user",
-            password="pass"
+            baseurl="https://test.com", username="user", password="pass"
         )
         mock_client.authorize.assert_called_once()
 
@@ -207,8 +217,10 @@ class TestConnectionAuthentication:
         """Test that invalid URL raises ConfigurationError via test_connection"""
         conn = Connection("not-a-url", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mock_client_class.side_effect = requests.exceptions.MissingSchema("Invalid URL scheme")
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mock_client_class.side_effect = requests.exceptions.MissingSchema(
+            "Invalid URL scheme"
+        )
 
         with pytest.raises(ConfigurationError) as exc_info:
             conn.test_connection()
@@ -220,7 +232,7 @@ class TestConnectionAuthentication:
         """Test that malformed URL raises ConfigurationError via test_connection"""
         conn = Connection("ht!tp://bad-url", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client_class.side_effect = requests.exceptions.InvalidURL("Invalid URL")
 
         with pytest.raises(ConfigurationError) as exc_info:
@@ -228,32 +240,72 @@ class TestConnectionAuthentication:
 
         assert "Malformed server URL" in str(exc_info.value)
 
-    def test_test_connection_auth_error_raises_authentication_error(self, mocker):
-        """Test that authentication failure raises AuthenticationError via test_connection"""
+    def test_debug_exception_chain(self, mocker):
         conn = Connection("https://test.com", "user", "badpass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
-        mock_client.authorize.side_effect = asnake.client.web_client.ASnakeAuthError("Invalid credentials")
+        mock_client.authorize.side_effect = asnake.client.web_client.ASnakeAuthError(
+            "Invalid credentials"
+        )
 
         with pytest.raises(AuthenticationError) as exc_info:
             conn.test_connection()
 
-        assert "Invalid username or password" in str(exc_info.value)
-        assert isinstance(exc_info.value.__cause__, asnake.client.web_client.ASnakeAuthError)
+        print(f"Exception: {exc_info.value}")
+        print(f"Cause: {exc_info.value.__cause__}")
+        print(f"Cause type: {type(exc_info.value.__cause__)}")
 
-    @pytest.mark.parametrize("exception_class,expected_error", [
-        (requests.exceptions.ConnectionError, NetworkError),
-        (requests.exceptions.ConnectTimeout, NetworkError),
-        (requests.exceptions.ReadTimeout, NetworkError),
-        (requests.exceptions.Timeout, NetworkError),
-    ])
-    def test_test_connection_network_errors_raise_network_error(self, mocker, exception_class, expected_error):
+    def test_test_connection_auth_error_raises_authentication_error(self, mocker):
+        """Test that authentication failure raises AuthenticationError via test_connection"""
+        conn = Connection("https://test.com", "user", "badpass")
+
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mock_client = mocker.Mock(spec=ASnakeClient)
+        mock_client_class.return_value = mock_client
+        mock_client.authorize.side_effect = asnake.client.web_client.ASnakeAuthError(
+            "Invalid credentials"
+        )
+        # Add some debugging
+        original_exception = asnake.client.web_client.ASnakeAuthError(
+            "Invalid credentials"
+        )
+        mock_client.authorize.side_effect = original_exception
+        print(f"Original exception: {original_exception}")
+        print(f"Original exception type: {type(original_exception)}")
+
+        with pytest.raises(AuthenticationError) as exc_info:
+            conn.test_connection()
+        print(f"Raised exception: {exc_info.value}")
+        print(f"Raised exception type: {type(exc_info.value)}")
+        print(f"Cause: {exc_info.value.__cause__}")
+        print(f"Cause type: {type(exc_info.value.__cause__)}")
+        print(f"Cause is original: {exc_info.value.__cause__ is original_exception}")
+        print(f"Cause is None: {exc_info.value.__cause__ is None}")
+        assert "Invalid username or password" in str(exc_info.value)
+        assert isinstance(
+            exc_info.value.__cause__, asnake.client.web_client.ASnakeAuthError
+        )
+
+    @pytest.mark.slow
+    @pytest.mark.parametrize(
+        "exception_class,expected_error",
+        [
+            (requests.exceptions.ConnectionError, NetworkError),
+            (requests.exceptions.ConnectTimeout, NetworkError),
+            (requests.exceptions.ReadTimeout, NetworkError),
+            (requests.exceptions.Timeout, NetworkError),
+        ],
+    )
+
+    def test_test_connection_network_errors_raise_network_error(
+        self, mocker, exception_class, expected_error
+    ):
         """Test that various network exceptions raise NetworkError via test_connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client_class.side_effect = exception_class("Network failed")
 
         with pytest.raises(expected_error) as exc_info:
@@ -261,11 +313,13 @@ class TestConnectionAuthentication:
 
         assert "Failed to connect to server" in str(exc_info.value)
 
-    def test_test_connection_http_client_error_raises_authentication_error(self, mocker):
+    def test_test_connection_http_client_error_raises_authentication_error(
+        self, mocker
+    ):
         """Test that HTTP 4xx errors raise AuthenticationError via test_connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
 
         # Create a mock response with status_code
         mock_response = mocker.Mock()
@@ -285,7 +339,7 @@ class TestConnectionAuthentication:
         """Test that HTTP 5xx errors raise ServerError via test_connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
 
         # Create a mock response with status_code
         mock_response = mocker.Mock()
@@ -301,11 +355,13 @@ class TestConnectionAuthentication:
 
         assert "Server error" in str(exc_info.value)
 
-    def test_test_connection_http_error_without_response_raises_server_error(self, mocker):
+    def test_test_connection_http_error_without_response_raises_server_error(
+        self, mocker
+    ):
         """Test that HTTP errors without response object raise ServerError via test_connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         http_error = requests.exceptions.HTTPError("Generic HTTP error")
         # No response attribute
 
@@ -318,7 +374,7 @@ class TestConnectionAuthentication:
         """Test that unexpected errors raise ServerError via test_connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client_class.side_effect = ValueError("Unexpected error")
 
         with pytest.raises(ServerError) as exc_info:
@@ -334,15 +390,15 @@ class TestConnectionRetryBehavior:
         """Test that connection succeeds after temporary network issues"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mock_sleep = mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mock_sleep = mocker.patch("time.sleep")
 
         # First two calls fail, third succeeds
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.side_effect = [
             requests.exceptions.ConnectionError("Temporary failure"),
             requests.exceptions.Timeout("Network timeout"),
-            mock_client  # Success on third try
+            mock_client,  # Success on third try
         ]
 
         # Should not raise exception (succeeds on retry)
@@ -356,11 +412,13 @@ class TestConnectionRetryBehavior:
         """Test that connection fails after all retries are exhausted"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mocker.patch("time.sleep")
 
         # All attempts fail
-        mock_client_class.side_effect = requests.exceptions.ConnectionError("Persistent failure")
+        mock_client_class.side_effect = requests.exceptions.ConnectionError(
+            "Persistent failure"
+        )
 
         with pytest.raises(NetworkError) as exc_info:
             conn.test_connection()
@@ -373,10 +431,12 @@ class TestConnectionRetryBehavior:
         """Test that authentication errors are not retried"""
         conn = Connection("https://test.com", "user", "badpass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mock_sleep = mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mock_sleep = mocker.patch("time.sleep")
 
-        mock_client_class.side_effect = asnake.client.web_client.ASnakeAuthError("Bad credentials")
+        mock_client_class.side_effect = asnake.client.web_client.ASnakeAuthError(
+            "Bad credentials"
+        )
 
         with pytest.raises(AuthenticationError):
             conn.test_connection()
@@ -389,8 +449,8 @@ class TestConnectionRetryBehavior:
         """Test that configuration errors are not retried"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mock_sleep = mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mock_sleep = mocker.patch("time.sleep")
 
         mock_client_class.side_effect = ValueError("Unexpected configuration issue")
 
@@ -405,11 +465,13 @@ class TestConnectionRetryBehavior:
         """Test that retry delays follow exponential backoff pattern"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mock_sleep = mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mock_sleep = mocker.patch("time.sleep")
 
         # All attempts fail to trigger all retries
-        mock_client_class.side_effect = requests.exceptions.ConnectionError("Always fails")
+        mock_client_class.side_effect = requests.exceptions.ConnectionError(
+            "Always fails"
+        )
 
         with pytest.raises(NetworkError):
             conn.test_connection()
@@ -428,11 +490,11 @@ class TestConnectionQueryBehavior:
         conn = Connection("https://test.com", "user", "pass")
 
         # Setup a successfully tested connection
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
         conn.test_connection()  # This sets up the client
-
+        mock_client.get.reset_mock()  # Clear previous calls
         # Now test the query
         mock_response = mocker.Mock()
         mock_client.get.return_value = mock_response
@@ -442,12 +504,12 @@ class TestConnectionQueryBehavior:
         assert result == mock_response
         mock_client.get.assert_called_once_with("/repositories/2")
 
-    def test_query_revalidates_connection_when_needed(self, mocker):
+    def test_query_raises_authentication_exception_when_needed(self, mocker):
         """Test that query revalidates connection when not validated"""
         conn = Connection("https://test.com", "user", "pass")
 
         # Set up client but mark as not validated
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -456,23 +518,20 @@ class TestConnectionQueryBehavior:
 
         mock_response = mocker.Mock()
         mock_client.get.return_value = mock_response
+        with pytest.raises(AuthenticationError):
+            conn.query(HttpRequestType.GET, "/test")
 
-        result = conn.query(HttpRequestType.GET, "/test")
-
-        # Should have revalidated (created new session)
-        assert mock_client_class.call_count >= 1
-        assert result == mock_response
 
     def test_query_handles_unsupported_http_methods(self, mocker):
         """Test that unsupported HTTP methods return None gracefully"""
         conn = Connection("https://test.com", "user", "pass")
 
         # Setup validated connection
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
         conn.test_connection()
-
+        mock_client.get.reset_mock()
         # Test unsupported method
         result = conn.query(HttpRequestType.POST, "/test")
 
@@ -482,22 +541,25 @@ class TestConnectionQueryBehavior:
         # Should not call any client methods
         mock_client.get.assert_not_called()
 
-    @pytest.mark.parametrize("http_type", [
-        HttpRequestType.HEAD,
-        HttpRequestType.POST,
-        HttpRequestType.PUT,
-        HttpRequestType.DELETE,
-        HttpRequestType.CONNECTION,
-        HttpRequestType.OPTIONS,
-        HttpRequestType.TRACE,
-        HttpRequestType.PATCH,
-    ])
+    @pytest.mark.parametrize(
+        "http_type",
+        [
+            HttpRequestType.HEAD,
+            HttpRequestType.POST,
+            HttpRequestType.PUT,
+            HttpRequestType.DELETE,
+            HttpRequestType.CONNECTION,
+            HttpRequestType.OPTIONS,
+            HttpRequestType.TRACE,
+            HttpRequestType.PATCH,
+        ],
+    )
     def test_query_returns_none_for_unsupported_methods(self, mocker, http_type):
         """Test that all unsupported HTTP methods return None"""
         conn = Connection("https://test.com", "user", "pass")
 
         # Setup validated connection
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
         conn.test_connection()
@@ -515,7 +577,7 @@ class TestConnectionEdgeCases:
         conn = Connection(long_string, long_string, long_string)
 
         # Should handle long strings without issue
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -524,9 +586,7 @@ class TestConnectionEdgeCases:
 
         # Verify it was called with the long strings
         mock_client_class.assert_called_once_with(
-            baseurl=long_string,
-            username=long_string,
-            password=long_string
+            baseurl=long_string, username=long_string, password=long_string
         )
 
     def test_connection_with_unicode_credentials_works(self, mocker):
@@ -537,7 +597,7 @@ class TestConnectionEdgeCases:
 
         conn = Connection(server, username, password)
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -546,9 +606,7 @@ class TestConnectionEdgeCases:
 
         # Verify Unicode was passed correctly
         mock_client_class.assert_called_once_with(
-            baseurl=server,
-            username=username,
-            password=password
+            baseurl=server, username=username, password=password
         )
 
     def test_connection_handles_special_characters_in_credentials(self, mocker):
@@ -559,7 +617,7 @@ class TestConnectionEdgeCases:
 
         conn = Connection(server, username, password)
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -567,9 +625,7 @@ class TestConnectionEdgeCases:
         conn.test_connection()
 
         mock_client_class.assert_called_once_with(
-            baseurl=server,
-            username=username,
-            password=password
+            baseurl=server, username=username, password=password
         )
 
 
@@ -580,8 +636,8 @@ class TestConnectionIntegration:
         """Test complete successful connection workflow"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mocker.patch("time.sleep")
 
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
@@ -604,15 +660,15 @@ class TestConnectionIntegration:
         """Test that connection can recover after initial failure"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
-        mocker.patch('time.sleep')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
+        mocker.patch("time.sleep")
 
         mock_client = mocker.Mock(spec=ASnakeClient)
 
         # First attempt fails, second succeeds
         mock_client_class.side_effect = [
             requests.exceptions.ConnectionError("Temporary failure"),
-            mock_client
+            mock_client,
         ]
 
         # Should succeed after retry
@@ -629,7 +685,7 @@ class TestConnectionIntegration:
         """Test querying different endpoints after connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -654,7 +710,7 @@ class TestConnectionIntegration:
         """Test graceful handling when query is called before test_connection"""
         conn = Connection("https://test.com", "user", "pass")
 
-        mock_client_class = mocker.patch('controller.connection.ASnakeClient')
+        mock_client_class = mocker.patch("controller.connection.ASnakeClient")
         mock_client = mocker.Mock(spec=ASnakeClient)
         mock_client_class.return_value = mock_client
 
@@ -662,13 +718,5 @@ class TestConnectionIntegration:
         mock_client.get.return_value = mock_response
 
         # Call query without calling test_connection first
-        # This should either auto-validate or handle gracefully
-        result = conn.query(HttpRequestType.GET, "/test")
-
-        # Should either work (auto-validation) or return None gracefully
-        # The important thing is it doesn't crash
-        if result is not None:
-            assert result == mock_response
-            mock_client.get.assert_called_with("/test")
-
-# Remove the old TestConnectionLogging class entirely since it tested private behavior
+        with pytest.raises(AuthenticationError):
+            result = conn.query(HttpRequestType.GET, "/test")

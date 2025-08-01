@@ -51,7 +51,7 @@ class IfBlockFrame(ttk.Frame):
             *[e.name for e in model.ResourceField.ResourceField],
         ).grid(row=0, column=1)
 
-        ttk.OptionMenu( #TODO: replace with ComboBox with scrollbar
+        ttk.OptionMenu(  # TODO: replace with ComboBox with scrollbar
             self,
             self.query_type,
             self.query_type.get(),

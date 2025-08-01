@@ -74,7 +74,7 @@ class ManageConnections:
         title_label = ttk.Label(
             self.main_frame,
             text="Manage Saved Connections",
-            font=("TkDefaultFont", 12, "bold")
+            font=("TkDefaultFont", 12, "bold"),
         )
         title_label.pack(pady=(0, 15))
 
@@ -98,16 +98,14 @@ class ManageConnections:
             info_frame,
             text="No saved connections found.",
             font=("TkDefaultFont", 10, "bold"),
-            justify="center"
+            justify="center",
         ).pack(pady=(20, 10))
 
         ttk.Label(
             info_frame,
             text="To save a connection:\n1. Configure a connection\n2. Test the connection\n3. Click 'Save Connection'",
-            justify="center"
+            justify="center",
         ).pack(pady=10)
-
-
 
     def _create_credentials_list_ui(self, credentials):
         """Create UI for displaying the list of credentials."""
@@ -117,7 +115,7 @@ class ManageConnections:
         ttk.Label(
             info_frame,
             text=f"Found {len(credentials)} saved connection(s):",
-            font=("TkDefaultFont", 10, "bold")
+            font=("TkDefaultFont", 10, "bold"),
         ).pack(pady=(10, 5))
 
         # Create treeview for better display
@@ -126,7 +124,9 @@ class ManageConnections:
 
         # Treeview with columns
         columns = ("username", "server")
-        self.credentials_tree = ttk.Treeview(tree_frame, columns=columns, show="tree headings", height=8)
+        self.credentials_tree = ttk.Treeview(
+            tree_frame, columns=columns, show="tree headings", height=8
+        )
 
         # Configure columns
         self.credentials_tree.heading("#0", text="Display Name")
@@ -138,7 +138,9 @@ class ManageConnections:
         self.credentials_tree.column("server", width=250)
 
         # Scrollbar
-        scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=self.credentials_tree.yview)
+        scrollbar = ttk.Scrollbar(
+            tree_frame, orient="vertical", command=self.credentials_tree.yview
+        )
         self.credentials_tree.configure(yscrollcommand=scrollbar.set)
 
         # Pack treeview and scrollbar
@@ -148,10 +150,11 @@ class ManageConnections:
         # Populate treeview
         for i, cred in enumerate(credentials):
             self.credentials_tree.insert(
-                "", "end",
+                "",
+                "end",
                 iid=str(i),
                 text=cred.display_name,
-                values=(cred.username, cred.server)
+                values=(cred.username, cred.server),
             )
 
         # Select first item
@@ -170,42 +173,38 @@ class ManageConnections:
             ttk.Button(
                 button_frame,
                 text="Load Connection",
-                command=self._load_selected_credential
+                command=self._load_selected_credential,
             ).pack(side="left", padx=5)
 
             ttk.Button(
                 button_frame,
                 text="Delete Connection",
-                command=self._delete_selected_credential
+                command=self._delete_selected_credential,
             ).pack(side="left", padx=5)
 
             ttk.Button(
                 button_frame,
                 text="Test Connection",
-                command=self._test_selected_credential
+                command=self._test_selected_credential,
             ).pack(side="left", padx=5)
 
         ttk.Button(
-            button_frame,
-            text="Refresh",
-            command=self._refresh_credentials
+            button_frame, text="Refresh", command=self._refresh_credentials
         ).pack(side="left", padx=5)
 
         ttk.Button(
-            button_frame,
-            text="Cleanup",
-            command=self._cleanup_invalid_credentials
+            button_frame, text="Cleanup", command=self._cleanup_invalid_credentials
         ).pack(side="left", padx=5)
 
-        ttk.Button(
-            button_frame,
-            text="Close",
-            command=self.on_close
-        ).pack(side="left", padx=5)
+        ttk.Button(button_frame, text="Close", command=self.on_close).pack(
+            side="left", padx=5
+        )
 
     def _get_selected_credential(self):
         """Get the currently selected credential."""
-        if not hasattr(self, 'credentials_tree') or not hasattr(self, 'current_credentials'):
+        if not hasattr(self, "credentials_tree") or not hasattr(
+            self, "current_credentials"
+        ):
             return None
 
         selection = self.credentials_tree.selection()
@@ -222,9 +221,7 @@ class ManageConnections:
         selected = self._get_selected_credential()
         if not selected:
             FrameUtils.modal_message_popup(
-                self.dialog,
-                "No connection selected",
-                "Selection Error"
+                self.dialog, "No connection selected", "Selection Error"
             )
             return
 
@@ -232,29 +229,25 @@ class ManageConnections:
             connection = credential_manager.load_credential(selected)
             if connection:
                 self.connection_manager.set_connection(
-                    connection.server,
-                    connection.username,
-                    connection.password
+                    connection.server, connection.username, connection.password
                 )
                 logger.info(f"Loaded connection: {selected.display_name}")
                 FrameUtils.modal_message_popup(
                     self.dialog,
                     f"Connection loaded successfully:\n{selected.display_name}",
-                    "Connection Loaded"
+                    "Connection Loaded",
                 )
                 self.on_close()
             else:
                 FrameUtils.modal_message_popup(
                     self.dialog,
                     f"Failed to load connection: {selected.display_name}",
-                    "Load Error"
+                    "Load Error",
                 )
         except Exception as e:
             logger.error(f"Error loading credential: {e}")
             FrameUtils.modal_message_popup(
-                self.dialog,
-                f"Error loading connection: {e}",
-                "Error"
+                self.dialog, f"Error loading connection: {e}", "Error"
             )
 
     def _test_selected_credential(self):
@@ -262,9 +255,7 @@ class ManageConnections:
         selected = self._get_selected_credential()
         if not selected:
             FrameUtils.modal_message_popup(
-                self.dialog,
-                "No connection selected",
-                "Selection Error"
+                self.dialog, "No connection selected", "Selection Error"
             )
             return
 
@@ -275,20 +266,20 @@ class ManageConnections:
                 FrameUtils.modal_message_popup(
                     self.dialog,
                     f"Connection test successful:\n{selected.display_name}",
-                    "Test Successful"
+                    "Test Successful",
                 )
             else:
                 FrameUtils.modal_message_popup(
                     self.dialog,
                     f"Failed to load connection for testing: {selected.display_name}",
-                    "Test Error"
+                    "Test Error",
                 )
         except Exception as e:
             logger.error(f"Connection test failed: {e}")
             FrameUtils.modal_message_popup(
                 self.dialog,
                 f"Connection test failed:\n{selected.display_name}\n\nError: {e}",
-                "Test Failed"
+                "Test Failed",
             )
 
     def _delete_selected_credential(self):
@@ -296,38 +287,33 @@ class ManageConnections:
         selected = self._get_selected_credential()
         if not selected:
             FrameUtils.modal_message_popup(
-                self.dialog,
-                "No connection selected",
-                "Selection Error"
+                self.dialog, "No connection selected", "Selection Error"
             )
             return
 
         try:
             from tkinter import messagebox
+
             if messagebox.askyesno(
-                    "Confirm Deletion",
-                    f"Are you sure you want to delete the saved connection:\n{selected.display_name}?"
+                "Confirm Deletion",
+                f"Are you sure you want to delete the saved connection:\n{selected.display_name}?",
             ):
                 success = credential_manager.delete_credential(selected)
                 if success:
                     FrameUtils.modal_message_popup(
                         self.dialog,
                         "Connection deleted successfully",
-                        "Connection Deleted"
+                        "Connection Deleted",
                     )
                     self._refresh_credentials()
                 else:
                     FrameUtils.modal_message_popup(
-                        self.dialog,
-                        "Failed to delete connection",
-                        "Deletion Error"
+                        self.dialog, "Failed to delete connection", "Deletion Error"
                     )
         except Exception as e:
             logger.error(f"Error deleting credential: {e}")
             FrameUtils.modal_message_popup(
-                self.dialog,
-                f"Error deleting connection: {e}",
-                "Deletion Error"
+                self.dialog, f"Error deleting connection: {e}", "Deletion Error"
             )
 
     def _refresh_credentials(self):
@@ -342,24 +328,23 @@ class ManageConnections:
                 FrameUtils.modal_message_popup(
                     self.dialog,
                     f"Cleaned up {removed_count} invalid credential(s)",
-                    "Cleanup Complete"
+                    "Cleanup Complete",
                 )
                 self._refresh_credentials()
             else:
                 FrameUtils.modal_message_popup(
-                    self.dialog,
-                    "No invalid credentials found",
-                    "Cleanup Complete"
+                    self.dialog, "No invalid credentials found", "Cleanup Complete"
                 )
         except Exception as e:
             logger.error(f"Cleanup failed: {e}")
             FrameUtils.modal_message_popup(
-                self.dialog,
-                f"Cleanup failed: {e}",
-                "Cleanup Error"
+                self.dialog, f"Cleanup failed: {e}", "Cleanup Error"
             )
 
+
 # Factory function for easier integration
-def create_manage_connections_button(master_frame, connection_manager: ConnectionManager) -> ManageConnectionsButton:
+def create_manage_connections_button(
+    master_frame, connection_manager: ConnectionManager
+) -> ManageConnectionsButton:
     """Factory function to create a ManageConnectionsButton instance."""
     return ManageConnectionsButton(master_frame, connection_manager)

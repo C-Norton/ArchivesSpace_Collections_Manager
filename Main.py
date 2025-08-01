@@ -6,8 +6,6 @@ import view.MasterFrame as MF
 import faulthandler
 
 
-
-
 class Main:
     connection_manager = None
     data_model: DM.DataModel = None

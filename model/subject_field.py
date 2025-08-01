@@ -1,6 +1,3 @@
-import field
-
-
 class SubjectField(Field):
     """I'm not entirely clear on what this class is anymore. It inherits from field, so is clearly related to that.
     Research the two based off this file's clear mirroring of an archivesspace data model concept.

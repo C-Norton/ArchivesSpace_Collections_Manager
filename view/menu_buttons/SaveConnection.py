@@ -1,7 +1,12 @@
 from tkinter import ttk, Toplevel
 
 from controller.connection import Connection
-from controller.connection_exceptions import AuthenticationError, NetworkError, ServerError, ConfigurationError
+from controller.connection_exceptions import (
+    AuthenticationError,
+    NetworkError,
+    ServerError,
+    ConfigurationError,
+)
 from view.util.FrameUtils import FrameUtils
 from model.credential_index_manager import credential_manager
 
@@ -40,9 +45,7 @@ def save_connection(connection: Connection):
         # Connection is valid, store it using the index manager
         try:
             success = credential_manager.store_credential(
-                connection.server,
-                connection.username,
-                connection.password
+                connection.server, connection.username, connection.password
             )
 
             if success:

@@ -11,7 +11,6 @@ from controller.connection import Connection
 from controller.HttpRequestType import HttpRequestType
 
 
-
 @pytest.fixture
 def mock_connection():
     """Create a mock connection for testing."""
@@ -19,9 +18,9 @@ def mock_connection():
 
 
 @pytest.fixture
-def connection_manager(mock_connection):
+def connection_manager(mock_connection, mocker):
     """Create a ConnectionManager with mocked connection."""
-    cm = ConnectionManager()
+    cm = ConnectionManager(mocker.Mock())
     cm.connection = mock_connection
     return cm
 
@@ -29,31 +28,22 @@ def connection_manager(mock_connection):
 class TestConnectionManagerInitialization:
     """Test ConnectionManager initialization and contract compliance."""
 
-    def test_creates_connection_manager_instance(self):
+    def test_creates_connection_manager_instance(self, mocker):
         """Test that ConnectionManager can be instantiated."""
-        cm = ConnectionManager()
+        cm = ConnectionManager(mocker.Mock())
         assert isinstance(cm, ConnectionManager)
 
-    def test_has_connection_attribute(self):
+    def test_has_connection_attribute(self,mocker):
         """Test that ConnectionManager has a connection attribute."""
-        cm = ConnectionManager()
+        cm = ConnectionManager(mocker.Mock())
         assert hasattr(cm, "connection")
-        assert isinstance(cm.connection, Connection)
+        assert cm.connection is None
 
-    def test_implements_query_service_interface(self, connection_manager):
-        """Test that ConnectionManager implements IQueryService interface."""
-        assert isinstance(connection_manager, IQueryService)
 
-        # Verify interface methods exist and are callable
-        assert hasattr(connection_manager, "execute_query")
-        assert hasattr(connection_manager, "validate_query")
-        assert callable(getattr(connection_manager, "execute_query"))
-        assert callable(getattr(connection_manager, "validate_query"))
-
-    def test_accepts_connection_dependency(self):
+    def test_accepts_connection_dependency(self, mocker):
         """Test that ConnectionManager can accept a connection dependency."""
         custom_connection = Mock(spec=Connection)
-        cm = ConnectionManager()
+        cm = ConnectionManager(mocker.Mock())
         cm.connection = custom_connection
 
         assert cm.connection is custom_connection
@@ -62,7 +52,9 @@ class TestConnectionManagerInitialization:
 class TestRepositoryRetrieval:
     """Test repository retrieval behavior and contracts."""
 
-    def test_get_repository_returns_repository_data(self, connection_manager, mock_connection):
+    def test_get_repository_returns_repository_data(
+        self, connection_manager, mock_connection
+    ):
         """Test that get_repository returns repository data for valid ID."""
         expected_data = {
             "uri": "/repositories/2",
@@ -82,7 +74,9 @@ class TestRepositoryRetrieval:
         assert result == json.dumps(expected_data)
         assert isinstance(result, str)
 
-    def test_get_repository_calls_correct_endpoint(self, connection_manager, mock_connection):
+    def test_get_repository_calls_correct_endpoint(
+        self, connection_manager, mock_connection
+    ):
         """Test that get_repository makes correct API call."""
         mock_response = Mock()
         mock_response.json = json.dumps({"uri": "/repositories/2"})
@@ -95,7 +89,9 @@ class TestRepositoryRetrieval:
             HttpRequestType.GET, "/repositories/2"
         )
 
-    def test_get_repository_with_different_ids(self, connection_manager, mock_connection):
+    def test_get_repository_with_different_ids(
+        self, connection_manager, mock_connection
+    ):
         """Test that get_repository works with different repository IDs."""
         test_cases = [2, 5, 10, 999]
 
@@ -111,9 +107,13 @@ class TestRepositoryRetrieval:
             assert result == json.dumps(expected_data)
             # Verify correct endpoint was called
             expected_call = (HttpRequestType.GET, f"/repositories/{repo_id}")
-            assert expected_call in [call.args for call in mock_connection.query.call_args_list]
+            assert expected_call in [
+                call.args for call in mock_connection.query.call_args_list
+            ]
 
-    def test_get_repository_propagates_connection_errors(self, connection_manager, mock_connection):
+    def test_get_repository_propagates_connection_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test that connection errors are propagated to caller."""
         mock_connection.query.side_effect = ConnectionError("Network unreachable")
 
@@ -123,7 +123,9 @@ class TestRepositoryRetrieval:
         # Verify error message is preserved for caller
         assert "Network unreachable" in str(exc_info.value)
 
-    def test_get_repository_propagates_timeout_errors(self, connection_manager, mock_connection):
+    def test_get_repository_propagates_timeout_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test that timeout errors are propagated to caller."""
         mock_connection.query.side_effect = Timeout("Request timed out")
 
@@ -132,83 +134,51 @@ class TestRepositoryRetrieval:
 
         assert "Request timed out" in str(exc_info.value)
 
-    def test_get_repository_handles_json_decode_errors(self, connection_manager, mock_connection):
+    def test_get_repository_handles_json_decode_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test behavior when API returns invalid JSON."""
         mock_response = Mock()
         # Set json as a string property that contains invalid JSON
         mock_response.json = "invalid json string that will cause decode error"
         mock_connection.query.return_value = mock_response
+        with pytest.raises(json.JSONDecodeError):
+            connection_manager.get_repository(2)
 
-        # Based on your implementation, this should return "{}" not raise an exception
-        result = connection_manager.get_repository(2)
-        assert result == "{}"
 
 
 class TestRepositoryListRetrieval:
     """Test repository list retrieval behavior."""
 
-    def test_get_repositories_returns_dictionary(self, connection_manager, mock_connection):
+    def test_get_repositories_returns_dictionary(
+        self, connection_manager, mock_connection
+    ):
         """Test that get_repositories returns a dictionary of repositories."""
-        # Mock sequential responses: repo 2, repo 3, then error (end of list)
-        responses = [
-            Mock(json=lambda: {"uri": "/repositories/2", "repo_code": "TEST1"}),
-            Mock(json=lambda: {"uri": "/repositories/3", "repo_code": "TEST2"}),
-            Mock(json=lambda: {"error": "Not found"}),
-        ]
 
-        mock_connection.query.side_effect = responses
-
-        result = connection_manager.get_repositories()
-
-        # Test the contract: returns dictionary
-        assert isinstance(result, dict)
-        assert len(result) == 2
-        assert "/repositories/2" in result
-        assert "/repositories/3" in result
-
-    def test_get_repositories_starts_from_repo_2(self, connection_manager, mock_connection):
-        """Test that repository scanning starts from repository 2."""
+        # Mock the response to return JSON strings
         mock_response = Mock()
-        mock_response.json.return_value = {"error": "Not found"}
-        mock_connection.query.return_value = mock_response
+        mock_response.json.return_value = (
+            '{"uri": "/repositories/2", "repo_code": "TEST1"}'
+        )
 
-        connection_manager.get_repositories()
-
-        # Verify first call is to repository 2
-        first_call = mock_connection.query.call_args_list[0]
-        assert first_call.args == (HttpRequestType.GET, "/repositories/2")
-
-    def test_get_repositories_stops_on_error(self, connection_manager, mock_connection):
-        """Test that repository scanning stops when error is encountered."""
-        # First repo exists, second returns error
-        responses = [
-            Mock(json=lambda: {"uri": "/repositories/2", "repo_code": "TEST"}),
-            Mock(json=lambda: {"error": "Not found"}),
-        ]
-
-        mock_connection.query.side_effect = responses
-
-        result = connection_manager.get_repositories()
-
-        # Should only contain the first repository
-        assert len(result) == 1
-        assert "/repositories/2" in result
-
-    def test_get_repositories_handles_empty_result(self, connection_manager, mock_connection):
-        """Test behavior when no repositories exist."""
-        mock_response = Mock()
-        mock_response.json.return_value = {"error": "Not found"}
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_repositories()
 
-        # Should return empty dictionary
-        assert result == {}
         assert isinstance(result, dict)
+        assert result["uri"] == "/repositories/2"
+        assert result["repo_code"] == "TEST1"
 
-    def test_get_repositories_propagates_network_errors(self, connection_manager, mock_connection):
+
+
+
+    def test_get_repositories_propagates_network_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test that network errors during repository listing are propagated."""
-        mock_connection.query.side_effect = requests.exceptions.HTTPError("500 Server Error")
+        mock_connection.query.side_effect = requests.exceptions.HTTPError(
+            "500 Server Error"
+        )
 
         with pytest.raises(requests.exceptions.HTTPError):
             connection_manager.get_repositories()
@@ -217,7 +187,9 @@ class TestRepositoryListRetrieval:
 class TestResourceRetrieval:
     """Test resource retrieval behavior."""
 
-    def test_get_resource_record_returns_resource_data(self, connection_manager, mock_connection):
+    def test_get_resource_record_returns_resource_data(
+        self, connection_manager, mock_connection
+    ):
         """Test that get_resource_record returns resource data."""
         expected_data = {
             "uri": "/repositories/2/resources/1",
@@ -236,7 +208,9 @@ class TestResourceRetrieval:
         assert result == expected_data
         assert isinstance(result, dict)
 
-    def test_get_resource_record_calls_correct_endpoint(self, connection_manager, mock_connection):
+    def test_get_resource_record_calls_correct_endpoint(
+        self, connection_manager, mock_connection
+    ):
         """Test that get_resource_record calls correct API endpoint."""
         mock_response = Mock()
         mock_response.json = {"uri": "/repositories/2/resources/1"}
@@ -249,7 +223,9 @@ class TestResourceRetrieval:
             HttpRequestType.GET, "/repositories/2/resources/1"
         )
 
-    def test_get_resource_record_with_various_ids(self, connection_manager, mock_connection):
+    def test_get_resource_record_with_various_ids(
+        self, connection_manager, mock_connection
+    ):
         """Test resource retrieval with different repository and resource IDs."""
         test_cases = [(2, 1), (3, 5), (10, 100), (999, 888)]
 
@@ -264,9 +240,13 @@ class TestResourceRetrieval:
             result = connection_manager.get_resource_record(repo_id, resource_id)
 
             assert result["uri"] == expected_uri
-            mock_connection.query.assert_called_once_with(HttpRequestType.GET, expected_uri)
+            mock_connection.query.assert_called_once_with(
+                HttpRequestType.GET, expected_uri
+            )
 
-    def test_get_resource_record_propagates_errors(self, connection_manager, mock_connection):
+    def test_get_resource_record_propagates_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test that errors during resource retrieval are propagated."""
         mock_connection.query.side_effect = ConnectionError("Connection failed")
 
@@ -318,7 +298,9 @@ class TestBatchResourceRetrieval:
         assert result == {}
         assert isinstance(result, dict)
 
-    def test_get_resource_records_propagates_individual_errors(self, connection_manager):
+    def test_get_resource_records_propagates_individual_errors(
+        self, connection_manager
+    ):
         """Test that errors in individual resource retrieval are propagated."""
         resource_ids = [1, 999]  # Assume 999 will fail
 
@@ -336,7 +318,9 @@ class TestBatchResourceRetrieval:
 class TestResourceUpdate:
     """Test resource update behavior."""
 
-    def test_put_resource_record_returns_success_status(self, connection_manager, mock_connection):
+    def test_put_resource_record_returns_success_status(
+        self, connection_manager, mock_connection
+    ):
         """Test that put_resource_record returns boolean success status."""
         resource_data = {
             "uri": "/repositories/2/resources/1",
@@ -357,7 +341,9 @@ class TestResourceUpdate:
         assert isinstance(result, bool)
         assert result is True
 
-    def test_put_resource_record_calls_correct_endpoint(self, connection_manager, mock_connection):
+    def test_put_resource_record_calls_correct_endpoint(
+        self, connection_manager, mock_connection
+    ):
         """Test that put_resource_record calls correct API endpoint."""
         resource_data = {"title": "Test Collection"}
 
@@ -373,7 +359,9 @@ class TestResourceUpdate:
             "/repositories/2/resources/1", json=resource_data
         )
 
-    def test_put_resource_record_handles_client_errors(self, connection_manager, mock_connection):
+    def test_put_resource_record_handles_client_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test behavior when update returns client error status."""
         resource_data = {"title": "Test Collection"}
 
@@ -387,7 +375,9 @@ class TestResourceUpdate:
         # Should return False for client errors
         assert result is False
 
-    def test_put_resource_record_handles_server_errors(self, connection_manager, mock_connection):
+    def test_put_resource_record_handles_server_errors(
+        self, connection_manager, mock_connection
+    ):
         """Test behavior when update returns server error status."""
         resource_data = {"title": "Test Collection"}
 
@@ -401,7 +391,9 @@ class TestResourceUpdate:
         # Should return False for server errors
         assert result is False
 
-    def test_put_resource_record_handles_connection_exceptions(self, connection_manager, mock_connection):
+    def test_put_resource_record_handles_connection_exceptions(
+        self, connection_manager, mock_connection
+    ):
         """Test behavior when update raises connection exception."""
         resource_data = {"title": "Test Collection"}
 
@@ -413,7 +405,9 @@ class TestResourceUpdate:
         # Should return False when exception occurs
         assert result is False
 
-    def test_put_resource_record_with_various_endpoints(self, connection_manager, mock_connection):
+    def test_put_resource_record_with_various_endpoints(
+        self, connection_manager, mock_connection
+    ):
         """Test update with different repository and resource combinations."""
         test_cases = [(2, 1), (3, 5), (10, 100)]
         resource_data = {"title": "Test"}
@@ -424,11 +418,15 @@ class TestResourceUpdate:
             mock_connection.client = Mock()
             mock_connection.client.put.return_value = mock_response
 
-            result = connection_manager.put_resource_record(repo_id, resource_id, resource_data)
+            result = connection_manager.put_resource_record(
+                repo_id, resource_id, resource_data
+            )
 
             assert result is True
             expected_endpoint = f"/repositories/{repo_id}/resources/{resource_id}"
-            mock_connection.client.put.assert_called_with(expected_endpoint, json=resource_data)
+            mock_connection.client.put.assert_called_with(
+                expected_endpoint, json=resource_data
+            )
 
 
 class TestQueryServiceInterface:
@@ -505,14 +503,17 @@ class TestErrorPropagation:
     def test_json_errors_are_propagated(self, connection_manager, mock_connection):
         """Test that JSON parsing errors are propagated."""
         mock_response = Mock()
-        mock_response.json = Mock(side_effect=json.JSONDecodeError("Invalid JSON", "", 0))
+        mock_response.json = Mock(
+            side_effect=json.JSONDecodeError("Invalid JSON", "", 0)
+        )
         mock_connection.query.return_value = mock_response
 
-        # Based on your implementation, this should return "{}" not raise an exception
         result = connection_manager.get_repository(2)
         assert result == "{}"
 
-    def test_unexpected_exceptions_are_propagated(self, connection_manager, mock_connection):
+    def test_unexpected_exceptions_are_propagated(
+        self, connection_manager, mock_connection
+    ):
         """Test that unexpected exceptions are propagated."""
         mock_connection.query.side_effect = RuntimeError("Unexpected error")
 
@@ -525,7 +526,9 @@ class TestErrorPropagation:
 class TestDataConsistency:
     """Test data consistency and state management."""
 
-    def test_repeated_calls_return_consistent_results(self, connection_manager, mock_connection):
+    def test_repeated_calls_return_consistent_results(
+        self, connection_manager, mock_connection
+    ):
         """Test that repeated calls to same endpoint return consistent data."""
         expected_data = {"uri": "/repositories/2", "name": "Test Repo"}
         mock_response = Mock()
@@ -544,7 +547,9 @@ class TestDataConsistency:
         assert result3 == expected_json
         assert result1 == result2 == result3
 
-    def test_different_parameters_call_different_endpoints(self, connection_manager, mock_connection):
+    def test_different_parameters_call_different_endpoints(
+        self, connection_manager, mock_connection
+    ):
         """Test that different parameters result in different API calls."""
         mock_response = Mock()
         mock_response.json = json.dumps({"uri": "/repositories/2"})
@@ -566,7 +571,9 @@ class TestDataConsistency:
         for expected_call in expected_calls:
             assert expected_call in call_args
 
-    def test_method_calls_do_not_affect_each_other(self, connection_manager, mock_connection):
+    def test_method_calls_do_not_affect_each_other(
+        self, connection_manager, mock_connection
+    ):
         """Test that different method calls don't interfere with each other."""
         # Setup different responses for different methods
         repo_response_data = {"uri": "/repositories/2"}

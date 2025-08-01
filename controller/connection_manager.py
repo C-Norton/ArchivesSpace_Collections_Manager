@@ -9,12 +9,13 @@ from observer.ui_event import UiEvent
 from view.ui_event_manager import UiEventManager
 from .connection import Connection
 
+
 class ConnectionManager(SubjectMixin):
     def __init__(self, main):
         super().__init__()  # Initialize the mixin
         self.main = main
-        self.connection :Optional[Connection] = None
-        self.event_manager :UiEventManager= UiEventManager()
+        self.connection: Optional[Connection] = None
+        self.event_manager: UiEventManager = UiEventManager()
 
     def set_connection(self, server: str, username: str, password: str):
         """Set connection and notify observers"""
@@ -23,14 +24,14 @@ class ConnectionManager(SubjectMixin):
             ConfigurationError,
             NetworkError,
             ServerError,
-            AuthenticationError
+            AuthenticationError,
         )
 
-        self.connection :Connection = Connection(server, username, password)
+        self.connection: Connection = Connection(server, username, password)
 
         # Test connection and determine validity
-        is_valid:bool = False
-        error_message:Optional[str] = None
+        is_valid: bool = False
+        error_message: Optional[str] = None
 
         try:
             self.connection.test_connection()
@@ -50,23 +51,20 @@ class ConnectionManager(SubjectMixin):
         self.event_manager.publish_event(
             UiEvent.CONNECTION_CHANGED,
             {
-                'connection': self.connection,
-                'server': server,
-                'username': username,
-                'is_valid': is_valid,
-                'error_message': error_message
-            }
+                "connection": self.connection,
+                "server": server,
+                "username": username,
+                "is_valid": is_valid,
+                "error_message": error_message,
+            },
         )
 
-    def get_repository_list(self)->dict:
-        """Get repositories and notify observers"""
+    """def get_repository_list(self) -> dict:
+        Get repositories and notify observers
         if not self.connection:
             self.event_manager.publish_event(
                 UiEvent.REPOSITORY_LOADED,
-                {
-                    'repositories': {},
-                    'error': 'No connection available'
-                }
+                {"repositories": {}, "error": "No connection available"},
             )
             return {}
 
@@ -79,11 +77,7 @@ class ConnectionManager(SubjectMixin):
 
             # Notify observers about successfully loaded repositories
             self.event_manager.publish_event(
-                UiEvent.REPOSITORY_LOADED,
-                {
-                    'repositories': repos,
-                    'error': None
-                }
+                UiEvent.REPOSITORY_LOADED, {"repositories": repos, "error": None}
             )
             return repos
 
@@ -91,14 +85,11 @@ class ConnectionManager(SubjectMixin):
             # Notify observers about repository loading failure
             self.event_manager.publish_event(
                 UiEvent.REPOSITORY_LOADED,
-                {
-                    'repositories': {},
-                    'error': f"Failed to load repositories: {e}"
-                }
+                {"repositories": {}, "error": f"Failed to load repositories: {e}"},
             )
-            return {}
+            return {}"""
 
-    def get_repository(self,repo_number:int)->json:
+    def get_repository(self, repo_number: int) -> json:
         repo = self.connection.query(
             HttpRequestType.GET, f"/repositories/{repo_number}"
         )
@@ -108,18 +99,24 @@ class ConnectionManager(SubjectMixin):
             return repo.json
         except JSONDecodeError as e:
             logging.error(f"Error decoding JSON: {e}")
+            raise
 
-    def get_resource_list(self,repo_number)->list[int]:
-
+    def get_resource_list(self, repo_number) -> list[int]:
         """AI Generated. Double check especially lines 118, 119
         todo: Add error handling
         """
         resources = []
-        result = self.connection.query(HttpRequestType.GET, f"/repositories/{repo_number}/resources").json()
+        result = self.connection.query(
+            HttpRequestType.GET, f"/repositories/{repo_number}/resources"
+        ).json()
         while "error" not in result:
             resources.append(result["uri"])
-            result = self.connection.query(HttpRequestType.GET, f"/repositories/{repo_number}/resources?page={len(resources)}").json()
+            result = self.connection.query(
+                HttpRequestType.GET,
+                f"/repositories/{repo_number}/resources?page={len(resources)}",
+            ).json()
         return resources
+
     def get_resource_records(self, repo_number: int, resources_to_get: list) -> dict:
         """
         Make the queries necessary to turn a list of resources in a repo into a dict of resource JSONs
@@ -130,7 +127,9 @@ class ConnectionManager(SubjectMixin):
         resources = dict()
         for resource in resources_to_get:
             resources.update(
-                {resource: self.get_resource_record(repo_number, resource)}  # Fixed: colon instead of comma
+                {
+                    resource: self.get_resource_record(repo_number, resource)
+                }  # Fixed: colon instead of comma
             )
         return resources
 
@@ -203,3 +202,5 @@ class ConnectionManager(SubjectMixin):
         except Exception as e:
             logging.warning(f"An error occurred while updating the resource: {e}")
             return False
+    def get_repositories(self) ->dict:
+        return json.loads(self.connection.query(HttpRequestType.GET, "repositories").json())

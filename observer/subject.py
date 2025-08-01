@@ -20,9 +20,10 @@ class Subject(Protocol):
         """Remove an observer from the notification list."""
         ...
 
-    def notify(self, event:UiEvent, data: Any = None) -> None:
+    def notify(self, event: UiEvent, data: Any = None) -> None:
         """Notify all observers of a change."""
         ...
+
 
 class SubjectMixin:
     """Mixin class that provides Subject protocol implementation"""

@@ -11,9 +11,11 @@ from controller.connection import Connection
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class CredentialInfo:
     """Information about a stored credential"""
+
     username: str
     server: str
     display_name: str
@@ -21,20 +23,21 @@ class CredentialInfo:
 
     def to_dict(self) -> dict:
         return {
-            'username': self.username,
-            'server': self.server,
-            'display_name': self.display_name,
-            'storage_key': self.storage_key
+            "username": self.username,
+            "server": self.server,
+            "display_name": self.display_name,
+            "storage_key": self.storage_key,
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'CredentialInfo':
+    def from_dict(cls, data: dict) -> "CredentialInfo":
         return cls(
-            username=data['username'],
-            server=data['server'],
-            display_name=data['display_name'],
-            storage_key=data['storage_key']
+            username=data["username"],
+            server=data["server"],
+            display_name=data["display_name"],
+            storage_key=data["storage_key"],
         )
+
 
 class CredentialIndexManager:
     """
@@ -60,8 +63,12 @@ class CredentialIndexManager:
             index_json = keyring.get_password(self.INDEX_SERVICE, self.INDEX_KEY)
             if index_json:
                 index_data = json.loads(index_json)
-                self._index_cache = [CredentialInfo.from_dict(item) for item in index_data]
-                logger.debug(f"Loaded credential index with {len(self._index_cache)} entries")
+                self._index_cache = [
+                    CredentialInfo.from_dict(item) for item in index_data
+                ]
+                logger.debug(
+                    f"Loaded credential index with {len(self._index_cache)} entries"
+                )
             else:
                 self._index_cache = []
                 logger.debug("No credential index found, starting with empty index")
@@ -108,14 +115,18 @@ class CredentialIndexManager:
             index = self._get_index()
 
             # Remove any existing entry for this server/username combination
-            index = [item for item in index if not (item.username == username and item.server == server)]
+            index = [
+                item
+                for item in index
+                if not (item.username == username and item.server == server)
+            ]
 
             # Add the new entry
             cred_info = CredentialInfo(
                 username=username,
                 server=server,
                 display_name=display_name,
-                storage_key=storage_key
+                storage_key=storage_key,
             )
             index.append(cred_info)
 
@@ -135,7 +146,9 @@ class CredentialIndexManager:
     def get_credential_password(self, cred_info: CredentialInfo) -> Optional[str]:
         """Get the password for a specific credential"""
         try:
-            password = keyring.get_password(self.CREDENTIAL_SERVICE, cred_info.storage_key)
+            password = keyring.get_password(
+                self.CREDENTIAL_SERVICE, cred_info.storage_key
+            )
             return password
         except Exception as e:
             logger.error(f"Error retrieving password for {cred_info.display_name}: {e}")
@@ -157,7 +170,9 @@ class CredentialIndexManager:
 
             # Remove from index
             index = self._get_index()
-            index = [item for item in index if item.storage_key != cred_info.storage_key]
+            index = [
+                item for item in index if item.storage_key != cred_info.storage_key
+            ]
             self._save_index(index)
 
             logger.info(f"Successfully deleted credential: {cred_info.display_name}")
@@ -179,7 +194,9 @@ class CredentialIndexManager:
         removed_count = 0
 
         for cred_info in index:
-            password = keyring.get_password(self.CREDENTIAL_SERVICE, cred_info.storage_key)
+            password = keyring.get_password(
+                self.CREDENTIAL_SERVICE, cred_info.storage_key
+            )
             if password is not None:
                 valid_entries.append(cred_info)
             else:
@@ -209,22 +226,30 @@ class CredentialIndexManager:
 
         for pattern in common_patterns:
             try:
-                password = keyring.get_password(self.CREDENTIAL_SERVICE, pattern['storage_key'])
+                password = keyring.get_password(
+                    self.CREDENTIAL_SERVICE, pattern["storage_key"]
+                )
                 if password:
                     # Check if already in index
-                    if not any(item.storage_key == pattern['storage_key'] for item in index):
+                    if not any(
+                        item.storage_key == pattern["storage_key"] for item in index
+                    ):
                         cred_info = CredentialInfo(
-                            username=pattern['username'],
-                            server=pattern['server'],
+                            username=pattern["username"],
+                            server=pattern["server"],
                             display_name=f"{pattern['username']} @ {pattern['server']}",
-                            storage_key=pattern['storage_key']
+                            storage_key=pattern["storage_key"],
                         )
                         index.append(cred_info)
                         found_count += 1
-                        logger.info(f"Found existing credential: {cred_info.display_name}")
+                        logger.info(
+                            f"Found existing credential: {cred_info.display_name}"
+                        )
 
             except Exception as e:
-                logger.debug(f"Migration pattern check failed for {pattern['storage_key']}: {e}")
+                logger.debug(
+                    f"Migration pattern check failed for {pattern['storage_key']}: {e}"
+                )
 
         if found_count > 0:
             self._save_index(index)
@@ -245,18 +270,21 @@ class CredentialIndexManager:
             "https://localhost:443",
             "http://localhost:8089",
             # Add your known server here
-            "https://devstaffarchivesspace.lib.rochester.edu:443"
+            "https://devstaffarchivesspace.lib.rochester.edu:443",
         ]
 
         for username in common_usernames:
             for server in common_servers:
-                patterns.append({
-                    'username': username,
-                    'server': server,
-                    'storage_key': username + server
-                })
+                patterns.append(
+                    {
+                        "username": username,
+                        "server": server,
+                        "storage_key": username + server,
+                    }
+                )
 
         return patterns
+
 
 # Global instance
 credential_manager = CredentialIndexManager()
