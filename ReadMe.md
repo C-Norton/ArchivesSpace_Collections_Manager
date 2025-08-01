@@ -5,17 +5,17 @@ This project was coded in whole by Channing Norton, in collaboration with the Un
 # Who is this project for?
 This project is intended for use by archivists, librarians, and digital content managers in the academic space. This project is only really useful if you are running ArchivesSpace
 # Project Status
-This project is still in the early development phases. It is not yet ready for use or outside contribution. Please check back in early January 2025.
+This project is still in the early development phases. It is not yet ready for use or outside contribution. Please check back in early January 2026.
 # Running the Project - For End Users
 This project is still not ready for use by end users, even in a test environment. When that changes, I will post a commit with a release tag to this repository, so that anyone watching the repo is notified.
 # Running and Debugging the project - For Programmers
-The code entry point is in MainGui.py. You MUST be using CPython version 3.12 or higher, not any other implementation or lower version. At the moment, the only _supported_ editor is [JetBrains PyCharm](https://www.jetbrains.com/pycharm/), but it should be trivial to get the project working in your editor of choice. "pip install -r requirements.txt" will take care of the dependencies
+The code entry point is in Main.py. You MUST be using CPython version 3.12 or higher, not any other implementation or lower version. At the moment, the only _supported_ editor is [JetBrains PyCharm](https://www.jetbrains.com/pycharm/), but it should be trivial to get the project working in your editor of choice. "pip install -r requirements.txt" will take care of the dependencies
 # Technologies Used
 [ArchivesSpace Rest API](https://archivesspace.github.io/archivesspace/api/#introduction), [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake), [Keyring](https://pypi.org/project/keyring/),[Python 3.12](https://www.python.org/), [TKinter](https://docs.python.org/3/library/tkinter.html#module-tkinter), [mypy](https://github.com/python/mypy), [black](https://pypi.org/project/black/), [Pillow](https://pypi.org/project/pillow/)
 # Feature Requests and Support
 At the moment, create an issue on GitHub. I may eventually tie this to a jira queue, but that's a while off still. 
 
-Currently, there are numerous known issues, this software is in a pre-alpha state. Issues will be ignored until the first alpha release, expected in early 2025.
+Currently, there are numerous known issues, this software is in a pre-alpha state. Issues will be ignored until the first alpha release, expected in early 2026.
 # Contributing
 At this time, the project is not ready to receive contributions.
 # License
