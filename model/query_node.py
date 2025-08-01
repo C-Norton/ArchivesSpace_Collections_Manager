@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from model import *
+from model import node
 
 
-class QueryNode(Node.Node):
+class QueryNode(node.Node):
     """
     The goal of the Query Node is to determine true or false based off data actively in the archivesspace system.
 

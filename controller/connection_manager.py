@@ -8,6 +8,7 @@ from observer.subject import SubjectMixin
 from observer.ui_event import UiEvent
 from view.ui_event_manager import UiEventManager
 from .connection import Connection
+from .connection_exceptions import NetworkError, ServerError
 
 
 class ConnectionManager(SubjectMixin):
@@ -95,8 +96,9 @@ class ConnectionManager(SubjectMixin):
         )
 
         try:
-            json.loads(repo.json)
-            return repo.json
+            json_string = repo
+            json.loads(json_string) #validation
+            return json_string
         except JSONDecodeError as e:
             logging.error(f"Error decoding JSON: {e}")
             raise
@@ -119,20 +121,79 @@ class ConnectionManager(SubjectMixin):
 
     def get_resource_records(self, repo_number: int, resources_to_get: list) -> dict:
         """
-        Make the queries necessary to turn a list of resources in a repo into a dict of resource JSONs
-        :param repo_number:
-        :param resources_to_get:
-        :return:
-        """
-        resources = dict()
-        for resource in resources_to_get:
-            resources.update(
-                {
-                    resource: self.get_resource_record(repo_number, resource)
-                }  # Fixed: colon instead of comma
-            )
-        return resources
+        Make the queries necessary to turn a list of resources in a repo into a dict of resource JSONs.
 
+        Args:
+            repo_number: The repository number to query
+            resources_to_get: List of resource identifiers to retrieve
+
+        Returns:
+            dict: Mapping of resource identifier to resource data
+
+        Raises:
+            ValueError: If repo_number is invalid or resources_to_get is empty
+            ConnectionError: If connection issues occur during retrieval
+            JSONDecodeError: If server returns invalid JSON
+            ServerError: If server returns unexpected errors
+            NetworkError: If network connectivity issues occur
+        """
+        # Input validation
+        if not isinstance(repo_number, int) or repo_number <= 0:
+            raise ValueError(f"Invalid repository number: {repo_number}")
+
+        if not resources_to_get:
+            logging.warning(f"No resources requested for repository {repo_number}")
+            return {}
+
+        if not isinstance(resources_to_get, list):
+            raise ValueError("resources_to_get must be a list")
+
+        logging.info(
+            f"Fetching {len(resources_to_get)} resources from repository {repo_number}"
+        )
+
+        resources = {}
+        failed_resources = []
+
+        for resource_id in resources_to_get:
+            try:
+                logging.debug(
+                    f"Fetching resource {resource_id} from repository {repo_number}"
+                )
+                resource_data = self.get_resource_record(repo_number, resource_id)
+
+                resources[resource_id] = resource_data
+                logging.debug(f"Successfully fetched resource {resource_id}")
+
+            except (JSONDecodeError, ConnectionError, NetworkError, ServerError) as e:
+                # These are critical errors - propagate immediately with same type
+                error_msg = f"Critical error fetching resource {resource_id} from repository {repo_number}: {e}"
+                logging.error(error_msg)
+                raise  # Re-raise the original exception with same type
+
+            except Exception as e:
+                # Unexpected errors - log and continue, but track the failure
+                error_msg = f"Unexpected error fetching resource {resource_id}: {e}"
+                logging.error(error_msg)
+                failed_resources.append((resource_id, f"Unexpected error: {str(e)}"))
+
+        # Log summary of results
+        success_count = len(resources)
+        failure_count = len(failed_resources)
+        total_count = len(resources_to_get)
+
+        if failure_count > 0:
+            logging.warning(
+                f"Resource retrieval completed with {failure_count} failures: "
+                f"{success_count}/{total_count} resources retrieved successfully"
+            )
+
+        else:
+            logging.info(
+                f"Successfully retrieved all {success_count} resources from repository {repo_number}"
+            )
+
+        return resources
     def get_resource_record(self, repo_number: int, resource_number: int) -> dict:
         """
         Fetches a specific resource record from a repository using its resource number.
@@ -204,3 +265,4 @@ class ConnectionManager(SubjectMixin):
             return False
     def get_repositories(self) ->dict:
         return json.loads(self.connection.query(HttpRequestType.GET, "repositories").json())
+

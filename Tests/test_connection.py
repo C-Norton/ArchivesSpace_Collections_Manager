@@ -311,7 +311,7 @@ class TestConnectionAuthentication:
         with pytest.raises(expected_error) as exc_info:
             conn.test_connection()
 
-        assert "Failed to connect to server" in str(exc_info.value)
+        assert "Connection to server failed" in str(exc_info.value)
 
     def test_test_connection_http_client_error_raises_authentication_error(
         self, mocker

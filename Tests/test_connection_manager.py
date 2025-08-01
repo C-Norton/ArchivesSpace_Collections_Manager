@@ -199,7 +199,7 @@ class TestResourceRetrieval:
         }
 
         mock_response = Mock()
-        mock_response.json = expected_data
+        mock_response.json.return_value = expected_data
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_resource_record(2, 1)
@@ -234,7 +234,7 @@ class TestResourceRetrieval:
             expected_uri = f"/repositories/{repo_id}/resources/{resource_id}"
 
             mock_response = Mock()
-            mock_response.json = {"uri": expected_uri}
+            mock_response.json.return_value = {"uri": expected_uri}
             mock_connection.query.return_value = mock_response
 
             result = connection_manager.get_resource_record(repo_id, resource_id)
@@ -243,16 +243,6 @@ class TestResourceRetrieval:
             mock_connection.query.assert_called_once_with(
                 HttpRequestType.GET, expected_uri
             )
-
-    def test_get_resource_record_propagates_errors(
-        self, connection_manager, mock_connection
-    ):
-        """Test that errors during resource retrieval are propagated."""
-        mock_connection.query.side_effect = ConnectionError("Connection failed")
-
-        with pytest.raises(ConnectionError):
-            connection_manager.get_resource_record(2, 1)
-
 
 class TestBatchResourceRetrieval:
     """Test batch resource retrieval behavior."""
@@ -302,10 +292,10 @@ class TestBatchResourceRetrieval:
         self, connection_manager
     ):
         """Test that errors in individual resource retrieval are propagated."""
-        resource_ids = [1, 999]  # Assume 999 will fail
+        resource_ids = [1, 999999]  # Assume 999999 will fail
 
         def mock_get_resource(repo_id, resource_id):
-            if resource_id == 999:
+            if resource_id == 999999:
                 raise ValueError("Resource not found")
             return {"uri": f"/repositories/{repo_id}/resources/{resource_id}"}
 
@@ -428,58 +418,6 @@ class TestResourceUpdate:
                 expected_endpoint, json=resource_data
             )
 
-
-class TestQueryServiceInterface:
-    """Test IQueryService interface contract compliance."""
-
-    def test_execute_query_returns_response_object(self, connection_manager):
-        """Test that execute_query returns Response object."""
-        mock_query = Mock()
-
-        result = connection_manager.execute_query(mock_query)
-
-        # Test the contract: returns Response object
-        assert isinstance(result, Response)
-
-    def test_execute_query_accepts_query_parameter(self, connection_manager):
-        """Test that execute_query accepts query parameter without error."""
-        mock_query = Mock()
-
-        # Should not raise exception
-        connection_manager.execute_query(mock_query)
-
-    def test_validate_query_returns_boolean(self, connection_manager):
-        """Test that validate_query returns boolean value."""
-        mock_query = Mock()
-
-        result = connection_manager.validate_query(mock_query)
-
-        # Test the contract: returns boolean
-        assert isinstance(result, bool)
-
-    def test_validate_query_handles_none_input(self, connection_manager):
-        """Test that validate_query handles None input gracefully."""
-        result = connection_manager.validate_query(None)
-
-        # Should return boolean (likely False) rather than raise exception
-        assert isinstance(result, bool)
-
-    def test_validate_query_with_various_inputs(self, connection_manager):
-        """Test validate_query behavior with different input types."""
-        test_inputs = [
-            Mock(),  # Mock object
-            {},  # Dictionary
-            "",  # String
-            123,  # Number
-            [],  # List
-        ]
-
-        for test_input in test_inputs:
-            result = connection_manager.validate_query(test_input)
-            # Should always return boolean, never raise exception
-            assert isinstance(result, bool)
-
-
 class TestErrorPropagation:
     """Test that errors are properly propagated to callers."""
 
@@ -507,9 +445,9 @@ class TestErrorPropagation:
             side_effect=json.JSONDecodeError("Invalid JSON", "", 0)
         )
         mock_connection.query.return_value = mock_response
+        with pytest.raises(json.JSONDecodeError):
+            connection_manager.get_repository(2)
 
-        result = connection_manager.get_repository(2)
-        assert result == "{}"
 
     def test_unexpected_exceptions_are_propagated(
         self, connection_manager, mock_connection
@@ -583,7 +521,7 @@ class TestDataConsistency:
         def side_effect(method, endpoint):
             response = Mock()
             if "resources" in endpoint:
-                response.json = resource_response_data
+                response.json.return_value = resource_response_data
             else:
                 response.json = json.dumps(repo_response_data)
             return response

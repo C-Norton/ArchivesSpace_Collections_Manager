@@ -1,7 +1,7 @@
 import model.field
 
 
-class ResourceField(model.Field.Field):
+class ResourceField(model.field.Field):
     """
     All the different fields in a resource
     """

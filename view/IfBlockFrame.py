@@ -48,14 +48,14 @@ class IfBlockFrame(ttk.Frame):
             self,
             self.field,
             self.field.get(),
-            *[e.name for e in model.ResourceField.ResourceField],
+            *[e.name for e in model.resource_field.ResourceField],
         ).grid(row=0, column=1)
 
         ttk.OptionMenu(  # TODO: replace with ComboBox with scrollbar
             self,
             self.query_type,
             self.query_type.get(),
-            *[e.name for e in model.QueryType.QueryType],
+            *[e.name for e in model.query_type.QueryType],
         ).grid(row=0, column=2)
 
         ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
@@ -66,7 +66,7 @@ class IfBlockFrame(ttk.Frame):
             self,
             self.action,
             self.action.get(),
-            *[e.name for e in model.ActionType.ActionType],
+            *[e.name for e in model.action_type.ActionType],
         ).grid(row=1, column=1)
         ttk.Button(self, text="Submit", command=self.submit_query).grid(
             row=1, column=4, columnspan=3 if not self.note_layout else 1
