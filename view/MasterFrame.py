@@ -39,5 +39,3 @@ class MasterFrame(ttk.Frame):
         self.mainloop()
         self.focus_force()
         logging.info("UI started successfully!")
-
-        logging.debug(f"Icon path used: {icon_path}")
