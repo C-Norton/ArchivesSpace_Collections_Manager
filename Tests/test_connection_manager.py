@@ -65,7 +65,7 @@ class TestRepositoryRetrieval:
 
         # FIXED: Set json as JSON string, not dict
         mock_response = Mock()
-        mock_response.json = json.dumps(expected_data)
+        mock_response.json.return_value = json.dumps(expected_data)
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_repository(2)
@@ -79,7 +79,7 @@ class TestRepositoryRetrieval:
     ):
         """Test that get_repository makes correct API call."""
         mock_response = Mock()
-        mock_response.json = json.dumps({"uri": "/repositories/2"})
+        mock_response.json.return_value = json.dumps({"uri": "/repositories/2"})
         mock_connection.query.return_value = mock_response
 
         connection_manager.get_repository(2)
@@ -99,7 +99,7 @@ class TestRepositoryRetrieval:
             mock_connection.query.reset_mock()
             expected_data = {"uri": f"/repositories/{repo_id}"}
             mock_response = Mock()
-            mock_response.json = json.dumps(expected_data)
+            mock_response.json.return_value = json.dumps(expected_data)
             mock_connection.query.return_value = mock_response
 
             result = connection_manager.get_repository(repo_id)
@@ -140,7 +140,7 @@ class TestRepositoryRetrieval:
         """Test behavior when API returns invalid JSON."""
         mock_response = Mock()
         # Set json as a string property that contains invalid JSON
-        mock_response.json = "invalid json string that will cause decode error"
+        mock_response.json.return_value = "invalid json string that will cause decode error"
         mock_connection.query.return_value = mock_response
         with pytest.raises(json.JSONDecodeError):
             connection_manager.get_repository(2)
@@ -470,7 +470,7 @@ class TestDataConsistency:
         """Test that repeated calls to same endpoint return consistent data."""
         expected_data = {"uri": "/repositories/2", "name": "Test Repo"}
         mock_response = Mock()
-        mock_response.json = json.dumps(expected_data)
+        mock_response.json.return_value = json.dumps(expected_data)
         mock_connection.query.return_value = mock_response
 
         # Make multiple calls
@@ -490,7 +490,7 @@ class TestDataConsistency:
     ):
         """Test that different parameters result in different API calls."""
         mock_response = Mock()
-        mock_response.json = json.dumps({"uri": "/repositories/2"})
+        mock_response.json.return_value = json.dumps({"uri": "/repositories/2"})
         mock_connection.query.return_value = mock_response
 
         # Call with different repository IDs
@@ -523,7 +523,7 @@ class TestDataConsistency:
             if "resources" in endpoint:
                 response.json.return_value = resource_response_data
             else:
-                response.json = json.dumps(repo_response_data)
+                response.json.return_value = json.dumps(repo_response_data)
             return response
 
         mock_connection.query.side_effect = side_effect
@@ -543,7 +543,7 @@ class TestEdgeCases:
     def test_empty_response_handling(self, connection_manager, mock_connection):
         """Test behavior when API returns empty response."""
         mock_response = Mock()
-        mock_response.json = json.dumps({})  # Empty response as JSON string
+        mock_response.json.return_value = json.dumps({})  # Empty response as JSON string
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_repository(2)
@@ -558,7 +558,7 @@ class TestEdgeCases:
         expected_data = {"uri": f"/repositories/{large_id}"}
 
         mock_response = Mock()
-        mock_response.json = json.dumps(expected_data)
+        mock_response.json.return_value = json.dumps(expected_data)
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_repository(large_id)
@@ -574,7 +574,7 @@ class TestEdgeCases:
         }
 
         mock_response = Mock()
-        mock_response.json = json.dumps(unicode_data, ensure_ascii=False)
+        mock_response.json.return_value = json.dumps(unicode_data, ensure_ascii=False)
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_repository(2)

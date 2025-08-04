@@ -96,7 +96,7 @@ class ConnectionManager(SubjectMixin):
         )
 
         try:
-            json_string = repo
+            json_string = repo.json()
             json.loads(json_string) #validation
             return json_string
         except JSONDecodeError as e:
@@ -168,9 +168,12 @@ class ConnectionManager(SubjectMixin):
             except (JSONDecodeError, ConnectionError, NetworkError, ServerError) as e:
                 # These are critical errors - propagate immediately with same type
                 error_msg = f"Critical error fetching resource {resource_id} from repository {repo_number}: {e}"
-                logging.error(error_msg)
+                logging.warning(error_msg)
                 raise  # Re-raise the original exception with same type
-
+            except ValueError as e:
+                error_msg = f"Invalid resource ID {resource_id} in repository {repo_number}: {e}"
+                logging.warning(error_msg)
+                raise
             except Exception as e:
                 # Unexpected errors - log and continue, but track the failure
                 error_msg = f"Unexpected error fetching resource {resource_id}: {e}"
