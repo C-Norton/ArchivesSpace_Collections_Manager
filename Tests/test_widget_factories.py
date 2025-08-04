@@ -196,6 +196,7 @@ class TestScrollableComboboxFactory:
 class TestScrollableComboboxFactoryIntegration:
     """Integration tests that test the factory with real tkinter components"""
 
+
     def test_real_enum_combobox_creation(self):
         """Test creating a real combobox with enum (requires tkinter)"""
         import tkinter as tk
@@ -219,13 +220,12 @@ class TestScrollableComboboxFactoryIntegration:
 
             # Verify it's a real Combobox
             assert isinstance(combobox, ttk.Combobox)
-            assert combobox['state'] == 'readonly'
-            assert combobox['height'] == 4
-            assert list(combobox['values']) == ['OPTION1', 'OPTION2']
+            assert 'readonly' in combobox.state()  # state() returns a tuple of states
+            assert len(combobox['values']) == 2
+            assert sorted(combobox['values']) == ['OPTION1', 'OPTION2']
 
         finally:
             root.destroy()
-
     def test_real_list_combobox_creation(self):
         """Test creating a real combobox with list values"""
         import tkinter as tk

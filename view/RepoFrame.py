@@ -16,9 +16,8 @@ class RepoFrame(ttk.Frame):
     def refresh(self):
         repos = self.master_frame.connection_manager.get_repositories()
 
-        i = 0
-        for repo in repos:
-            repo = repos[f"{repo}"]
+
+        for index, repo in enumerate(repos):
             checkvar = tkinter.IntVar()
             self.check_buttons.update(
                 {
@@ -30,11 +29,11 @@ class RepoFrame(ttk.Frame):
                             variable=checkvar,
                             onvalue=1,
                             offvalue=0,
-                        ).grid(column=i % 3, row=i // 3),
+                        ).grid(column=index % 3, row=index // 3),
                     )
                 }
             )
-            i += 1
+
         for child in self.winfo_children():
             child.grid_configure(padx=2, pady=5)
 

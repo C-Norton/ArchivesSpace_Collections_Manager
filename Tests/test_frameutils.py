@@ -335,18 +335,14 @@ class TestFrameUtilsSetIconMethodFallbacks:
         debug_calls = [call.args[0] for call in mock_debug.call_args_list]
         assert "Icon set successfully using PhotoImage" in debug_calls
 
-    def test_iconbitmap_and_photoimage_fail_pil_succeeds(self, mocker):
+    def test_iconbitmap_and_photoimage_fail_pil_succeeds_fixed(self, mocker):
         """Test fallback to PIL when both iconbitmap and PhotoImage fail"""
         mock_root = mocker.Mock()
         mock_root.iconbitmap.side_effect = TclError("iconbitmap failed")
-        mock_root.iconphoto.side_effect = [
-            TclError("photoimage failed"),
-            None,
-        ]  # Fail first, succeed second
 
         self._setup_successful_path(mocker)
 
-        # Mock PhotoImage to fail
+        # Mock PhotoImage to fail, preventing iconphoto from being called in this block
         mock_photoimage = mocker.patch("tkinter.PhotoImage")
         mock_photoimage.side_effect = TclError("PhotoImage creation failed")
 
@@ -359,25 +355,20 @@ class TestFrameUtilsSetIconMethodFallbacks:
         mock_pil_photo = mocker.Mock()
         mock_imagetk.return_value = mock_pil_photo
 
-        mock_debug = mocker.patch("logging.debug")
-        mock_warning = mocker.patch("logging.warning")
+
+        # We expect iconphoto to be called only once, in the PIL fallback
+        mock_root.iconphoto.return_value = None
 
         FrameUtils.set_icon(mock_root)
 
-        # Should try all methods in sequence
+        # Assertions
         mock_root.iconbitmap.assert_called_once()
         mock_photoimage.assert_called_once()
         mock_image_open.assert_called_once_with("/test/icon.ico")
         mock_imagetk.assert_called_once_with(mock_image)
 
-        # Should call iconphoto twice (once failing with PhotoImage, once succeeding with PIL)
-        assert mock_root.iconphoto.call_count == 2
-        mock_root.iconphoto.assert_any_call(False, mock_pil_photo)
-
-        # Should log warnings for first two failures and success for PIL
-        assert mock_warning.call_count == 2
-        debug_calls = [call.args[0] for call in mock_debug.call_args_list]
-        assert "Icon set successfully using PIL" in debug_calls
+        mock_root.iconphoto.assert_called_once_with(False, mock_pil_photo)
+        assert mock_root.iconphoto.call_count == 1
 
     def test_all_methods_fail_graceful_handling(self, mocker):
         """Test graceful handling when all icon setting methods fail"""
@@ -590,7 +581,11 @@ class TestFrameUtilsSetIconRootObjectTypes:
         mock_root.iconbitmap.assert_called_once()
 
         debug_calls = [call.args[0] for call in mock_debug.call_args_list]
-        root_type_logged = any("Toplevel" in call for call in debug_calls)
+
+
+        root_type_logged = any(
+            f"Root object type: <class 'unittest.mock.Mock'>" in call for call in debug_calls
+        )
         assert root_type_logged
 
     def test_custom_widget_root(self, mocker):

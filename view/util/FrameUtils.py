@@ -1,7 +1,7 @@
 import os
 import tkinter
 import logging
-from tkinter import ttk
+from tkinter import ttk, TclError
 
 from PIL import Image, ImageTk
 
@@ -22,7 +22,7 @@ class FrameUtils:
                 "Icons",
                 "ArchivesSpace_Collections_Manager-32x32.ico",
             )
-        except Exception as e:
+        except (OSError, IOError) as e:
             logging.error(f"Error constructing icon path: {e}")
             return None
 
@@ -31,12 +31,14 @@ class FrameUtils:
         """Extract file existence check for easier testing"""
         try:
             return os.path.exists(icon_path)
-        except Exception as e:
+        except (OSError, IOError) as e:
             logging.error(f"Error checking icon file existence: {e}")
             return False
 
     @staticmethod
     def set_icon(root):
+        if not root:
+            raise AttributeError("Root object is None")
         logging.debug("Entering set_icon method")
 
         try:
@@ -59,7 +61,7 @@ class FrameUtils:
             root.iconbitmap(icon_path)
             logging.debug("Icon set successfully using iconbitmap")
 
-        except Exception as e:
+        except (TclError, AttributeError, OSError, IOError, RuntimeError, TypeError, Exception) as e:
             logging.warning(f"Failed to set icon using iconbitmap: {e}")
 
             try:
@@ -67,7 +69,7 @@ class FrameUtils:
                 icon = tkinter.PhotoImage(file=icon_path)
                 root.iconphoto(False, icon)
                 logging.debug("Icon set successfully using PhotoImage")
-            except Exception as e:
+            except (TclError, OSError, ValueError, MemoryError, TypeError, RuntimeError, Exception) as e:
                 logging.warning(f"Failed to set icon using PhotoImage: {e}")
 
                 try:
@@ -76,7 +78,7 @@ class FrameUtils:
                     photo = ImageTk.PhotoImage(icon)
                     root.iconphoto(False, photo)
                     logging.debug("Icon set successfully using PIL")
-                except Exception as e:
+                except (IOError, OSError, ValueError, MemoryError, AttributeError, TypeError, RuntimeError, Exception) as e:
                     logging.error(f"Failed to set icon using all methods: {e}")
         finally:
             logging.debug("Exiting set_icon method")
@@ -84,7 +86,11 @@ class FrameUtils:
     @staticmethod
     def modal_message_popup(root, message, title="Warning", button_text="OK"):
         popup = tkinter.Toplevel(root)
-        FrameUtils.set_icon(popup)
+        try:
+            FrameUtils.set_icon(popup)
+        except (AttributeError, Exception) as e:
+            logging.error(f"Failed to set icon for modal message popup: {e}")
+            
         popup.title(title)
         ttk.Label(popup, text=message, wraplength=220).grid(row=0, column=0)
         ttk.Button(popup, text=button_text, command=popup.destroy).grid(row=1, column=0)

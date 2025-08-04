@@ -270,5 +270,5 @@ class ConnectionManager(SubjectMixin):
 
     def get_repositories(self) -> dict:
         return json.loads(
-            self.connection.query(HttpRequestType.GET, "repositories").json()
+            self.connection.query(HttpRequestType.GET, "repositories").content
         )
