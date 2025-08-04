@@ -3,6 +3,8 @@ import pytest
 import logging
 
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
+
+
 class TestConnectionStateManagement:
     """Test connection state management through public behavior"""
 
@@ -298,7 +300,6 @@ class TestConnectionAuthentication:
             (requests.exceptions.Timeout, NetworkError),
         ],
     )
-
     def test_test_connection_network_errors_raise_network_error(
         self, mocker, exception_class, expected_error
     ):
@@ -520,7 +521,6 @@ class TestConnectionQueryBehavior:
         mock_client.get.return_value = mock_response
         with pytest.raises(AuthenticationError):
             conn.query(HttpRequestType.GET, "/test")
-
 
     def test_query_handles_unsupported_http_methods(self, mocker):
         """Test that unsupported HTTP methods return None gracefully"""

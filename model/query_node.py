@@ -16,11 +16,11 @@ class QueryNode(Node):
     """
 
     def __init__(
-            self,
-            data_model: DataModel,
-            query_type: QueryType,
-            compare_field: Field,
-            data_to_compare_to: Optional[str] = None,
+        self,
+        data_model: DataModel,
+        query_type: QueryType,
+        compare_field: Field,
+        data_to_compare_to: Optional[str] = None,
     ):
         self.query_type = query_type
         self.data_to_compare_to = data_to_compare_to
@@ -69,7 +69,9 @@ class QueryNode(Node):
         # Note: The original logic seems confused - it's matching against compare_field
         # which should be a Field enum, not RecordType. This needs clarification.
         # For now, assuming we're always dealing with Resources
-        return self.data_model.main.connection_manager.get_resource_record(repo, record_id)
+        return self.data_model.main.connection_manager.get_resource_record(
+            repo, record_id
+        )
 
     def _extract_field_value(self, record_data: dict) -> Any:
         """Extract the specific field value from the record data."""
@@ -158,10 +160,18 @@ class QueryNode(Node):
         Returns:
             str: String representation of this query
         """
-        field_name = self.compare_field.name if hasattr(self.compare_field, 'name') else str(self.compare_field)
-        query_name = self.query_type.name if hasattr(self.query_type, 'name') else str(self.query_type)
+        field_name = (
+            self.compare_field.name
+            if hasattr(self.compare_field, "name")
+            else str(self.compare_field)
+        )
+        query_name = (
+            self.query_type.name
+            if hasattr(self.query_type, "name")
+            else str(self.query_type)
+        )
 
         if self.data_to_compare_to:
             return f'%{field_name} &{query_name} "{self.data_to_compare_to}"'
         else:
-            return f'%{field_name} &{query_name}'
+            return f"%{field_name} &{query_name}"

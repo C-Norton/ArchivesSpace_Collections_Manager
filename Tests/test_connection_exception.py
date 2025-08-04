@@ -38,7 +38,12 @@ class TestConnectionExceptionHierarchy:
         # Test MRO (Method Resolution Order) for proper inheritance
         assert ConnectionException.__bases__ == (Exception,)
 
-        for exception_class in [ConfigurationError, NetworkError, ServerError, AuthenticationError]:
+        for exception_class in [
+            ConfigurationError,
+            NetworkError,
+            ServerError,
+            AuthenticationError,
+        ]:
             assert ConnectionException in exception_class.__bases__
             assert Exception in exception_class.__mro__
             assert ConnectionException in exception_class.__mro__
@@ -58,7 +63,9 @@ class TestConnectionExceptionHierarchy:
             for j, class2 in enumerate(exception_classes):
                 if i != j:
                     assert class1 != class2
-                    assert not issubclass(class1, class2) or class2 == ConnectionException
+                    assert (
+                        not issubclass(class1, class2) or class2 == ConnectionException
+                    )
 
 
 class TestConnectionExceptionInstantiation:
@@ -209,6 +216,7 @@ class TestPolymorphicExceptionHandling:
 
     def test_exception_handling_specificity(self):
         """Test that more specific exception handlers are triggered first"""
+
         def handle_errors():
             try:
                 raise ConfigurationError("Specific config error")
@@ -224,6 +232,7 @@ class TestPolymorphicExceptionHandling:
 
     def test_generic_connection_exception_handling(self):
         """Test handling any connection-related error generically"""
+
         def raise_various_connection_errors(error_type):
             if error_type == "config":
                 raise ConfigurationError("Missing URL")
@@ -247,7 +256,9 @@ class TestPolymorphicExceptionHandling:
         assert handle_connection_errors("network") == "Connection problem: Timeout"
         assert handle_connection_errors("server") == "Connection problem: 500 Error"
         assert handle_connection_errors("auth") == "Connection problem: Bad credentials"
-        assert handle_connection_errors("generic") == "Connection problem: Generic error"
+        assert (
+            handle_connection_errors("generic") == "Connection problem: Generic error"
+        )
 
 
 class TestExceptionAttributes:
@@ -286,14 +297,26 @@ class TestExceptionAttributes:
 
     def test_empty_message_handling(self):
         """Test exceptions with empty messages"""
-        for exception_class in [ConnectionException, ConfigurationError, NetworkError, ServerError, AuthenticationError]:
+        for exception_class in [
+            ConnectionException,
+            ConfigurationError,
+            NetworkError,
+            ServerError,
+            AuthenticationError,
+        ]:
             error = exception_class("")
             assert str(error) == ""
             assert error.args == ("",)
 
     def test_none_message_handling(self):
         """Test exceptions with None message"""
-        for exception_class in [ConnectionException, ConfigurationError, NetworkError, ServerError, AuthenticationError]:
+        for exception_class in [
+            ConnectionException,
+            ConfigurationError,
+            NetworkError,
+            ServerError,
+            AuthenticationError,
+        ]:
             # Most exception classes handle None by creating empty args
             error = exception_class()
             assert isinstance(error, exception_class)
@@ -333,6 +356,7 @@ class TestExceptionChaining:
 
     def test_multiple_exception_levels(self):
         """Test multiple levels of exception chaining"""
+
         def level_3():
             raise ValueError("Level 3 error")
 
@@ -366,9 +390,15 @@ class TestExceptionMessagePatterns:
         """Test that exceptions can hold descriptive messages"""
         test_cases = [
             (ConfigurationError, "Server URL 'invalid-url' is not a valid URL format"),
-            (NetworkError, "Connection timeout after 30 seconds to server https://example.com"),
+            (
+                NetworkError,
+                "Connection timeout after 30 seconds to server https://example.com",
+            ),
             (ServerError, "HTTP 500 Internal Server Error: Database connection failed"),
-            (AuthenticationError, "Authentication failed: Invalid username 'user123' or password"),
+            (
+                AuthenticationError,
+                "Authentication failed: Invalid username 'user123' or password",
+            ),
         ]
 
         for exception_class, message in test_cases:
@@ -389,7 +419,9 @@ class TestExceptionMessagePatterns:
 
     def test_unicode_error_messages(self):
         """Test exceptions with Unicode characters"""
-        unicode_message = "连接失败: 服务器不可用 (Connection failed: Server unavailable)"
+        unicode_message = (
+            "连接失败: 服务器不可用 (Connection failed: Server unavailable)"
+        )
         error = NetworkError(unicode_message)
 
         assert str(error) == unicode_message
@@ -409,6 +441,7 @@ class TestExceptionUsagePatterns:
 
     def test_connection_factory_error_handling(self):
         """Test error handling in a connection factory pattern"""
+
         def create_connection(config):
             if not config.get("server"):
                 raise ConfigurationError("Server URL is required")
@@ -449,6 +482,7 @@ class TestExceptionUsagePatterns:
 
     def test_retry_logic_with_specific_exceptions(self):
         """Test retry logic that behaves differently for different exception types"""
+
         class ConnectionRetryManager:
             def __init__(self):
                 self.attempt_count = 0
@@ -468,9 +502,13 @@ class TestExceptionUsagePatterns:
                     self.attempt_count += 1
 
                     if error_type == "network" and self.attempt_count < 3:
-                        raise NetworkError(f"Network error on attempt {self.attempt_count}")
+                        raise NetworkError(
+                            f"Network error on attempt {self.attempt_count}"
+                        )
                     elif error_type == "server" and self.attempt_count < 2:
-                        raise ServerError(f"Server error on attempt {self.attempt_count}")
+                        raise ServerError(
+                            f"Server error on attempt {self.attempt_count}"
+                        )
                     elif error_type == "config":
                         raise ConfigurationError("Configuration error - no retry")
                     elif error_type == "auth":
@@ -503,6 +541,7 @@ class TestExceptionUsagePatterns:
 
     def test_error_logging_and_categorization(self):
         """Test categorizing errors for logging purposes"""
+
         def categorize_error(error):
             """Categorize errors for different handling"""
             if isinstance(error, ConfigurationError):
@@ -581,6 +620,7 @@ class TestExceptionCompatibility:
 
     def test_exception_context_managers(self):
         """Test exceptions work properly with context managers"""
+
         class MockResource:
             def __init__(self, should_fail=False):
                 self.should_fail = should_fail

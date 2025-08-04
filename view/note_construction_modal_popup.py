@@ -9,6 +9,7 @@ from model.note_sub_type import NoteSubType
 from model.note_type import NoteType
 from view import MasterFrame
 from view.util.FrameUtils import FrameUtils
+from view.util.widget_factories import ScrollableComboboxFactory
 
 """
 TODO:Make it so that when a note is already defined, that note data is loaded
@@ -45,19 +46,17 @@ class NoteConstructionModalPopup:
             self.label.set(self.note_manager.get_note()["label"][1])
             self.persistent_id.set(self.note_manager.get_note()["persistent_id"][1])
             self.sub_type.set(self.note_manager.get_note()["sub_type"][1])
-            self.has_subtype = Note.has_subtype(NoteType[self.note_type.get()])
+            self.has_subtype = Note.has_subtype(getattr(NoteType, self.note_type.get()) if self.note_type.get() else None)
         self.frame.focus_set()
         self.frame.grab_set()
 
     def draw_note_definition_menu(self):
         ttk.Label(self.frame, text="Define Note").grid(row=0, column=0)
         ttk.Label(self.frame, text="Note Type").grid(row=1, column=0)
-        ttk.OptionMenu(
-            self.frame,
-            self.note_type,
-            self.note_type.get(),
-            *[e.name for e in model.NoteType.NoteType],
-        ).grid(row=1, column=1)
+        note_type_combobox = ScrollableComboboxFactory.create_enum_combobox(
+            self.frame, self.note_type, model.note_type.NoteType, max_visible_items=4
+        )
+        note_type_combobox.grid(row=1, column=1)
 
         ttk.Label(self.frame, text="Note Content (required)").grid(
             row=2, column=0, columnspan=2
@@ -73,16 +72,13 @@ class NoteConstructionModalPopup:
         ttk.Label(self.frame, text="Persistent ID").grid(row=6, column=0)
         ttk.Entry(self.frame, textvariable=self.persistent_id).grid(row=6, column=1)
         self.has_subtype = Note.has_subtype(
-            model.NoteType.NoteType[self.note_type.get()]
+            getattr(NoteType, self.note_type.get()) if self.note_type.get() else None
         )
         if self.has_subtype:
             ttk.Label(self.frame, text="SubType").grid(row=7, column=0)
             self.sub_type.set(self.note_type.get())
-            ttk.OptionMenu(
-                self.frame,
-                self.sub_type,
-                self.sub_type.get(),
-                *[e.name for e in NoteSubType],
+            ScrollableComboboxFactory.create_enum_combobox(
+                self.frame, self.sub_type, model.note_sub_type.NoteSubType, max_visible_items=4
             ).grid(row=7, column=1)
 
         else:
@@ -125,7 +121,7 @@ class NoteConstructionModalPopup:
                 logging.warning(e.__str__())
 
     def validate(self) -> bool:
-        if model.NoteType.NoteType[self.note_type.get()] is NoteType.Abstract:
+        if model.note_type.NoteType[self.note_type.get()] is NoteType.Abstract:
             if self.note_content.get("1.0", "end-1c").strip() != "":
                 return True
 
@@ -135,13 +131,13 @@ class NoteConstructionModalPopup:
         if self.validate():
             note_manager = NoteManager()
             note_manager.set_note(
-                model.NoteType.NoteType[self.note_type.get()],
+                getattr(NoteType, self.note_type.get()) if self.note_type.get() else None,
                 self.note_content.get("1.0", "end-1c").strip(),
                 self.publish.get(),
                 self.label.get(),
                 self.persistent_id.get(),
                 self.has_subtype,
-                model.NoteSubType.NoteSubType[self.sub_type.get()],
+                getattr(NoteSubType, self.sub_type.get()) if self.sub_type.get() else None,
             )
             self.frame.destroy()
         else:

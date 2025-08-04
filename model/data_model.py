@@ -43,7 +43,7 @@ class DataModel:
         self.repositories = None
 
     def initialize_repositories(self):
-        self.repositories = self.main.connection_manager.get_repository_list()
+        self.repositories = self.main.connection_manager.get_repositories()
 
     def get_repository_count(self) -> int:
         return len(self.repositories)

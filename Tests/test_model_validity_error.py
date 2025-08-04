@@ -151,6 +151,7 @@ class TestModelValidityErrorUsagePatterns:
 
     def test_raise_during_validation_scenario(self):
         """Test raising error in a validation scenario"""
+
         def validate_user_age(age):
             if age < 0:
                 raise ModelValidityError(f"Age cannot be negative: {age}")
@@ -172,6 +173,7 @@ class TestModelValidityErrorUsagePatterns:
 
     def test_chain_validation_errors(self):
         """Test chaining multiple validation errors"""
+
         def validate_note_data(note_data):
             errors = []
 
@@ -199,6 +201,7 @@ class TestModelValidityErrorUsagePatterns:
 
     def test_error_in_class_method(self):
         """Test using ModelValidityError in a class validation method"""
+
         class MockNote:
             def __init__(self, content, note_type):
                 self.content = content
@@ -265,7 +268,6 @@ class TestModelValidityErrorEdgeCases:
         assert error.message == message_dict
         assert str(error) == str(message_dict)
 
-
     def test_error_with_whitespace_only_message(self):
         """Test creating error with whitespace-only message"""
         whitespace_message = "   \t\n   "
@@ -282,7 +284,7 @@ class TestModelValidityErrorAttributes:
         """Test that error has message attribute"""
         error = ModelValidityError("test")
 
-        assert hasattr(error, 'message')
+        assert hasattr(error, "message")
         assert error.message == "test"
 
     def test_message_attribute_type(self):
@@ -325,6 +327,7 @@ class TestModelValidityErrorInExceptionHandling:
 
     def test_multiple_exception_types(self):
         """Test catching ModelValidityError among other exception types"""
+
         def risky_operation(operation_type):
             if operation_type == "validity":
                 raise ModelValidityError("Data is invalid")
@@ -348,6 +351,7 @@ class TestModelValidityErrorInExceptionHandling:
 
     def test_exception_chaining(self):
         """Test exception chaining with ModelValidityError"""
+
         def inner_function():
             raise ValueError("Original error")
 
@@ -386,6 +390,7 @@ class TestModelValidityErrorDocumentation:
 
     def test_docstring_example_usage(self):
         """Test usage patterns that might be in documentation"""
+
         # Example: Field validation
         def validate_field(field_name, value, constraints):
             if not value and constraints.get("required"):
@@ -412,6 +417,7 @@ class TestModelValidityErrorDocumentation:
 
     def test_integration_with_model_classes(self):
         """Test how ModelValidityError integrates with model validation"""
+
         class MockModel:
             def __init__(self, data):
                 self.data = data
@@ -498,7 +504,7 @@ class TestModelValidityErrorCompatibility:
         error_data = {
             "error_type": "ModelValidityError",
             "message": error.message,
-            "timestamp": "2024-01-01T00:00:00Z"
+            "timestamp": "2024-01-01T00:00:00Z",
         }
 
         json_string = json.dumps(error_data)

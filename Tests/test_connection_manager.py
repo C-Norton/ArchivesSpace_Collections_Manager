@@ -2,7 +2,6 @@ import json
 import pytest
 from unittest.mock import Mock
 import requests
-from requests import Response
 from requests.exceptions import ConnectionError, Timeout
 
 # Import the classes we're testing
@@ -33,12 +32,11 @@ class TestConnectionManagerInitialization:
         cm = ConnectionManager(mocker.Mock())
         assert isinstance(cm, ConnectionManager)
 
-    def test_has_connection_attribute(self,mocker):
+    def test_has_connection_attribute(self, mocker):
         """Test that ConnectionManager has a connection attribute."""
         cm = ConnectionManager(mocker.Mock())
         assert hasattr(cm, "connection")
         assert cm.connection is None
-
 
     def test_accepts_connection_dependency(self, mocker):
         """Test that ConnectionManager can accept a connection dependency."""
@@ -140,11 +138,12 @@ class TestRepositoryRetrieval:
         """Test behavior when API returns invalid JSON."""
         mock_response = Mock()
         # Set json as a string property that contains invalid JSON
-        mock_response.json.return_value = "invalid json string that will cause decode error"
+        mock_response.json.return_value = (
+            "invalid json string that will cause decode error"
+        )
         mock_connection.query.return_value = mock_response
         with pytest.raises(json.JSONDecodeError):
             connection_manager.get_repository(2)
-
 
 
 class TestRepositoryListRetrieval:
@@ -168,9 +167,6 @@ class TestRepositoryListRetrieval:
         assert isinstance(result, dict)
         assert result["uri"] == "/repositories/2"
         assert result["repo_code"] == "TEST1"
-
-
-
 
     def test_get_repositories_propagates_network_errors(
         self, connection_manager, mock_connection
@@ -243,6 +239,7 @@ class TestResourceRetrieval:
             mock_connection.query.assert_called_once_with(
                 HttpRequestType.GET, expected_uri
             )
+
 
 class TestBatchResourceRetrieval:
     """Test batch resource retrieval behavior."""
@@ -418,6 +415,7 @@ class TestResourceUpdate:
                 expected_endpoint, json=resource_data
             )
 
+
 class TestErrorPropagation:
     """Test that errors are properly propagated to callers."""
 
@@ -447,7 +445,6 @@ class TestErrorPropagation:
         mock_connection.query.return_value = mock_response
         with pytest.raises(json.JSONDecodeError):
             connection_manager.get_repository(2)
-
 
     def test_unexpected_exceptions_are_propagated(
         self, connection_manager, mock_connection
@@ -543,7 +540,9 @@ class TestEdgeCases:
     def test_empty_response_handling(self, connection_manager, mock_connection):
         """Test behavior when API returns empty response."""
         mock_response = Mock()
-        mock_response.json.return_value = json.dumps({})  # Empty response as JSON string
+        mock_response.json.return_value = json.dumps(
+            {}
+        )  # Empty response as JSON string
         mock_connection.query.return_value = mock_response
 
         result = connection_manager.get_repository(2)

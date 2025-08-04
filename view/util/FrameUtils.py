@@ -25,6 +25,7 @@ class FrameUtils:
 
         if not os.path.exists(icon_path):
             logging.error(f"Icon file not found: {icon_path}")
+            logging.debug("Exiting set_icon method")
             return
 
         logging.debug(f"Root object type: {type(root)}")
@@ -52,8 +53,8 @@ class FrameUtils:
                     logging.debug("Icon set successfully using PIL")
                 except Exception as e:
                     logging.error(f"Failed to set icon using all methods: {e}")
-
-        logging.debug("Exiting set_icon method")
+        finally:
+            logging.debug("Exiting set_icon method")
 
     @staticmethod
     def modal_message_popup(root, message, title="Warning", button_text="OK"):

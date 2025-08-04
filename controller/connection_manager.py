@@ -97,7 +97,7 @@ class ConnectionManager(SubjectMixin):
 
         try:
             json_string = repo.json()
-            json.loads(json_string) #validation
+            json.loads(json_string)  # validation
             return json_string
         except JSONDecodeError as e:
             logging.error(f"Error decoding JSON: {e}")
@@ -197,6 +197,7 @@ class ConnectionManager(SubjectMixin):
             )
 
         return resources
+
     def get_resource_record(self, repo_number: int, resource_number: int) -> dict:
         """
         Fetches a specific resource record from a repository using its resource number.
@@ -266,6 +267,8 @@ class ConnectionManager(SubjectMixin):
         except Exception as e:
             logging.warning(f"An error occurred while updating the resource: {e}")
             return False
-    def get_repositories(self) ->dict:
-        return json.loads(self.connection.query(HttpRequestType.GET, "repositories").json())
 
+    def get_repositories(self) -> dict:
+        return json.loads(
+            self.connection.query(HttpRequestType.GET, "repositories").json()
+        )

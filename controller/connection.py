@@ -13,7 +13,6 @@ from controller.connection_exceptions import (
 from controller.HttpRequestType import HttpRequestType
 
 
-
 class Connection:
     """
     A Connection is a small class used to pass around connection information to an archivesspace server, as well as the
@@ -36,7 +35,6 @@ class Connection:
         self.password: str = p
         self.client = None
         self.validated = False
-
 
     def create_session(self) -> ASnakeClient:
         """
@@ -89,7 +87,9 @@ class Connection:
             requests.exceptions.Timeout,
         ) as e:
             logging.error(f"Network error: {e}")
-            raise NetworkError(f"Connection to server failed after 3 attempts: {e}") from e
+            raise NetworkError(
+                f"Connection to server failed after 3 attempts: {e}"
+            ) from e
 
         except requests.exceptions.HTTPError as e:
             logging.error(f"HTTP error: {e}")
@@ -145,7 +145,9 @@ class Connection:
             attempt: Current attempt number (0-based)
             max_attempts: Total number of attempts allowed
         """
-        logging.debug(f"_handle_connection_error called with: {type(error)}, attempt={attempt}")
+        logging.debug(
+            f"_handle_connection_error called with: {type(error)}, attempt={attempt}"
+        )
         is_final_attempt = attempt == max_attempts - 1
         logging.debug(f"is_final_attempt: {is_final_attempt}")
 
@@ -179,9 +181,9 @@ class Connection:
 
         # Handle retryable network errors
         if isinstance(error, retryable_network_errors):
-            logging.debug(f"Error is retryable network error")
+            logging.debug("Error is retryable network error")
             if is_final_attempt:
-                logging.debug(f"Final attempt, re-raising")
+                logging.debug("Final attempt, re-raising")
                 if isinstance(error, NetworkError):
                     raise  # Re-raise original NetworkError
                 else:

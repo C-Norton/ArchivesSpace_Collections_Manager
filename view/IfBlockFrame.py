@@ -12,9 +12,11 @@ from controller.QueryManager import QueryManager
 import model.action_type
 import model.query_type
 import model.resource_field
+from model.field_type import FieldType
 from view import MasterFrame
 import model.operator_node
-from view.NoteConstructionModalPopup import NoteConstructionModalPopup
+from view.note_construction_modal_popup import NoteConstructionModalPopup
+from view.util.widget_factories import ScrollableComboboxFactory
 
 
 # this will need to be a grid type
@@ -44,30 +46,27 @@ class IfBlockFrame(ttk.Frame):
     def draw_if_block(self):
         ttk.Label(self, text="If").grid(row=0, column=0)
 
-        ttk.OptionMenu(
-            self,
-            self.field,
-            self.field.get(),
-            *[e.name for e in model.resource_field.ResourceField],
-        ).grid(row=0, column=1)
+        resource_field_combobox = ScrollableComboboxFactory.create_enum_combobox(
+            self, self.field, model.resource_field.ResourceField, max_visible_items=4,width=30
+        )
+        resource_field_combobox.grid(row=0, column=1)
 
-        ttk.OptionMenu(  # TODO: replace with ComboBox with scrollbar
-            self,
-            self.query_type,
-            self.query_type.get(),
-            *[e.name for e in model.query_type.QueryType],
-        ).grid(row=0, column=2)
+
+        query_type_combobox = ScrollableComboboxFactory.create_enum_combobox(
+            self, self.query_type, model.query_type.QueryType, max_visible_items=4, width=15
+        )
+        query_type_combobox.grid(row=0, column=2)
+
+
+
 
         ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
         ttk.Button(self, text="Add", command=self.query_add).grid(row=0, column=4)
         ttk.Label(self, text="Action").grid(row=1, column=0)
 
-        ttk.OptionMenu(
-            self,
-            self.action,
-            self.action.get(),
-            *[e.name for e in model.action_type.ActionType],
-        ).grid(row=1, column=1)
+
+
+        ScrollableComboboxFactory.create_enum_combobox(self,self.action,model.action_type.ActionType).grid(row=1, column=1)
         ttk.Button(self, text="Submit", command=self.submit_query).grid(
             row=1, column=4, columnspan=3 if not self.note_layout else 1
         )
