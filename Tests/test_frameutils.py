@@ -795,8 +795,15 @@ class TestFrameUtilsModalMessagePopupEdgeCases:
 
         # Should handle whitespace message without issues
         mock_label.assert_called_once()
-        label_args = mock_label.call_args
-        assert whitespace_message in str(label_args)
+
+        # Check that the label was called with the correct text parameter
+        # Instead of checking string representation (which escapes special chars),
+        # check the actual call arguments
+        call_args, call_kwargs = mock_label.call_args
+
+        # The message should be passed as the 'text' keyword argument
+        assert "text" in call_kwargs
+        assert call_kwargs["text"] == whitespace_message
 
     def test_popup_with_extremely_long_message(self, mocker):
         """Test popup with very long message that should trigger wrapping"""
@@ -1239,16 +1246,42 @@ class TestFrameUtilsComprehensiveParameterizedTests:
             mock_root.iconbitmap.side_effect = TclError("iconbitmap failed")
 
         mock_photoimage = mocker.patch("tkinter.PhotoImage")
-        if not photoimage_works:
-            mock_photoimage.side_effect = TclError("PhotoImage failed")
-            mock_root.iconphoto.side_effect = TclError("iconphoto failed")
 
+        # Configure PhotoImage behavior
+        if not photoimage_works:
+            # PhotoImage creation fails, so iconphoto is never called in this path
+            mock_photoimage.side_effect = TclError("PhotoImage failed")
+            # Don't set up iconphoto side_effect here since it won't be called
+        else:
+            # PhotoImage creation succeeds
+            mock_tk_icon = mocker.Mock()
+            mock_photoimage.return_value = mock_tk_icon
+
+        # Configure PIL behavior
         mock_image_open = mocker.patch("PIL.Image.open")
         mock_imagetk = mocker.patch("PIL.ImageTk.PhotoImage")
         if not pil_works:
             mock_image_open.side_effect = IOError("PIL failed")
         else:
-            mock_imagetk.return_value = mocker.Mock()
+            mock_image = mocker.Mock()
+            mock_image_open.return_value = mock_image
+            mock_pil_photo = mocker.Mock()
+            mock_imagetk.return_value = mock_pil_photo
+
+        # Configure iconphoto behavior - this is the key insight!
+        # iconphoto is only called when PhotoImage creation succeeds OR when PIL succeeds
+        if photoimage_works and pil_works:
+            # Both PhotoImage and PIL work - iconphoto should succeed for both
+            mock_root.iconphoto.return_value = None
+        elif photoimage_works and not pil_works:
+            # PhotoImage works, PIL fails - iconphoto should succeed for PhotoImage
+            mock_root.iconphoto.return_value = None
+        elif not photoimage_works and pil_works:
+            # PhotoImage creation fails (no iconphoto call), PIL works - iconphoto should succeed for PIL
+            mock_root.iconphoto.return_value = None
+        elif not photoimage_works and not pil_works:
+            # PhotoImage creation fails (no iconphoto call), PIL fails - no iconphoto calls
+            pass
 
         mock_debug = mocker.patch("logging.debug")
         mock_warning = mocker.patch("logging.warning")
@@ -1264,9 +1297,23 @@ class TestFrameUtilsComprehensiveParameterizedTests:
             # Should log success with expected method
             debug_calls = [call.args[0] for call in mock_debug.call_args_list]
             success_logged = any(
-                f"successfully using {expected_success_method}" in call
+                f"Icon set successfully using {expected_success_method}" in call
                 for call in debug_calls
             )
+
+            if not success_logged:
+                # Debug output to understand what went wrong
+                print(
+                    f"Expected: 'Icon set successfully using {expected_success_method}'"
+                )
+                print(f"Actual debug calls: {debug_calls}")
+                print(
+                    f"Warning calls: {[call.args[0] for call in mock_warning.call_args_list]}"
+                )
+                print(
+                    f"Error calls: {[call.args[0] for call in mock_error.call_args_list]}"
+                )
+
             assert success_logged
         else:
             # All methods failed, should log final error
@@ -1274,7 +1321,51 @@ class TestFrameUtilsComprehensiveParameterizedTests:
             error_message = mock_error.call_args[0][0]
             assert "Failed to set icon using all methods" in error_message
 
+    def test_set_icon_photoimage_creation_succeeds_but_iconphoto_fails_then_pil_succeeds(
+        self, mocker
+    ):
+        """Test the specific scenario where PhotoImage creation succeeds but iconphoto fails, then PIL succeeds"""
+        mock_root = mocker.Mock()
 
+        # Setup path mocks
+        mocker.patch("os.path.abspath", return_value="/test/FrameUtils.py")
+        mocker.patch("os.path.dirname", return_value="/test")
+        mocker.patch("os.path.join", return_value="/test/icon.ico")
+        mocker.patch("os.path.exists", return_value=True)
+
+        # iconbitmap fails
+        mock_root.iconbitmap.side_effect = TclError("iconbitmap failed")
+
+        # PhotoImage creation succeeds
+        mock_photoimage = mocker.patch("tkinter.PhotoImage")
+        mock_tk_icon = mocker.Mock()
+        mock_photoimage.return_value = mock_tk_icon
+
+        # iconphoto fails first time (PhotoImage), succeeds second time (PIL)
+        mock_root.iconphoto.side_effect = [TclError("iconphoto failed"), None]
+
+        # PIL succeeds
+        mock_image_open = mocker.patch("PIL.Image.open")
+        mock_image = mocker.Mock()
+        mock_image_open.return_value = mock_image
+        mock_imagetk = mocker.patch("PIL.ImageTk.PhotoImage")
+        mock_pil_photo = mocker.Mock()
+        mock_imagetk.return_value = mock_pil_photo
+
+        mock_debug = mocker.patch("logging.debug")
+        mock_warning = mocker.patch("logging.warning")
+
+        FrameUtils.set_icon(mock_root)
+
+        # Should log success with PIL
+        debug_calls = [call.args[0] for call in mock_debug.call_args_list]
+        success_logged = any(
+            "Icon set successfully using PIL" in call for call in debug_calls
+        )
+        assert success_logged
+
+        # Should call iconphoto twice
+        assert mock_root.iconphoto.call_count == 2
 class TestFrameUtilsLoggingBehavior:
     """Test comprehensive logging behavior across both methods"""
 
@@ -1523,7 +1614,7 @@ class TestFrameUtilsRegressionTests:
         mocker.patch("os.path.join", return_value="/test/icon.ico")
         mocker.patch("os.path.exists", return_value=True)
 
-        # Test PhotoImage path
+        # Test PhotoImage path succeeds
         mock_photoimage = mocker.patch("tkinter.PhotoImage")
         mock_tk_icon = mocker.Mock()
         mock_photoimage.return_value = mock_tk_icon
@@ -1535,11 +1626,12 @@ class TestFrameUtilsRegressionTests:
         # iconphoto should be called with (False, icon_object)
         mock_root.iconphoto.assert_called_with(False, mock_tk_icon)
 
-        # Reset and test PIL path
+        # Reset and test PIL fallback path
         mock_root.reset_mock()
         mock_root.iconbitmap.side_effect = TclError("iconbitmap failed")
-        mock_root.iconphoto.side_effect = [TclError("photoimage failed"), None]
 
+        # When PhotoImage creation fails, iconphoto is never called with PhotoImage
+        # The code jumps directly to PIL fallback
         mock_photoimage.side_effect = TclError("PhotoImage failed")
         mock_image_open = mocker.patch("PIL.Image.open")
         mock_pil_image = mocker.Mock()
@@ -1550,10 +1642,50 @@ class TestFrameUtilsRegressionTests:
 
         FrameUtils.set_icon(mock_root)
 
-        # iconphoto should be called with same signature for PIL
+        # iconphoto should only be called once with PIL icon
+        # (PhotoImage creation failed, so iconphoto was never called with PhotoImage object)
+        mock_root.iconphoto.assert_called_once_with(False, mock_pil_icon)
+
+    def test_iconphoto_call_sequence_when_photoimage_succeeds_then_fails_on_iconphoto(
+        self, mocker
+    ):
+        """Test scenario where PhotoImage creation succeeds but iconphoto call fails, then PIL succeeds"""
+        mock_root = mocker.Mock()
+        mock_root.iconbitmap.side_effect = TclError("iconbitmap failed")
+
+        mocker.patch("os.path.abspath", return_value="/test/FrameUtils.py")
+        mocker.patch("os.path.dirname", return_value="/test")
+        mocker.patch("os.path.join", return_value="/test/icon.ico")
+        mocker.patch("os.path.exists", return_value=True)
+
+        # PhotoImage creation succeeds, but iconphoto call fails
+        mock_photoimage = mocker.patch("tkinter.PhotoImage")
+        mock_tk_icon = mocker.Mock()
+        mock_photoimage.return_value = mock_tk_icon
+
+        # First iconphoto call fails, second succeeds
+        mock_root.iconphoto.side_effect = [
+            TclError("iconphoto with PhotoImage failed"),
+            None,
+        ]
+
+        # PIL setup
+        mock_image_open = mocker.patch("PIL.Image.open")
+        mock_pil_image = mocker.Mock()
+        mock_image_open.return_value = mock_pil_image
+        mock_imagetk = mocker.patch("PIL.ImageTk.PhotoImage")
+        mock_pil_icon = mocker.Mock()
+        mock_imagetk.return_value = mock_pil_icon
+
+        mocker.patch("logging.debug")
+        mocker.patch("logging.warning")
+
+        FrameUtils.set_icon(mock_root)
+
+        # Should be called twice: once with PhotoImage (fails), once with PIL (succeeds)
         expected_calls = [
-            mocker.call(False, mock_tk_icon),  # This will fail
-            mocker.call(False, mock_pil_icon),  # This should succeed
+            mocker.call(False, mock_tk_icon),  # PhotoImage attempt (fails)
+            mocker.call(False, mock_pil_icon),  # PIL attempt (succeeds)
         ]
         mock_root.iconphoto.assert_has_calls(expected_calls)
 

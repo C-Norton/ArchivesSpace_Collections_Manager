@@ -86,6 +86,86 @@ class TestScrollableComboboxFactory:
         )
         assert result == mock_combobox
 
+    def test_real_enum_combobox_creation(self):
+        """Test creating a real combobox with enum (requires tkinter)"""
+        import tkinter as tk
+        from enum import Enum
+
+        class TestEnum(Enum):
+            OPTION1 = 1
+            OPTION2 = 2
+
+        # Create a root window for testing
+        root = tk.Tk()
+        root.withdraw()  # Hide the window
+
+        try:
+            textvariable = tk.StringVar()
+
+            # This should create a real combobox without error
+            combobox = ScrollableComboboxFactory.create_enum_combobox(
+                root, textvariable, TestEnum
+            )
+
+            # Verify it's a real Combobox
+            assert isinstance(combobox, ttk.Combobox)
+            # Use str() to work around Python tkinter bug where cget returns Tcl_Obj instead of string
+            # See: https://github.com/python/cpython/issues/126008
+            assert str(combobox.cget("state")) == "readonly"
+            assert str(combobox.cget("height")) == "4"
+            assert list(combobox.cget("values")) == ["OPTION1", "OPTION2"]
+
+        finally:
+            root.destroy()
+
+    def test_real_list_combobox_creation(self):
+        """Test creating a real combobox with list values"""
+        import tkinter as tk
+
+        root = tk.Tk()
+        root.withdraw()
+
+        try:
+            textvariable = tk.StringVar()
+            values = ["Alpha", "Beta", "Gamma"]
+
+            combobox = ScrollableComboboxFactory.create_list_combobox(
+                root, textvariable, values, max_visible_items=2
+            )
+
+            assert isinstance(combobox, ttk.Combobox)
+            # Use str() to work around Python tkinter bug where cget returns Tcl_Obj instead of string
+            # See: https://github.com/python/cpython/issues/126008
+            assert str(combobox.cget("state")) == "readonly"
+            assert str(combobox.cget("height")) == "2"
+            assert list(combobox.cget("values")) == values
+
+        finally:
+            root.destroy()
+
+    def test_combobox_with_custom_entry_enabled(self):
+        """Test combobox allowing custom text entry"""
+        import tkinter as tk
+
+        root = tk.Tk()
+        root.withdraw()
+
+        try:
+            textvariable = tk.StringVar()
+            values = ["Predefined1", "Predefined2"]
+
+            combobox = ScrollableComboboxFactory.create_list_combobox(
+                root, textvariable, values, allow_custom_entry=True
+            )
+
+            assert isinstance(combobox, ttk.Combobox)
+            # Use str() to work around Python tkinter bug where cget returns Tcl_Obj instead of string
+            # See: https://github.com/python/cpython/issues/126008
+            assert str(combobox.cget("state")) == "normal"  # Should allow text entry
+            assert list(combobox.cget("values")) == values
+
+        finally:
+            root.destroy()
     def test_custom_width_parameter(self, mocker):
         """Test that custom width is properly applied"""
         class TestEnum(Enum):
@@ -220,9 +300,9 @@ class TestScrollableComboboxFactoryIntegration:
 
             # Verify it's a real Combobox
             assert isinstance(combobox, ttk.Combobox)
-            assert 'readonly' in combobox.state()  # state() returns a tuple of states
-            assert len(combobox['values']) == 2
-            assert sorted(combobox['values']) == ['OPTION1', 'OPTION2']
+            assert str(combobox.cget('state')) == 'readonly'
+            assert int(combobox.cget('height')) == 4  # height is also returned as a Tcl object
+            assert list(combobox['values']) == ['OPTION1', 'OPTION2']
 
         finally:
             root.destroy()
@@ -242,7 +322,7 @@ class TestScrollableComboboxFactoryIntegration:
             )
 
             assert isinstance(combobox, ttk.Combobox)
-            assert combobox['state'] == 'readonly'
+            assert str(combobox['state']) == 'readonly'
             assert combobox['height'] == 2
             assert list(combobox['values']) == values
 
@@ -265,7 +345,7 @@ class TestScrollableComboboxFactoryIntegration:
             )
 
             assert isinstance(combobox, ttk.Combobox)
-            assert combobox['state'] == 'normal'  # Should allow text entry
+            assert str(combobox['state']) == 'normal'  # Should allow text entry
             assert list(combobox['values']) == values
 
         finally:
