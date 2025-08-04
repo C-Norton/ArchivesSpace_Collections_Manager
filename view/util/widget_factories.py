@@ -2,7 +2,7 @@
 Utility for creating standardized scrollable comboboxes to replace problematic OptionMenus
 """
 from tkinter import ttk
-from typing import List, Union, Optional
+from typing import List, Optional
 from enum import Enum
 
 class ScrollableComboboxFactory:

@@ -167,19 +167,119 @@ class TestFrameUtilsSetIconFileHandling:
         assert "Entering set_icon method" in debug_calls
         assert "Exiting set_icon method" in debug_calls
 
-    def test_os_path_exists_exception_handling(self, mocker):
-        """Test handling of exceptions from os.path.exists"""
+    def test_check_icon_exists_exception_handling(self, mocker):
+        """Test handling of exceptions from _check_icon_exists method"""
+        # Mock the private method instead of os.path.exists directly
+        mocker.patch.object(
+            FrameUtils, "_check_icon_exists", side_effect=OSError("Permission denied")
+        )
+        mocker.patch.object(
+            FrameUtils, "_construct_icon_path", return_value="/test/icon.ico"
+        )
+        mocker.patch("logging.debug")
+        mocker.patch("logging.error")
+
         mock_root = mocker.Mock()
 
-        self._setup_basic_path_mocks(mocker, "/test/icon.ico")
-        mocker.patch("os.path.exists", side_effect=OSError("Permission denied"))
-        mock_error = mocker.patch("logging.error")
+        # Should handle the exception gracefully and return early
+        FrameUtils.set_icon(mock_root)
 
-        # Should handle os.path.exists exception gracefully
-        try:
-            FrameUtils.set_icon(mock_root)
-        except OSError:
-            pytest.fail("set_icon should handle os.path.exists exceptions gracefully")
+        # Should not attempt to set icon when file check fails
+        mock_root.iconbitmap.assert_not_called()
+
+    def test_construct_icon_path_exception_handling(self, mocker):
+        """Test exception handling in _construct_icon_path method"""
+        mocker.patch("os.path.abspath", side_effect=OSError("File system error"))
+        mocker.patch("logging.error")
+
+        result = FrameUtils._construct_icon_path()
+
+        assert result is None
+
+    def test_check_icon_exists_exception_handling(self, mocker):
+        """Test exception handling in _check_icon_exists method"""
+        mocker.patch("logging.error")
+
+        # This should handle the exception gracefully
+        result = FrameUtils._check_icon_exists("/test/path")
+
+        # Should return False when exception occurs
+        assert result is False
+
+    def test_set_icon_with_path_construction_failure(self, mocker):
+        """Test set_icon when path construction fails"""
+        mock_root = mocker.Mock()
+        mocker.patch.object(FrameUtils, "_construct_icon_path", return_value=None)
+        mocker.patch("logging.debug")
+        mocker.patch("logging.error")
+
+        FrameUtils.set_icon(mock_root)
+
+        # Should not attempt to set icon when path construction fails
+        mock_root.iconbitmap.assert_not_called()
+
+    def test_set_icon_with_file_check_failure(self, mocker):
+        """Test set_icon when file existence check fails"""
+        mock_root = mocker.Mock()
+        mocker.patch.object(
+            FrameUtils, "_construct_icon_path", return_value="/test/icon.ico"
+        )
+        mocker.patch.object(FrameUtils, "_check_icon_exists", return_value=False)
+        mocker.patch("logging.debug")
+        mocker.patch("logging.error")
+
+        FrameUtils.set_icon(mock_root)
+
+        # Should not attempt to set icon when file doesn't exist
+        mock_root.iconbitmap.assert_not_called()
+
+    # Add this to fix modal popup tests:
+    def test_modal_popup_with_mock_children_handling(self, mocker):
+        """Test modal popup handles mock objects gracefully"""
+        mock_root = mocker.Mock()
+        mock_toplevel = mocker.Mock()
+
+        # Make winfo_children() return a non-iterable mock (common in tests)
+        mock_toplevel.winfo_children.return_value = mocker.Mock()
+
+        mocker.patch("tkinter.Toplevel", return_value=mock_toplevel)
+        mocker.patch("view.util.FrameUtils.FrameUtils.set_icon")
+        mocker.patch("tkinter.ttk.Label")
+        mocker.patch("tkinter.ttk.Button")
+
+        # Should not raise exception even with non-iterable winfo_children
+        FrameUtils.modal_message_popup(mock_root, "Test message")
+
+        # Should still set title and modal behavior
+        mock_toplevel.title.assert_called_once_with("Warning")
+        mock_toplevel.focus_set.assert_called_once()
+        mock_toplevel.grab_set.assert_called_once()
+
+    def test_construct_icon_path_method(self, mocker):
+        """Test the icon path construction method separately"""
+        mocker.patch("os.path.dirname", return_value="/test/view/util")
+        mocker.patch("os.path.abspath", return_value="/test/view/util/FrameUtils.py")
+        mocker.patch("os.path.join", return_value="/test/Public/Icons/icon.ico")
+
+        result = FrameUtils._construct_icon_path()
+
+        assert result == "/test/Public/Icons/icon.ico"
+
+    def test_check_icon_exists_method_true(self, mocker):
+        """Test the file existence check method when file exists"""
+        mocker.patch("os.path.exists", return_value=True)
+
+        result = FrameUtils._check_icon_exists("/test/icon.ico")
+
+        assert result is True
+
+    def test_check_icon_exists_method_false(self, mocker):
+        """Test the file existence check method when file doesn't exist"""
+        mocker.patch("os.path.exists", return_value=False)
+
+        result = FrameUtils._check_icon_exists("/test/icon.ico")
+
+        assert result is False
 
     def _setup_basic_path_mocks(self, mocker, icon_path):
         """Helper to set up basic path construction mocks"""

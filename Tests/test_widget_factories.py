@@ -1,7 +1,6 @@
 """
 Fixed tests for ScrollableComboboxFactory with correct import paths
 """
-from io import text_encoding
 
 import pytest
 from enum import Enum

@@ -12,7 +12,6 @@ from controller.QueryManager import QueryManager
 import model.action_type
 import model.query_type
 import model.resource_field
-from model.field_type import FieldType
 from view import MasterFrame
 import model.operator_node
 from view.note_construction_modal_popup import NoteConstructionModalPopup
