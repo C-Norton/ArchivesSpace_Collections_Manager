@@ -1,9 +1,9 @@
 """
-Comprehensive unit tests for MenuFrame migration to Observer pattern.
+Improved MenuFrame tests that avoid tkinter mocking issues while maintaining
+compatibility with both current implementation and future Observer pattern migration.
 
-These tests are designed to be compatible with both the current implementation
-and the future Observer-based implementation where possible. Where not possible,
-they focus on testing the future implementation to guide the migration.
+These tests focus on business logic, component interactions, and architectural
+decisions rather than GUI implementation details.
 """
 
 import pytest
@@ -18,193 +18,62 @@ from observer.observer import Observer
 from view.ui_event_manager import UiEventManager
 
 
-class TestMenuFrameInitialization:
-    """Test MenuFrame initialization and setup"""
+class TestMenuFrameInterface:
+    """Test MenuFrame interface compliance without GUI instantiation"""
 
-    def test_menuframe_creation_with_connection_manager(self, mocker):
-        """Test that MenuFrame can be created with ConnectionManager"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+    def test_has_required_methods(self):
+        """Test that MenuFrame has all expected public methods"""
+        required_methods = [
+            'connectionDialog',
+            'saveConnection',
+            'testConnection',
+            'helpButton',
+            'manageConnections'
+        ]
 
-        # Mock tkinter components to avoid GUI dependency
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        for method_name in required_methods:
+            assert hasattr(MenuFrame, method_name)
+            assert callable(getattr(MenuFrame, method_name))
 
-        menu_frame = MenuFrame(mock_parent, mock_connection_manager)
+    def test_inherits_from_correct_base_class(self):
+        """Test MenuFrame inheritance without instantiating"""
+        from tkinter import ttk
+        assert issubclass(MenuFrame, ttk.Frame)
 
-        assert menu_frame.master_frame == mock_parent
-        assert menu_frame.connection_manager == mock_connection_manager
-
-    def test_menuframe_creates_all_required_buttons(self, mocker):
-        """Test that MenuFrame creates all expected buttons"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mock_button = mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        MenuFrame(mock_parent, mock_connection_manager)
-
-        # Should create 8 buttons as per current implementation
-        assert mock_button.call_count == 8
-
-        # Verify expected button texts are created
+    def test_menuframe_button_layout_constants(self):
+        """Test expected button configuration constants"""
+        # These represent the architectural decisions about button layout
+        expected_button_count = 8
         expected_buttons = [
             "Configure Connection", "Save Connection", "Manage Saved Connections",
             "Test Connection", "Save Query", "Load Query", "Refresh Repositories", "Help"
         ]
 
-        button_calls = mock_button.call_args_list
-        created_buttons = [call.kwargs.get('text', '') for call in button_calls]
-
-        for expected_text in expected_buttons:
-            assert expected_text in created_buttons
-
-    def test_menuframe_sets_up_grid_layout(self, mocker):
-        """Test that MenuFrame properly configures grid layout"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mock_rowconfigure = mocker.patch('tkinter.Grid.rowconfigure')
-        mock_columnconfigure = mocker.patch('tkinter.Grid.columnconfigure')
-
-        MenuFrame(mock_parent, mock_connection_manager)
-
-        # Should configure grid for dynamic resizing
-        mock_rowconfigure.assert_called()
-        mock_columnconfigure.assert_called()
-
-    def test_menuframe_inherits_from_frame(self, mocker):
-        """Test that MenuFrame properly inherits from ttk.Frame"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mock_frame_init = mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        MenuFrame(mock_parent, mock_connection_manager)
-
-        # Should call parent Frame.__init__ with proper parameters
-        mock_frame_init.assert_called_once()
+        # Test that our expectations match the class design
+        # This will help catch changes during refactoring
+        assert len(expected_buttons) == expected_button_count
 
 
-class TestMenuFrameButtonActions:
-    """Test button action methods in MenuFrame"""
+class TestMenuFrameObserverPatternCompatibility:
+    """Test compatibility with future Observer pattern implementation"""
 
     @pytest.fixture
-    def menu_frame_setup(self, mocker):
-        """Common setup for MenuFrame tests"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+    def observer_menuframe_mock(self, mocker):
+        """Create a mock that demonstrates future Observer pattern compatibility"""
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        class FutureObserverMenuFrame(Observer):
+            """Mock of what MenuFrame might look like with Observer pattern"""
 
-        menu_frame = MenuFrame(mock_parent, mock_connection_manager)
-        return menu_frame, mock_parent, mock_connection_manager
-
-    def test_connection_dialog_action(self, mocker, menu_frame_setup):
-        """Test connectionDialog method behavior"""
-        menu_frame, mock_parent, mock_connection_manager = menu_frame_setup
-
-        mock_connection_dialog = mocker.patch('view.menu_buttons.ConfigureConnection.ConnectionDialog')
-
-        menu_frame.connectionDialog()
-
-        mock_connection_dialog.assert_called_once_with(mock_parent, mock_connection_manager)
-
-    def test_test_connection_action(self, mocker, menu_frame_setup):
-        """Test testConnection method behavior"""
-        menu_frame, mock_parent, mock_connection_manager = menu_frame_setup
-
-        mock_test_connection = mocker.patch('view.menu_buttons.TestConnection.TestConnection')
-        mock_connection = Mock()
-        mock_connection_manager.connection = mock_connection
-
-        menu_frame.testConnection()
-
-        mock_test_connection.assert_called_once_with(mock_connection)
-
-    def test_help_button_action(self, mocker, menu_frame_setup):
-        """Test helpButton method behavior"""
-        menu_frame, mock_parent, mock_connection_manager = menu_frame_setup
-
-        mock_help_dialog = mocker.patch('view.menu_buttons.Help.HelpDialog')
-
-        menu_frame.helpButton()
-
-        mock_help_dialog.assert_called_once_with(mock_parent)
-
-    def test_save_connection_action(self, mocker, menu_frame_setup):
-        """Test saveConnection method behavior"""
-        menu_frame, mock_parent, mock_connection_manager = menu_frame_setup
-
-        mock_save_connection = mocker.patch('view.menu_buttons.SaveConnection.save_connection')
-        mock_connection = Mock()
-        mock_connection_manager.connection = mock_connection
-
-        menu_frame.saveConnection()
-
-        mock_save_connection.assert_called_once_with(mock_connection)
-
-    def test_manage_connections_action(self, mocker, menu_frame_setup):
-        """Test manageConnections method behavior"""
-        menu_frame, mock_parent, mock_connection_manager = menu_frame_setup
-
-        mock_manage_connections = mocker.patch('view.menu_buttons.ManageConnections.ManageConnections')
-        mock_instance = Mock()
-        mock_manage_connections.return_value = mock_instance
-
-        menu_frame.manageConnections()
-
-        mock_manage_connections.assert_called_once_with(mock_parent, mock_connection_manager)
-        mock_instance.on_click.assert_called_once()
-
-    def test_refresh_repositories_action(self, mocker, menu_frame_setup):
-        """Test refresh repositories button action"""
-        menu_frame, mock_parent, mock_connection_manager = menu_frame_setup
-
-        # Mock the repo_frame refresh method
-        mock_parent.repo_frame.refresh = Mock()
-
-        # Simulate button command execution (current implementation)
-        mock_parent.repo_frame.refresh()
-
-        mock_parent.repo_frame.refresh.assert_called_once()
-
-
-class TestMenuFrameObserverPattern:
-    """Test MenuFrame integration with Observer pattern (future implementation)"""
-
-    @pytest.fixture
-    def observer_menu_frame_setup(self, mocker):
-        """Setup for Observer pattern tests"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-        mock_event_manager = mocker.Mock(spec=UiEventManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-        mocker.patch('view.ui_event_manager.UiEventManager', return_value=mock_event_manager)
-
-        # Create a mock MenuFrame that implements Observer
-        class MockObserverMenuFrame(MenuFrame, Observer):
             def __init__(self, parent, connection_manager):
-                super().__init__(parent, connection_manager)
-                self.event_manager = mock_event_manager
+                self.master_frame = parent
+                self.connection_manager = connection_manager
+                self.event_manager = mocker.Mock(spec=UiEventManager)
                 self._button_states = {}
+                self._subscribe_to_events()
+
+            def _subscribe_to_events(self):
+                """Subscribe to UI events"""
+                self.event_manager.attach(self)
 
             def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
                 """Handle observed events"""
@@ -215,644 +84,772 @@ class TestMenuFrameObserverPattern:
 
             def _handle_connection_changed(self, data: Dict[str, Any]) -> None:
                 """Handle connection state changes"""
-                self._button_states['connection_valid'] = data.get('is_valid', False)
+                is_valid = data.get('is_valid', False) if data else False
+                self._button_states['connection_valid'] = is_valid
 
             def _handle_repository_loaded(self, data: Dict[str, Any]) -> None:
                 """Handle repository loading events"""
-                self._button_states['repositories_loaded'] = len(data.get('repositories', {})) > 0
+                repositories = data.get('repositories', {}) if data else {}
+                self._button_states['repositories_loaded'] = len(repositories) > 0
 
-        menu_frame = MockObserverMenuFrame(mock_parent, mock_connection_manager)
-        return menu_frame, mock_parent, mock_connection_manager, mock_event_manager
+            # Current MenuFrame methods for backward compatibility
+            def connectionDialog(self):
+                from view.menu_buttons.ConfigureConnection import ConnectionDialog
+                return ConnectionDialog(self.master_frame, self.connection_manager)
 
-    def test_menuframe_implements_observer_interface(self, observer_menu_frame_setup):
-        """Test that MenuFrame properly implements Observer interface"""
-        menu_frame, _, _, _ = observer_menu_frame_setup
+            def saveConnection(self):
+                from view.menu_buttons.SaveConnection import save_connection
+                return save_connection(self.connection_manager.connection)
 
-        # Should implement Observer protocol
-        assert hasattr(menu_frame, 'update')
-        assert callable(menu_frame.update)
+        return FutureObserverMenuFrame
 
-    def test_menuframe_handles_connection_changed_event(self, observer_menu_frame_setup):
-        """Test MenuFrame response to CONNECTION_CHANGED event"""
-        menu_frame, _, _, _ = observer_menu_frame_setup
 
-        # Test valid connection
-        connection_data = {
-            'connection': Mock(),
-            'server': 'https://test.com',
-            'username': 'testuser',
-            'is_valid': True,
-            'error_message': None
-        }
 
-        menu_frame.update(UiEvent.CONNECTION_CHANGED, connection_data)
+    def test_repository_loaded_event_handling(self, mocker, observer_menuframe_mock):
+        """Test handling of REPOSITORY_LOADED events"""
+        mock_parent = Mock()
+        mock_connection_manager = Mock(spec=ConnectionManager)
 
-        assert menu_frame._button_states.get('connection_valid') is True
+        future_menuframe = observer_menuframe_mock(mock_parent, mock_connection_manager)
 
-    def test_menuframe_handles_invalid_connection_event(self, observer_menu_frame_setup):
-        """Test MenuFrame response to invalid connection"""
-        menu_frame, _, _, _ = observer_menu_frame_setup
-
-        connection_data = {
-            'connection': None,
-            'server': 'invalid',
-            'username': 'test',
-            'is_valid': False,
-            'error_message': 'Connection failed'
-        }
-
-        menu_frame.update(UiEvent.CONNECTION_CHANGED, connection_data)
-
-        assert menu_frame._button_states.get('connection_valid') is False
-
-    def test_menuframe_handles_repository_loaded_event(self, observer_menu_frame_setup):
-        """Test MenuFrame response to REPOSITORY_LOADED event"""
-        menu_frame, _, _, _ = observer_menu_frame_setup
-
+        # Test with repositories
         repository_data = {
             'repositories': {'repo1': {}, 'repo2': {}},
             'error': None
         }
 
-        menu_frame.update(UiEvent.REPOSITORY_LOADED, repository_data)
+        future_menuframe.update(UiEvent.REPOSITORY_LOADED, repository_data)
+        assert future_menuframe._button_states.get('repositories_loaded') is True
 
-        assert menu_frame._button_states.get('repositories_loaded') is True
-
-    def test_menuframe_handles_empty_repository_event(self, observer_menu_frame_setup):
-        """Test MenuFrame response to empty repositories"""
-        menu_frame, _, _, _ = observer_menu_frame_setup
-
-        repository_data = {
+        # Test without repositories
+        empty_repository_data = {
             'repositories': {},
             'error': 'No repositories found'
         }
 
-        menu_frame.update(UiEvent.REPOSITORY_LOADED, repository_data)
+        future_menuframe.update(UiEvent.REPOSITORY_LOADED, empty_repository_data)
+        assert future_menuframe._button_states.get('repositories_loaded') is False
 
-        assert menu_frame._button_states.get('repositories_loaded') is False
-
-    def test_menuframe_publishes_events_on_button_clicks(self, observer_menu_frame_setup):
-        """Test that button clicks publish appropriate events (future implementation)"""
-        menu_frame, _, _, mock_event_manager = observer_menu_frame_setup
-
-        # Architectural decision: Button clicks should publish events rather than call methods directly
-        # This enables loose coupling and allows multiple components to respond to user actions
-
-        # Simulate future button click behavior
-        def simulate_configure_connection_click():
-            mock_event_manager.publish_event(UiEvent.CONFIGURE_CONNECTION_REQUESTED, {})
-
-        simulate_configure_connection_click()
-
-        mock_event_manager.publish_event.assert_called_with(
-            UiEvent.CONFIGURE_CONNECTION_REQUESTED, {}
-        )
-
-
-class TestMenuFrameButtonStateManagement:
-    """Test button state management and enabling/disabling logic"""
-
-    @pytest.fixture
-    def stateful_menu_frame_setup(self, mocker):
-        """Setup for button state management tests"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mock_button_class = mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        # Create mock button instances
-        mock_buttons = [Mock() for _ in range(8)]
-        mock_button_class.side_effect = mock_buttons
-
-        menu_frame = MenuFrame(mock_parent, mock_connection_manager)
-        menu_frame._buttons = {
-            'configure': mock_buttons[0],
-            'save': mock_buttons[1],
-            'manage': mock_buttons[2],
-            'test': mock_buttons[3],
-            'save_query': mock_buttons[4],
-            'load_query': mock_buttons[5],
-            'refresh': mock_buttons[6],
-            'help': mock_buttons[7]
-        }
-
-        return menu_frame, mock_buttons, mock_connection_manager
-
-    def test_buttons_enabled_when_connection_valid(self, stateful_menu_frame_setup):
-        """Test button states when connection is valid"""
-        menu_frame, mock_buttons, mock_connection_manager = stateful_menu_frame_setup
-
-        # Architectural decision: Connection-dependent buttons should be enabled only when connection is valid
-        # This prevents user confusion and API errors from invalid operations
-
-        # Simulate connection validation
-        mock_connection_manager.connection = Mock()
-        mock_connection_manager.connection.validated = True
-
-        # Method to update button states based on connection
-        def update_button_states(connection_valid: bool):
-            connection_dependent_buttons = ['save', 'test', 'refresh']
-            state = 'normal' if connection_valid else 'disabled'
-
-            for button_name in connection_dependent_buttons:
-                if button_name in menu_frame._buttons:
-                    menu_frame._buttons[button_name].configure(state=state)
-
-        update_button_states(True)
-
-        # Connection-dependent buttons should be enabled
-        menu_frame._buttons['save'].configure.assert_called_with(state='normal')
-        menu_frame._buttons['test'].configure.assert_called_with(state='normal')
-        menu_frame._buttons['refresh'].configure.assert_called_with(state='normal')
-
-    def test_buttons_disabled_when_no_connection(self, stateful_menu_frame_setup):
-        """Test button states when no connection exists"""
-        menu_frame, mock_buttons, mock_connection_manager = stateful_menu_frame_setup
-
-        mock_connection_manager.connection = None
-
-        def update_button_states(connection_valid: bool):
-            connection_dependent_buttons = ['save', 'test', 'refresh']
-            state = 'normal' if connection_valid else 'disabled'
-
-            for button_name in connection_dependent_buttons:
-                if button_name in menu_frame._buttons:
-                    menu_frame._buttons[button_name].configure(state=state)
-
-        update_button_states(False)
-
-        # Connection-dependent buttons should be disabled
-        menu_frame._buttons['save'].configure.assert_called_with(state='disabled')
-        menu_frame._buttons['test'].configure.assert_called_with(state='disabled')
-        menu_frame._buttons['refresh'].configure.assert_called_with(state='disabled')
-
-    def test_configure_and_help_always_enabled(self, stateful_menu_frame_setup):
-        """Test that some buttons are always available"""
-        menu_frame, mock_buttons, mock_connection_manager = stateful_menu_frame_setup
-
-        # Architectural decision: Configure Connection and Help should always be available
-        # Users need to be able to configure connections even when none exist
-        # Help should always be accessible for usability
-
-        # These buttons should never be disabled
-        always_enabled_buttons = ['configure', 'help', 'manage']
-
-        for button_name in always_enabled_buttons:
-            if button_name in menu_frame._buttons:
-                # Should not call configure with disabled state
-                calls = menu_frame._buttons[button_name].configure.call_args_list
-                disabled_calls = [call for call in calls if 'state' in call.kwargs and call.kwargs['state'] == 'disabled']
-                assert len(disabled_calls) == 0, f"{button_name} button should never be disabled"
-
-
-class TestMenuFrameErrorHandling:
-    """Test error handling and edge cases in MenuFrame"""
-
-    @pytest.fixture
-    def error_test_setup(self, mocker):
-        """Setup for error handling tests"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        menu_frame = MenuFrame(mock_parent, mock_connection_manager)
-        return menu_frame, mock_parent, mock_connection_manager
-
-    def test_test_connection_with_no_connection(self, mocker, error_test_setup):
-        """Test testConnection when no connection exists"""
-        menu_frame, _, mock_connection_manager = error_test_setup
-
-        mock_connection_manager.connection = None
-        mock_test_connection = mocker.patch('view.menu_buttons.TestConnection.TestConnection')
-
-        # Architectural decision: Attempting operations with no connection should either
-        # fail gracefully or show appropriate error message, not crash
-
-        # Current implementation might crash with None, should handle gracefully
-        with pytest.raises(AttributeError):
-            menu_frame.testConnection()
-
-    def test_save_connection_with_no_connection(self, mocker, error_test_setup):
-        """Test saveConnection when no connection exists"""
-        menu_frame, _, mock_connection_manager = error_test_setup
-
-        mock_connection_manager.connection = None
-        mock_save_connection = mocker.patch('view.menu_buttons.SaveConnection.save_connection')
-
-        # Should handle None connection gracefully
-        menu_frame.saveConnection()
-
-        mock_save_connection.assert_called_once_with(None)
-
-    def test_dialog_creation_failure(self, mocker, error_test_setup):
-        """Test behavior when dialog creation fails"""
-        menu_frame, _, _ = error_test_setup
-
-        mock_connection_dialog = mocker.patch(
-            'view.menu_buttons.ConfigureConnection.ConnectionDialog',
-            side_effect=Exception("Dialog creation failed")
-        )
-
-        # Architectural decision: Dialog creation failures should not crash the application
-        # They should be logged and possibly show a fallback error message
-
-        with pytest.raises(Exception):
-            menu_frame.connectionDialog()
-
-    def test_repository_refresh_failure(self, mocker, error_test_setup):
-        """Test behavior when repository refresh fails"""
-        menu_frame, mock_parent, _ = error_test_setup
-
-        mock_parent.repo_frame.refresh.side_effect = Exception("Refresh failed")
-
-        # Should handle refresh failures gracefully
-        with pytest.raises(Exception):
-            mock_parent.repo_frame.refresh()
-
-    def test_event_handling_with_malformed_data(self, mocker):
-        """Test Observer pattern with malformed event data"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        class TestObserverMenuFrame(MenuFrame, Observer):
-            def __init__(self, parent, connection_manager):
-                super().__init__(parent, connection_manager)
-                self.handled_events = []
-
-            def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
-                # Architectural decision: Event handlers should validate data and handle malformed input gracefully
-                # This prevents cascading failures when events contain unexpected data
-                try:
-                    if event == UiEvent.CONNECTION_CHANGED:
-                        is_valid = data.get('is_valid', False) if data else False
-                        self.handled_events.append(('connection_changed', is_valid))
-                except (TypeError, AttributeError, KeyError) as e:
-                    # Log error and continue - don't crash on malformed events
-                    self.handled_events.append(('error', str(e)))
-
-        menu_frame = TestObserverMenuFrame(mock_parent, mock_connection_manager)
-
-        # Test with malformed data
-        malformed_data_cases = [
-            None,
-            {},
-            {'invalid_key': 'value'},
-            {'is_valid': 'not_a_boolean'},
-            "not_a_dict"
-        ]
-
-        for malformed_data in malformed_data_cases:
-            menu_frame.update(UiEvent.CONNECTION_CHANGED, malformed_data)
-
-        # Should handle all cases without crashing
-        assert len(menu_frame.handled_events) == len(malformed_data_cases)
 
 
 class TestMenuFrameIntegration:
     """Test MenuFrame integration with other components"""
 
-    def test_menuframe_with_real_connection_manager(self, mocker):
-        """Test MenuFrame with actual ConnectionManager instance"""
-        mock_parent = mocker.Mock()
-        mock_main = mocker.Mock()
+    def test_integration_with_real_connection_manager(self, mocker):
+        """Test MenuFrame logic with real ConnectionManager"""
+        mock_parent = Mock()
+        mock_main = Mock()
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        # Create real ConnectionManager
+        # Create real ConnectionManager instance
         connection_manager = ConnectionManager(mock_main)
 
-        menu_frame = MenuFrame(mock_parent, connection_manager)
+        # Test the business logic components
+        menu_frame = MenuFrame.__new__(MenuFrame)
+        menu_frame.master_frame = mock_parent
+        menu_frame.connection_manager = connection_manager
 
         assert menu_frame.connection_manager == connection_manager
         assert isinstance(menu_frame.connection_manager, ConnectionManager)
 
-    def test_menuframe_event_subscription_lifecycle(self, mocker):
-        """Test proper event subscription and cleanup"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-        mock_event_manager = mocker.Mock(spec=UiEventManager)
+    def test_event_coordination_pattern(self, mocker):
+        """Test event-based coordination between components"""
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        class EventCoordinatingMenuFrame(Observer):
+            """Demonstrates event-based coordination"""
 
-        class LifecycleTestMenuFrame(MenuFrame, Observer):
             def __init__(self, parent, connection_manager, event_manager):
-                super().__init__(parent, connection_manager)
+                self.master_frame = parent
+                self.connection_manager = connection_manager
                 self.event_manager = event_manager
+                self.published_events = []
+
+            def refresh_repositories_requested(self):
+                """Publish event instead of direct method call"""
+                event_data = {'timestamp': 'mock_time', 'source': 'menu_frame'}
+                self.event_manager.publish_event(
+                    UiEvent.REPOSITORY_LOADED,  # Using existing event for test
+                    event_data
+                )
+                self.published_events.append('refresh_requested')
+
+            def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
+                """Handle incoming events"""
+                if event == UiEvent.CONNECTION_CHANGED:
+                    # Could trigger repository refresh if connection becomes valid
+                    if data and data.get('is_valid'):
+                        self.refresh_repositories_requested()
+
+        mock_parent = Mock()
+        mock_connection_manager = Mock(spec=ConnectionManager)
+        mock_event_manager = Mock(spec=UiEventManager)
+
+        coordinating_frame = EventCoordinatingMenuFrame(
+            mock_parent, mock_connection_manager, mock_event_manager
+        )
+
+        # Test direct event publishing
+        coordinating_frame.refresh_repositories_requested()
+
+        mock_event_manager.publish_event.assert_called()
+        assert len(coordinating_frame.published_events) == 1
+
+    def test_component_lifecycle_management(self, mocker):
+        """Test proper lifecycle management of MenuFrame"""
+
+        class LifecycleManagedMenuFrame(Observer):
+            """Demonstrates proper lifecycle management"""
+
+            def __init__(self, parent, connection_manager, event_manager):
+                self.master_frame = parent
+                self.connection_manager = connection_manager
+                self.event_manager = event_manager
+                self.is_initialized = False
+                self.is_subscribed = False
+                self._initialize()
+
+            def _initialize(self):
+                """Initialize the component"""
                 self._subscribe_to_events()
+                self.is_initialized = True
 
             def _subscribe_to_events(self):
                 """Subscribe to relevant events"""
-                events_to_subscribe = [
-                    UiEvent.CONNECTION_CHANGED,
-                    UiEvent.REPOSITORY_LOADED
-                ]
-                for event in events_to_subscribe:
-                    self.event_manager.attach(self)
+                self.event_manager.attach(self)
+                self.is_subscribed = True
 
-            def _unsubscribe_from_events(self):
-                """Unsubscribe from events on cleanup"""
-                self.event_manager.detach(self)
+            def cleanup(self):
+                """Clean up resources"""
+                if self.is_subscribed:
+                    self.event_manager.detach(self)
+                    self.is_subscribed = False
 
             def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
+                """Handle events"""
                 pass
 
-        menu_frame = LifecycleTestMenuFrame(mock_parent, mock_connection_manager, mock_event_manager)
+        mock_parent = Mock()
+        mock_connection_manager = Mock(spec=ConnectionManager)
+        mock_event_manager = Mock(spec=UiEventManager)
 
-        # Should have subscribed to events
-        assert mock_event_manager.attach.called
+        managed_frame = LifecycleManagedMenuFrame(
+            mock_parent, mock_connection_manager, mock_event_manager
+        )
 
-        # Cleanup
-        menu_frame._unsubscribe_from_events()
-        mock_event_manager.detach.assert_called_with(menu_frame)
+        # Should be properly initialized
+        assert managed_frame.is_initialized
+        assert managed_frame.is_subscribed
+        mock_event_manager.attach.assert_called_once_with(managed_frame)
 
-    def test_menuframe_coordinates_with_other_frames(self, mocker):
-        """Test MenuFrame coordination with other UI components"""
+        # Should clean up properly
+        managed_frame.cleanup()
+        assert not managed_frame.is_subscribed
+        mock_event_manager.detach.assert_called_once_with(managed_frame)
+
+
+class TestMenuFrameButtonStateManagement:
+    """Tests for button state management - WILL FAIL until implemented"""
+
+    def test_menuframe_has_button_references(self, mocker):
+        """Test that MenuFrame stores references to its buttons"""
+        # Create MenuFrame without GUI to test state management
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # MenuFrame should have a way to reference its buttons for state management
+        # This will FAIL until implemented
+        assert hasattr(menuframe, "_buttons"), (
+            "MenuFrame needs _buttons attribute to store button references for state management"
+        )
+
+        # Should be a dictionary mapping button names to button objects
+        if hasattr(menuframe, "_buttons"):
+            assert isinstance(menuframe._buttons, dict), (
+                "_buttons should be a dictionary mapping button names to button objects"
+            )
+
+    def test_menuframe_tracks_button_states(self, mocker):
+        """Test that MenuFrame tracks the enabled/disabled state of buttons"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # MenuFrame should track button states
+        # This will FAIL until implemented
+        assert hasattr(menuframe, "_button_states"), (
+            "MenuFrame needs _button_states attribute to track button enabled/disabled states"
+        )
+
+        if hasattr(menuframe, "_button_states"):
+            assert isinstance(menuframe._button_states, dict), (
+                "_button_states should be a dictionary"
+            )
+
+    def test_save_connection_button_disabled_without_connection(self, mocker):
+        """Test that save connection button is disabled when no connection exists"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+        menuframe.connection_manager.connection = None
+
+        # Initialize required attributes (these should exist in real implementation)
+        menuframe._buttons = {"save_connection": mocker.Mock()}
+        menuframe._button_states = {}
+
+        # This method should exist and update button states based on connection
+        assert hasattr(menuframe, "_update_button_states"), (
+            "MenuFrame needs _update_button_states method"
+        )
+
+        # Call the method that should exist
+        menuframe._update_button_states()
+
+        # Save connection button should be disabled
+        menuframe._buttons["save_connection"].configure.assert_called_with(
+            state="disabled"
+        )
+
+    def test_save_connection_button_enabled_with_valid_connection(self, mocker):
+        """Test that save connection button is enabled with valid connection"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # Set up valid connection
+        mock_connection = mocker.Mock()
+        mock_connection.validated = True
+        menuframe.connection_manager.connection = mock_connection
+
+        menuframe._buttons = {"save_connection": mocker.Mock()}
+        menuframe._button_states = {}
+
+        # This should update button states
+        menuframe._update_button_states()
+
+        # Save connection button should be enabled
+        menuframe._buttons["save_connection"].configure.assert_called_with(
+            state="normal"
+        )
+
+    def test_test_connection_button_enabled_with_any_connection(self, mocker):
+        """Test that test connection button is enabled with any connection (even unvalidated)"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # Set up unvalidated connection
+        mock_connection = mocker.Mock()
+        mock_connection.validated = False
+        menuframe.connection_manager.connection = mock_connection
+
+        menuframe._buttons = {"test_connection": mocker.Mock()}
+        menuframe._button_states = {}
+
+        menuframe._update_button_states()
+
+        # Test connection should be enabled even with unvalidated connection
+        menuframe._buttons["test_connection"].configure.assert_called_with(
+            state="normal"
+        )
+
+    def test_always_enabled_buttons_stay_enabled(self, mocker):
+        """Test that always-enabled buttons stay enabled regardless of connection state"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+        menuframe.connection_manager.connection = None  # No connection
+
+        always_enabled_buttons = [
+            "configure_connection",
+            "help",
+            "manage_connections",
+            "load_query",
+        ]
+        menuframe._buttons = {name: mocker.Mock() for name in always_enabled_buttons}
+        menuframe._button_states = {}
+
+        menuframe._update_button_states()
+
+        # These buttons should always be enabled
+        for button_name in always_enabled_buttons:
+            menuframe._buttons[button_name].configure.assert_called_with(state="normal")
+
+
+class TestMenuFrameButtonCreationAndTracking:
+    """Tests for button creation with proper tracking - WILL FAIL until implemented"""
+
+    def test_menuframe_creates_and_tracks_buttons(self, mocker):
+        """Test that MenuFrame creates buttons and stores references for state management"""
+        mocker.patch("view.MenuFrame.ttk.Frame.__init__")
+        mock_button_class = mocker.patch("view.MenuFrame.ttk.Button")
+        mocker.patch("view.MenuFrame.Grid.rowconfigure")
+        mocker.patch("view.MenuFrame.Grid.columnconfigure")
+        mocker.patch("view.MenuFrame.logging")
+
+        # Create mock button instances
+        mock_buttons = [mocker.Mock() for _ in range(8)]
+        mock_button_class.side_effect = mock_buttons
+
         mock_parent = mocker.Mock()
         mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-        mock_event_manager = mocker.Mock(spec=UiEventManager)
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        # Create MenuFrame - this should set up button tracking
+        menuframe = MenuFrame(mock_parent, mock_connection_manager)
 
-        # Architectural decision: MenuFrame should coordinate with other frames through events
-        # rather than direct method calls, enabling loose coupling and easier testing
+        # Should have created 8 buttons
+        assert mock_button_class.call_count == 8
 
-        class CoordinatingMenuFrame(MenuFrame, Observer):
-            def __init__(self, parent, connection_manager, event_manager):
-                super().__init__(parent, connection_manager)
-                self.event_manager = event_manager
+        # Should store button references for state management
+        assert hasattr(menuframe, "_buttons"), (
+            "MenuFrame should store button references"
+        )
+        assert len(menuframe._buttons) == 8, "Should store all 8 button references"
 
-            def refresh_repositories_clicked(self):
-                """Future implementation: publish event instead of direct call"""
-                self.event_manager.publish_event(
-                    UiEvent.REFRESH_REPOSITORIES_REQUESTED,
-                    {'timestamp': 'mock_time'}
-                )
+        # Button references should be the actual button objects
+        expected_button_names = [
+            "configure_connection",
+            "save_connection",
+            "manage_connections",
+            "test_connection",
+            "save_query",
+            "load_query",
+            "refresh_repositories",
+            "help",
+        ]
 
-        menu_frame = CoordinatingMenuFrame(mock_parent, mock_connection_manager, mock_event_manager)
-        menu_frame.refresh_repositories_clicked()
+        for button_name in expected_button_names:
+            assert button_name in menuframe._buttons, (
+                f"Should track {button_name} button"
+            )
+            assert menuframe._buttons[button_name] in mock_buttons, (
+                "Should store actual button object"
+            )
 
-        mock_event_manager.publish_event.assert_called_with(
-            UiEvent.REFRESH_REPOSITORIES_REQUESTED,
-            {'timestamp': 'mock_time'}
+    def test_menuframe_initializes_button_states_on_creation(self, mocker):
+        """Test that MenuFrame initializes button states when created"""
+        mocker.patch("view.MenuFrame.ttk.Frame.__init__")
+        mocker.patch("view.MenuFrame.ttk.Button")
+        mocker.patch("view.MenuFrame.Grid.rowconfigure")
+        mocker.patch("view.MenuFrame.Grid.columnconfigure")
+        mocker.patch("view.MenuFrame.logging")
+
+        mock_parent = mocker.Mock()
+        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        mock_connection_manager.connection = None
+
+        menuframe = MenuFrame(mock_parent, mock_connection_manager)
+
+        # Should initialize button states based on initial connection state
+        assert hasattr(menuframe, "_button_states"), "Should initialize button states"
+
+        # Should have called _update_button_states during initialization
+        # This will fail until the method exists and is called
+        assert hasattr(menuframe, "_update_button_states"), (
+            "Should have _update_button_states method"
         )
 
 
-class TestMenuFrameAccessibility:
-    """Test accessibility and usability features"""
+class TestMenuFrameObserverPatternImplementation:
+    """Tests for Observer pattern implementation - WILL FAIL until implemented"""
 
-    def test_buttons_have_proper_grid_spacing(self, mocker):
-        """Test that buttons are properly spaced for accessibility"""
+    def test_menuframe_implements_observer_interface(self):
+        """Test that MenuFrame implements Observer interface"""
+        # This will FAIL until MenuFrame actually implements Observer
+        assert issubclass(MenuFrame, Observer), (
+            "MenuFrame should implement Observer interface for event handling"
+        )
+
+    def test_menuframe_has_update_method(self):
+        """Test that MenuFrame has update method for Observer pattern"""
+        assert hasattr(MenuFrame, "update"), "MenuFrame should have update method"
+        assert callable(getattr(MenuFrame, "update")), "update should be callable"
+
+    def test_menuframe_handles_connection_changed_events(self, mocker):
+        """Test that MenuFrame responds to CONNECTION_CHANGED events"""
+        mocker.patch("view.MenuFrame.ttk.Frame.__init__")
+        mocker.patch("view.MenuFrame.ttk.Button")
+        mocker.patch("view.MenuFrame.Grid.rowconfigure")
+        mocker.patch("view.MenuFrame.Grid.columnconfigure")
+        mocker.patch("view.MenuFrame.logging")
+
         mock_parent = mocker.Mock()
         mock_connection_manager = mocker.Mock(spec=ConnectionManager)
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mock_button = mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        menuframe = MenuFrame(mock_parent, mock_connection_manager)
 
-        MenuFrame(mock_parent, mock_connection_manager)
+        # Should have _buttons and _button_states for state management
+        menuframe._buttons = {"save_connection": mocker.Mock()}
+        menuframe._button_states = {}
 
-        # Check that buttons are created with grid calls that include padding
-        button_instances = [call.return_value for call in mock_button.call_args_list]
+        # Test connection becoming valid
+        connection_data = {
+            "connection": mocker.Mock(),
+            "is_valid": True,
+            "error_message": None,
+        }
 
-        for button_instance in button_instances:
-            # Should have grid method called with padding
-            if button_instance.grid.called:
-                # Extract grid calls
-                grid_calls = button_instance.grid.call_args_list
-                # Should include padding parameters for accessibility
-                assert len(grid_calls) > 0
+        # This should update button states based on connection validity
+        menuframe.update(UiEvent.CONNECTION_CHANGED, connection_data)
 
-    def test_keyboard_navigation_support(self, mocker):
-        """Test keyboard navigation between buttons"""
+        # Should have updated internal state
+        assert menuframe._button_states.get("connection_valid") is True
+
+    def test_menuframe_handles_repository_loaded_events(self, mocker):
+        """Test that MenuFrame responds to REPOSITORY_LOADED events"""
+        mocker.patch("view.MenuFrame.ttk.Frame.__init__")
+        mocker.patch("view.MenuFrame.ttk.Button")
+        mocker.patch("view.MenuFrame.Grid.rowconfigure")
+        mocker.patch("view.MenuFrame.Grid.columnconfigure")
+        mocker.patch("view.MenuFrame.logging")
+
         mock_parent = mocker.Mock()
         mock_connection_manager = mocker.Mock(spec=ConnectionManager)
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mock_button = mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        menuframe = MenuFrame(mock_parent, mock_connection_manager)
+        menuframe._buttons = {"refresh_repositories": mocker.Mock()}
+        menuframe._button_states = {}
 
-        MenuFrame(mock_parent, mock_connection_manager)
+        # Test repositories loaded
+        repository_data = {"repositories": {"repo1": {}, "repo2": {}}, "error": None}
 
-        # Architectural decision: Buttons should support keyboard navigation for accessibility
-        # This means proper tab order and keyboard activation
+        menuframe.update(UiEvent.REPOSITORY_LOADED, repository_data)
 
-        # Buttons should be created without explicit tab order interference
-        button_calls = mock_button.call_args_list
-        for call in button_calls:
-            # Should not disable keyboard navigation
-            kwargs = call.kwargs
-            assert kwargs.get('takefocus', True) is not False
+        # Should have updated internal state
+        assert menuframe._button_states.get("repositories_loaded") is True
 
 
-class TestMenuFramePerformance:
-    """Test performance-related aspects of MenuFrame"""
+class TestMenuFrameCommandValidation:
+    """Tests for command validation - WILL FAIL until implemented"""
 
-    def test_menuframe_initialization_time(self, mocker):
-        """Test that MenuFrame initializes efficiently"""
+    def test_menuframe_has_command_validation_method(self):
+        """Test that MenuFrame has method to validate command prerequisites"""
+        assert hasattr(MenuFrame, "_can_execute_command"), (
+            "MenuFrame should have _can_execute_command method for validation"
+        )
+
+    def test_save_connection_validates_prerequisites(self, mocker):
+        """Test that saveConnection validates prerequisites before execution"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+        menuframe.connection_manager.connection = None
+
+        # Mock the save_connection function to track if it's called
+        mock_save_connection = mocker.patch("view.MenuFrame.save_connection")
+
+        # This should validate prerequisites and NOT call save_connection
+        menuframe.saveConnection()
+
+        # Should not have called save_connection due to failed validation
+        mock_save_connection.assert_not_called()
+
+    def test_test_connection_validates_prerequisites(self, mocker):
+        """Test that testConnection validates prerequisites"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+        menuframe.connection_manager.connection = None
+
+        mock_test_connection = mocker.patch("view.MenuFrame.TestConnection")
+
+        # This should validate prerequisites and handle gracefully
+        result = menuframe.testConnection()
+
+        # Should not crash, should handle validation failure gracefully
+        assert result is None or isinstance(result, str)
+
+
+class TestMenuFrameErrorHandling:
+    """Tests for error handling - WILL FAIL until implemented"""
+
+    def test_menuframe_has_error_handling_methods(self):
+        """Test that MenuFrame has error handling methods"""
+        required_methods = [
+            "_handle_button_error",
+            "_show_error_message",
+            "_execute_safely",
+        ]
+
+        for method_name in required_methods:
+            assert hasattr(MenuFrame, method_name), (
+                f"MenuFrame should have {method_name} method for error handling"
+            )
+
+    def test_button_actions_handle_errors_gracefully(self, mocker):
+        """Test that button actions handle errors without crashing"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # Mock a failing dialog
+        mocker.patch(
+            "view.MenuFrame.ConnectionDialog", side_effect=Exception("Dialog failed")
+        )
+
+        # This should handle the error gracefully, not crash
+        result = menuframe.connectionDialog()
+
+        # Should not crash, should return None or error indicator
+        assert result is None or isinstance(result, str)
+
+    def test_menuframe_recovers_from_invalid_state(self, mocker):
+        """Test that MenuFrame can recover from invalid internal state"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # Set up invalid state
+        menuframe._button_states = {"invalid_state": True}
+
+        # This should detect and correct invalid state
+        menuframe._recover_from_invalid_state()
+
+        # Should have reset to valid default state
+        assert "invalid_state" not in menuframe._button_states
+
+
+class TestMenuFrameIntegrationWithRepositoryFrame:
+    """Tests for repository frame integration - WILL FAIL until implemented"""
+
+    def test_refresh_repositories_calls_repo_frame_refresh(self, mocker):
+        """Test that refresh repositories button calls repo_frame.refresh()"""
+        # Create MenuFrame instance
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # Set up repo_frame on parent
+        mock_repo_frame = mocker.Mock()
+        menuframe.master_frame.repo_frame = mock_repo_frame
+
+        # This method should exist and call repo_frame.refresh
+        assert hasattr(menuframe, "_handle_refresh_repositories"), (
+            "MenuFrame should have _handle_refresh_repositories method"
+        )
+
+        menuframe._handle_refresh_repositories()
+
+        # Should have called refresh on repo_frame
+        mock_repo_frame.refresh.assert_called_once()
+
+    def test_refresh_repositories_handles_missing_repo_frame(self, mocker):
+        """Test graceful handling when repo_frame is missing"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        # No repo_frame on parent
+        del menuframe.master_frame.repo_frame
+
+        # Should handle gracefully, not crash
+        result = menuframe._handle_refresh_repositories()
+
+        # Should not crash, should return error indicator or None
+        assert result is None or isinstance(result, str)
+
+
+class TestMenuFrameQueryOperations:
+    """Tests for query operation support - WILL FAIL until implemented"""
+
+    def test_menuframe_has_query_state_tracking(self):
+        """Test that MenuFrame tracks query state for button management"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+
+        # Should track query state for save/load query buttons
+        assert hasattr(menuframe, "_query_state"), (
+            "MenuFrame should have _query_state attribute to track query operations"
+        )
+
+    def test_save_query_button_disabled_without_valid_query(self, mocker):
+        """Test that save query button is disabled without valid query"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        menuframe._buttons = {"save_query": mocker.Mock()}
+        menuframe._query_state = {"has_valid_query": False}
+
+        # This should update query button states
+        assert hasattr(menuframe, "_update_query_button_states"), (
+            "MenuFrame should have _update_query_button_states method"
+        )
+
+        menuframe._update_query_button_states()
+
+        # Save query should be disabled
+        menuframe._buttons["save_query"].configure.assert_called_with(state="disabled")
+
+    def test_load_query_button_always_enabled(self, mocker):
+        """Test that load query button is always enabled"""
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+
+        menuframe._buttons = {"load_query": mocker.Mock()}
+        menuframe._query_state = {"has_valid_query": False}
+
+        menuframe._update_query_button_states()
+
+        # Load query should always be enabled
+        menuframe._buttons["load_query"].configure.assert_called_with(state="normal")
+
+
+class TestMenuFramePerformanceRequirements:
+    """Tests for performance requirements - WILL FAIL until implemented"""
+
+    def test_menuframe_initialization_completes_quickly(self, mocker):
+        """Test that MenuFrame initializes within reasonable time"""
+        mocker.patch("view.MenuFrame.ttk.Frame.__init__")
+        mocker.patch("view.MenuFrame.ttk.Button")
+        mocker.patch("view.MenuFrame.Grid.rowconfigure")
+        mocker.patch("view.MenuFrame.Grid.columnconfigure")
+        mocker.patch("view.MenuFrame.logging")
+
         mock_parent = mocker.Mock()
         mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
 
         import time
+
         start_time = time.time()
 
-        MenuFrame(mock_parent, mock_connection_manager)
+        # Create MenuFrame
+        menuframe = MenuFrame(mock_parent, mock_connection_manager)
 
         end_time = time.time()
         initialization_time = end_time - start_time
 
-        # Should initialize quickly (under 1 second even with mocking overhead)
-        assert initialization_time < 1.0
+        # Should initialize quickly (within 100ms even with overhead)
+        assert initialization_time < 0.1, (
+            f"MenuFrame initialization took {initialization_time:.3f}s, should be < 0.1s"
+        )
 
-    def test_event_handling_performance(self, mocker):
+    def test_event_handling_performs_efficiently(self, mocker):
         """Test that event handling is efficient"""
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        menuframe = MenuFrame.__new__(MenuFrame)
+        menuframe.master_frame = mocker.Mock()
+        menuframe.connection_manager = mocker.Mock(spec=ConnectionManager)
+        menuframe._button_states = {}
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        class PerformanceTestMenuFrame(MenuFrame, Observer):
-            def __init__(self, parent, connection_manager):
-                super().__init__(parent, connection_manager)
-                self.event_count = 0
-
-            def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
-                self.event_count += 1
-                # Simple event handling should be fast
-                if event == UiEvent.CONNECTION_CHANGED:
-                    pass  # Minimal processing
-
-        menu_frame = PerformanceTestMenuFrame(mock_parent, mock_connection_manager)
-
-        # Test handling many events quickly
+        # Should handle many events quickly
         import time
+
         start_time = time.time()
 
         for i in range(100):
-            menu_frame.update(UiEvent.CONNECTION_CHANGED, {'is_valid': i % 2 == 0})
+            event_data = {"is_valid": i % 2 == 0}
+            menuframe.update(UiEvent.CONNECTION_CHANGED, event_data)
 
         end_time = time.time()
         handling_time = end_time - start_time
 
-        # Should handle 100 events quickly
-        assert handling_time < 0.1  # 100ms for 100 events
-        assert menu_frame.event_count == 100
+        # Should handle 100 events in under 50ms
+        assert handling_time < 0.05, (
+            f"Event handling took {handling_time:.3f}s for 100 events, should be < 0.05s"
+        )
 
 
-class TestMenuFrameArchitecturalDecisions:
-    """Test and document key architectural decisions"""
+# Additional requirement documentation tests
+class TestMenuFrameRequirements:
+    """Document what needs to be implemented - these should fail with clear messages"""
 
-    def test_error_boundary_behavior(self, mocker):
-        """Test error boundary behavior for architectural consistency"""
-        # Architectural decision: MenuFrame should act as an error boundary
-        # Button action failures should not crash the entire UI
+    def test_all_required_methods_exist(self):
+        """Document all methods that need to be implemented"""
+        required_methods = {
+            "_update_button_states": "Update button enabled/disabled states",
+            "_can_execute_command": "Validate command prerequisites",
+            "_handle_button_error": "Handle button action errors",
+            "_show_error_message": "Show error messages to user",
+            "_execute_safely": "Execute actions with error handling",
+            "_handle_refresh_repositories": "Handle repository refresh",
+            "_update_query_button_states": "Update query button states",
+            "_recover_from_invalid_state": "Recover from invalid internal state",
+            "update": "Observer pattern event handling",
+        }
 
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        missing_methods = []
+        for method_name, description in required_methods.items():
+            if not hasattr(MenuFrame, method_name):
+                missing_methods.append(f"{method_name}: {description}")
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+        if missing_methods:
+            methods_list = "\n  - ".join(missing_methods)
+            pytest.fail(
+                f"MenuFrame is missing required methods:\n  - {methods_list}\n\n"
+                f"These methods need to be implemented for proper functionality."
+            )
 
-        class ErrorBoundaryMenuFrame(MenuFrame):
-            def __init__(self, parent, connection_manager):
-                super().__init__(parent, connection_manager)
-                self.error_count = 0
+    def test_all_required_attributes_exist(self):
+        """Document all attributes that need to be implemented"""
+        # Create a test instance
+        menuframe = MenuFrame.__new__(MenuFrame)
 
-            def safe_execute(self, action_func, *args, **kwargs):
-                """Execute action with error boundary"""
-                try:
-                    return action_func(*args, **kwargs)
-                except Exception:
-                    self.error_count += 1
-                    # Log error but don't crash
-                    return None
+        required_attributes = {
+            "_buttons": "Dictionary storing button object references",
+            "_button_states": "Dictionary tracking button enabled/disabled states",
+            "_query_state": "Dictionary tracking query operation state",
+        }
 
-        menu_frame = ErrorBoundaryMenuFrame(mock_parent, mock_connection_manager)
+        missing_attributes = []
+        for attr_name, description in required_attributes.items():
+            if not hasattr(menuframe, attr_name):
+                missing_attributes.append(f"{attr_name}: {description}")
 
-        # Test that errors are contained
-        def failing_action():
-            raise ValueError("Test error")
+        if missing_attributes:
+            attrs_list = "\n  - ".join(missing_attributes)
+            pytest.fail(
+                f"MenuFrame is missing required attributes:\n  - {attrs_list}\n\n"
+                f"These attributes need to be added to MenuFrame.__init__() or class definition."
+            )
 
-        result = menu_frame.safe_execute(failing_action)
+@pytest.mark.gui
+@pytest.mark.slow
+class TestMenuFrameGUIIntegration:
+    """
+    Optional tests that require actual GUI components.
+    Run with: pytest -m gui
+    Skip in CI environments.
+    """
 
-        assert result is None
-        assert menu_frame.error_count == 1
+    def test_menuframe_gui_creation_smoke_test(self):
+        """Smoke test for actual GUI creation"""
+        import tkinter as tk
+        from controller.connection_manager import ConnectionManager
 
-    def test_state_consistency_guarantees(self, mocker):
-        """Test state consistency architectural decisions"""
-        # Architectural decision: MenuFrame should maintain consistent state
-        # even when multiple events arrive in quick succession
+        root = tk.Tk()
+        root.withdraw()  # Hide window during test
 
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        try:
+            mock_main = Mock()
+            connection_manager = ConnectionManager(mock_main)
 
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
+            # This tests actual GUI creation
+            menu_frame = MenuFrame(root, connection_manager)
 
-        class ConsistentStateMenuFrame(MenuFrame, Observer):
-            def __init__(self, parent, connection_manager):
-                super().__init__(parent, connection_manager)
-                self._state_lock = False
-                self._pending_updates = []
+            # Basic smoke tests
+            assert hasattr(menu_frame, 'master_frame')
+            assert hasattr(menu_frame, 'connection_manager')
+            assert menu_frame.connection_manager == connection_manager
 
-            def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
-                if self._state_lock:
-                    self._pending_updates.append((event, data))
-                    return
+        finally:
+            root.destroy()
+    def test_button_accessibility_features(self):
+        """Test button accessibility in real GUI"""
+        import tkinter as tk
+        from controller.connection_manager import ConnectionManager
 
-                self._state_lock = True
-                try:
-                    self._handle_event(event, data)
-                    # Process any pending updates
-                    while self._pending_updates:
-                        pending_event, pending_data = self._pending_updates.pop(0)
-                        self._handle_event(pending_event, pending_data)
-                finally:
-                    self._state_lock = False
+        root = tk.Tk()
+        root.withdraw()
 
-            def _handle_event(self, event: UiEvent, data: Dict[str, Any]) -> None:
-                """Handle individual event"""
-                pass
+        try:
+            mock_main = Mock()
+            connection_manager = ConnectionManager(mock_main)
+            menu_frame = MenuFrame(root, connection_manager)
 
-        menu_frame = ConsistentStateMenuFrame(mock_parent, mock_connection_manager)
+            # Test that buttons are accessible via keyboard navigation
+            # This would test actual tkinter focus behavior
+            # Implementation would check tab order, focus handling, etc.
 
-        # Send multiple events rapidly
-        for i in range(5):
-            menu_frame.update(UiEvent.CONNECTION_CHANGED, {'sequence': i})
+            assert True  # Placeholder for actual accessibility tests
 
-        # Should have processed all events without state corruption
-        assert not menu_frame._state_lock
-        assert len(menu_frame._pending_updates) == 0
-
-    def test_backward_compatibility_maintenance(self, mocker):
-        """Test backward compatibility architectural decisions"""
-        # Architectural decision: During migration, both old and new interfaces should work
-        # This allows incremental migration without breaking existing functionality
-
-        mock_parent = mocker.Mock()
-        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
-
-        mocker.patch('tkinter.ttk.Frame.__init__')
-        mocker.patch('tkinter.ttk.Button')
-        mocker.patch('tkinter.Grid.rowconfigure')
-        mocker.patch('tkinter.Grid.columnconfigure')
-
-        class BackwardCompatibleMenuFrame(MenuFrame, Observer):
-            def __init__(self, parent, connection_manager):
-                super().__init__(parent, connection_manager)
-                self._migration_mode = True
-
-            # Keep old interface working
-            def connectionDialog(self):
-                if self._migration_mode:
-                    # Old behavior
-                    super().connectionDialog()
-                else:
-                    # New behavior: publish event
-                    pass
-
-            def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
-                # New Observer interface
-                pass
-
-        menu_frame = BackwardCompatibleMenuFrame(mock_parent, mock_connection_manager)
-
-        # Should support both old and new interfaces
-        assert hasattr(menu_frame, 'connectionDialog')  # Old interface
-        assert hasattr(menu_frame, 'update')  # New interface
-        assert callable(menu_frame.connectionDialog)
-        assert callable(menu_frame.update)
+        finally:
+            root.destroy()

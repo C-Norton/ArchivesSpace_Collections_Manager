@@ -2022,39 +2022,150 @@ class TestFrameUtilsDocumentationAndContractCompliance:
         # Optional parameters should have defaults
         assert popup_sig.parameters["title"].default == "Warning"
         assert popup_sig.parameters["button_text"].default == "OK"
-
-    def test_error_handling_is_graceful(self, mocker):
-        """Test that error handling is graceful and doesn't crash the application"""
+    def test_path_construction_error_handling(self, mocker):
+        """Test graceful handling when path construction fails"""
         mock_root = mocker.Mock()
 
-        # Even with all operations failing, should not raise unhandled exceptions
-        mock_root.iconbitmap.side_effect = TclError("All methods fail")
-        mock_root.iconphoto.side_effect = TclError("All methods fail")
-
-        mocker.patch("os.path.abspath", side_effect=OSError("File system error"))
-        mocker.patch("os.path.dirname", side_effect=OSError("Path error"))
-        mocker.patch("os.path.join", side_effect=OSError("Join error"))
-        mocker.patch("os.path.exists", side_effect=OSError("Exists check error"))
-
-        mock_photoimage = mocker.patch(
-            "tkinter.PhotoImage", side_effect=TclError("PhotoImage error")
-        )
-        mock_image_open = mocker.patch(
-            "PIL.Image.open", side_effect=IOError("PIL error")
-        )
-
+        # Mock _construct_icon_path to return None (simulating failure)
+        mocker.patch.object(FrameUtils, "_construct_icon_path", return_value=None)
         mocker.patch("logging.debug")
-        mocker.patch("logging.warning")
         mocker.patch("logging.error")
 
-        # Should handle cascading failures gracefully
+        # Should handle gracefully and return early
         try:
             FrameUtils.set_icon(mock_root)
         except Exception as e:
-            pytest.fail(
-                f"set_icon should handle all exceptions gracefully, but raised: {e}"
+            pytest.fail(f"Should handle path construction failure gracefully: {e}")
+
+        # Verify iconbitmap was never called
+        mock_root.iconbitmap.assert_not_called()
+
+    def test_file_check_error_handling(self, mocker):
+        """Test graceful handling when file existence check fails"""
+        mock_root = mocker.Mock()
+
+        mocker.patch.object(
+            FrameUtils, "_construct_icon_path", return_value="/test/icon.ico"
+        )
+        mocker.patch.object(FrameUtils, "_check_icon_exists", return_value=False)
+        mocker.patch("logging.debug")
+        mocker.patch("logging.error")
+
+        try:
+            FrameUtils.set_icon(mock_root)
+        except Exception as e:
+            pytest.fail(f"Should handle file check failure gracefully: {e}")
+
+        mock_root.iconbitmap.assert_not_called()
+
+    def test_all_icon_methods_fail_gracefully(self, mocker):
+        """Test when all icon setting methods fail but path operations succeed"""
+        mock_root = mocker.Mock()
+        mock_root.iconbitmap.side_effect = TclError("iconbitmap failed")
+        mock_root.iconphoto.side_effect = TclError("iconphoto failed")
+
+        # Successful path operations
+        mocker.patch.object(
+            FrameUtils, "_construct_icon_path", return_value="/test/icon.ico"
+        )
+        mocker.patch.object(FrameUtils, "_check_icon_exists", return_value=True)
+
+        # Failing icon creation
+        mocker.patch("tkinter.PhotoImage", side_effect=TclError("PhotoImage failed"))
+        mocker.patch("PIL.Image.open", side_effect=IOError("PIL failed"))
+
+        mock_debug = mocker.patch("logging.debug")
+        mock_warning = mocker.patch("logging.warning")
+        mock_error = mocker.patch("logging.error")
+
+        # Should handle all failures gracefully
+        try:
+            FrameUtils.set_icon(mock_root)
+        except Exception as e:
+            pytest.fail(f"Should handle all icon method failures gracefully: {e}")
+
+        # Verify appropriate logging
+        assert mock_error.called
+        error_message = mock_error.call_args[0][0]
+        assert "Failed to set icon using all methods" in error_message
+
+    def test_graceful_degradation_pattern(self, mocker):
+        """Test the complete graceful degradation pattern"""
+        mock_root = mocker.Mock()
+
+        # Simulate the complete failure cascade that should be handled gracefully
+        scenarios = [
+            # Path construction succeeds, file exists, but all icon methods fail
+            {
+                "path_result": "/test/icon.ico",
+                "file_exists": True,
+                "iconbitmap_error": TclError("iconbitmap failed"),
+                "photoimage_error": TclError("PhotoImage failed"),
+                "pil_error": IOError("PIL failed"),
+                "expected_behavior": "logs final error",
+            },
+            # Path construction fails
+            {
+                "path_result": None,
+                "file_exists": True,
+                "iconbitmap_error": None,
+                "photoimage_error": None,
+                "pil_error": None,
+                "expected_behavior": "returns early",
+            },
+            # File doesn't exist
+            {
+                "path_result": "/test/icon.ico",
+                "file_exists": False,
+                "iconbitmap_error": None,
+                "photoimage_error": None,
+                "pil_error": None,
+                "expected_behavior": "returns early",
+            },
+        ]
+
+        for scenario in scenarios:
+            # Set up scenario
+            mocker.patch.object(
+                FrameUtils, "_construct_icon_path", return_value=scenario["path_result"]
+            )
+            mocker.patch.object(
+                FrameUtils, "_check_icon_exists", return_value=scenario["file_exists"]
             )
 
+            if scenario["iconbitmap_error"]:
+                mock_root.iconbitmap.side_effect = scenario["iconbitmap_error"]
+            else:
+                mock_root.iconbitmap.side_effect = None
+
+            if scenario["photoimage_error"]:
+                mocker.patch(
+                    "tkinter.PhotoImage", side_effect=scenario["photoimage_error"]
+                )
+            else:
+                mocker.patch("tkinter.PhotoImage", return_value=mocker.Mock())
+
+            if scenario["pil_error"]:
+                mocker.patch("PIL.Image.open", side_effect=scenario["pil_error"])
+            else:
+                mock_image = mocker.Mock()
+                mocker.patch("PIL.Image.open", return_value=mock_image)
+                mocker.patch("PIL.ImageTk.PhotoImage", return_value=mocker.Mock())
+
+            mock_debug = mocker.patch("logging.debug")
+            mock_warning = mocker.patch("logging.warning")
+            mock_error = mocker.patch("logging.error")
+
+            # Test graceful handling
+            try:
+                FrameUtils.set_icon(mock_root)
+            except Exception as e:
+                pytest.fail(
+                    f"Scenario failed: {scenario['expected_behavior']}, error: {e}"
+                )
+
+            # Reset for next scenario
+            mocker.resetall()
     def test_utility_class_design_principles(self):
         """Test that FrameUtils follows good utility class design principles"""
         import inspect
