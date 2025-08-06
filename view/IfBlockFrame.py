@@ -46,26 +46,30 @@ class IfBlockFrame(ttk.Frame):
         ttk.Label(self, text="If").grid(row=0, column=0)
 
         resource_field_combobox = ScrollableComboboxFactory.create_enum_combobox(
-            self, self.field, model.resource_field.ResourceField, max_visible_items=4,width=30
+            self,
+            self.field,
+            model.resource_field.ResourceField,
+            max_visible_items=4,
+            width=30,
         )
         resource_field_combobox.grid(row=0, column=1)
 
-
         query_type_combobox = ScrollableComboboxFactory.create_enum_combobox(
-            self, self.query_type, model.query_type.QueryType, max_visible_items=4, width=15
+            self,
+            self.query_type,
+            model.query_type.QueryType,
+            max_visible_items=4,
+            width=15,
         )
         query_type_combobox.grid(row=0, column=2)
-
-
-
 
         ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
         ttk.Button(self, text="Add", command=self.query_add).grid(row=0, column=4)
         ttk.Label(self, text="Action").grid(row=1, column=0)
 
-
-
-        ScrollableComboboxFactory.create_enum_combobox(self,self.action,model.action_type.ActionType).grid(row=1, column=1)
+        ScrollableComboboxFactory.create_enum_combobox(
+            self, self.action, model.action_type.ActionType
+        ).grid(row=1, column=1)
         ttk.Button(self, text="Submit", command=self.submit_query).grid(
             row=1, column=4, columnspan=3 if not self.note_layout else 1
         )

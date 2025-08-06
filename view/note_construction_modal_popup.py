@@ -46,7 +46,11 @@ class NoteConstructionModalPopup:
             self.label.set(self.note_manager.get_note()["label"][1])
             self.persistent_id.set(self.note_manager.get_note()["persistent_id"][1])
             self.sub_type.set(self.note_manager.get_note()["sub_type"][1])
-            self.has_subtype = Note.has_subtype(getattr(NoteType, self.note_type.get()) if self.note_type.get() else None)
+            self.has_subtype = Note.has_subtype(
+                getattr(NoteType, self.note_type.get())
+                if self.note_type.get()
+                else None
+            )
         self.frame.focus_set()
         self.frame.grab_set()
 
@@ -78,7 +82,10 @@ class NoteConstructionModalPopup:
             ttk.Label(self.frame, text="SubType").grid(row=7, column=0)
             self.sub_type.set(self.note_type.get())
             ScrollableComboboxFactory.create_enum_combobox(
-                self.frame, self.sub_type, model.note_sub_type.NoteSubType, max_visible_items=4
+                self.frame,
+                self.sub_type,
+                model.note_sub_type.NoteSubType,
+                max_visible_items=4,
             ).grid(row=7, column=1)
 
         else:
@@ -131,13 +138,17 @@ class NoteConstructionModalPopup:
         if self.validate():
             note_manager = NoteManager()
             note_manager.set_note(
-                getattr(NoteType, self.note_type.get()) if self.note_type.get() else None,
+                getattr(NoteType, self.note_type.get())
+                if self.note_type.get()
+                else None,
                 self.note_content.get("1.0", "end-1c").strip(),
                 self.publish.get(),
                 self.label.get(),
                 self.persistent_id.get(),
                 self.has_subtype,
-                getattr(NoteSubType, self.sub_type.get()) if self.sub_type.get() else None,
+                getattr(NoteSubType, self.sub_type.get())
+                if self.sub_type.get()
+                else None,
             )
             self.frame.destroy()
         else:

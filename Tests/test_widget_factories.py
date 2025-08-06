@@ -13,6 +13,7 @@ class TestScrollableComboboxFactory:
 
     def test_create_enum_combobox_basic(self, mocker):
         """Test basic enum combobox creation"""
+
         class TestEnum(Enum):
             OPTION1 = 1
             OPTION2 = 2
@@ -22,7 +23,7 @@ class TestScrollableComboboxFactory:
         textvariable = mocker.Mock()
 
         # Mock ttk.Combobox with the correct import path
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -34,9 +35,9 @@ class TestScrollableComboboxFactory:
         mock_combobox_class.assert_called_once_with(
             parent,
             textvariable=textvariable,
-            values=['OPTION1', 'OPTION2', 'OPTION3'],
-            state='readonly',
-            height=4
+            values=["OPTION1", "OPTION2", "OPTION3"],
+            state="readonly",
+            height=4,
         )
         assert result == mock_combobox
 
@@ -44,9 +45,9 @@ class TestScrollableComboboxFactory:
         """Test list combobox creation in readonly mode"""
         parent = mocker.Mock()
         textvariable = mocker.Mock()
-        values = ['Option A', 'Option B', 'Option C']
+        values = ["Option A", "Option B", "Option C"]
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -55,11 +56,7 @@ class TestScrollableComboboxFactory:
         )
 
         mock_combobox_class.assert_called_once_with(
-            parent,
-            textvariable=textvariable,
-            values=values,
-            state='readonly',
-            height=3
+            parent, textvariable=textvariable, values=values, state="readonly", height=3
         )
         assert result == mock_combobox
 
@@ -67,9 +64,9 @@ class TestScrollableComboboxFactory:
         """Test list combobox creation allowing custom entry"""
         parent = mocker.Mock()
         textvariable = mocker.Mock()
-        values = ['Option A', 'Option B']
+        values = ["Option A", "Option B"]
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -78,11 +75,7 @@ class TestScrollableComboboxFactory:
         )
 
         mock_combobox_class.assert_called_once_with(
-            parent,
-            textvariable=textvariable,
-            values=values,
-            state='normal',
-            height=4
+            parent, textvariable=textvariable, values=values, state="normal", height=4
         )
         assert result == mock_combobox
 
@@ -166,15 +159,17 @@ class TestScrollableComboboxFactory:
 
         finally:
             root.destroy()
+
     def test_custom_width_parameter(self, mocker):
         """Test that custom width is properly applied"""
+
         class TestEnum(Enum):
             OPTION1 = 1
 
         parent = mocker.Mock()
         textvariable = mocker.Mock()
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -184,10 +179,11 @@ class TestScrollableComboboxFactory:
 
         # Verify width was included in the call
         call_kwargs = mock_combobox_class.call_args[1]
-        assert call_kwargs['width'] == 25
+        assert call_kwargs["width"] == 25
 
     def test_enum_combobox_with_all_parameters(self, mocker):
         """Test enum combobox creation with all optional parameters"""
+
         class TestEnum(Enum):
             A = 1
             B = 2
@@ -195,7 +191,7 @@ class TestScrollableComboboxFactory:
         parent = mocker.Mock()
         textvariable = mocker.Mock()
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -206,18 +202,18 @@ class TestScrollableComboboxFactory:
             TestEnum,
             max_visible_items=6,
             width=30,
-            font=('Arial', 10)  # Additional tkinter parameter
+            font=("Arial", 10),  # Additional tkinter parameter
         )
 
         # Verify all parameters were passed correctly
         mock_combobox_class.assert_called_once_with(
             parent,
             textvariable=textvariable,
-            values=['A', 'B'],
-            state='readonly',
+            values=["A", "B"],
+            state="readonly",
             height=6,
             width=30,
-            font=('Arial', 10)
+            font=("Arial", 10),
         )
         assert result == mock_combobox
 
@@ -227,7 +223,7 @@ class TestScrollableComboboxFactory:
         textvariable = mocker.Mock()
         values = []
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -236,11 +232,7 @@ class TestScrollableComboboxFactory:
         )
 
         mock_combobox_class.assert_called_once_with(
-            parent,
-            textvariable=textvariable,
-            values=[],
-            state='readonly',
-            height=4
+            parent, textvariable=textvariable, values=[], state="readonly", height=4
         )
         assert result == mock_combobox
 
@@ -251,6 +243,7 @@ class TestScrollableComboboxFactory:
 
     def test_enum_values_extraction(self, mocker):
         """Test that enum values are correctly extracted as names"""
+
         class TestEnum(Enum):
             FIRST_OPTION = "value1"
             SECOND_OPTION = "value2"
@@ -259,23 +252,20 @@ class TestScrollableComboboxFactory:
         parent = mocker.Mock()
         textvariable = mocker.Mock()
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
-        ScrollableComboboxFactory.create_enum_combobox(
-            parent, textvariable, TestEnum
-        )
+        ScrollableComboboxFactory.create_enum_combobox(parent, textvariable, TestEnum)
 
         # Verify that enum names (not values) are used
         call_kwargs = mock_combobox_class.call_args[1]
-        expected_values = ['FIRST_OPTION', 'SECOND_OPTION', 'THIRD_OPTION']
-        assert call_kwargs['values'] == expected_values
+        expected_values = ["FIRST_OPTION", "SECOND_OPTION", "THIRD_OPTION"]
+        assert call_kwargs["values"] == expected_values
 
 
 class TestScrollableComboboxFactoryIntegration:
     """Integration tests that test the factory with real tkinter components"""
-
 
     def test_real_enum_combobox_creation(self):
         """Test creating a real combobox with enum (requires tkinter)"""
@@ -300,12 +290,15 @@ class TestScrollableComboboxFactoryIntegration:
 
             # Verify it's a real Combobox
             assert isinstance(combobox, ttk.Combobox)
-            assert str(combobox.cget('state')) == 'readonly'
-            assert int(combobox.cget('height')) == 4  # height is also returned as a Tcl object
-            assert list(combobox['values']) == ['OPTION1', 'OPTION2']
+            assert str(combobox.cget("state")) == "readonly"
+            assert (
+                int(combobox.cget("height")) == 4
+            )  # height is also returned as a Tcl object
+            assert list(combobox["values"]) == ["OPTION1", "OPTION2"]
 
         finally:
             root.destroy()
+
     def test_real_list_combobox_creation(self):
         """Test creating a real combobox with list values"""
         import tkinter as tk
@@ -315,16 +308,16 @@ class TestScrollableComboboxFactoryIntegration:
 
         try:
             textvariable = tk.StringVar()
-            values = ['Alpha', 'Beta', 'Gamma']
+            values = ["Alpha", "Beta", "Gamma"]
 
             combobox = ScrollableComboboxFactory.create_list_combobox(
                 root, textvariable, values, max_visible_items=2
             )
 
             assert isinstance(combobox, ttk.Combobox)
-            assert str(combobox['state']) == 'readonly'
-            assert combobox['height'] == 2
-            assert list(combobox['values']) == values
+            assert str(combobox["state"]) == "readonly"
+            assert combobox["height"] == 2
+            assert list(combobox["values"]) == values
 
         finally:
             root.destroy()
@@ -338,15 +331,15 @@ class TestScrollableComboboxFactoryIntegration:
 
         try:
             textvariable = tk.StringVar()
-            values = ['Predefined1', 'Predefined2']
+            values = ["Predefined1", "Predefined2"]
 
             combobox = ScrollableComboboxFactory.create_list_combobox(
                 root, textvariable, values, allow_custom_entry=True
             )
 
             assert isinstance(combobox, ttk.Combobox)
-            assert str(combobox['state']) == 'normal'  # Should allow text entry
-            assert list(combobox['values']) == values
+            assert str(combobox["state"]) == "normal"  # Should allow text entry
+            assert list(combobox["values"]) == values
 
         finally:
             root.destroy()
@@ -361,42 +354,44 @@ class TestScrollableComboboxFactoryErrorHandling:
         textvariable = mocker.Mock()
 
         # Mock ttk.Combobox
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
         # This should raise an AttributeError when trying to iterate over non-enum
         with pytest.raises(TypeError):
             ScrollableComboboxFactory.create_enum_combobox(
-                parent, textvariable, str  # str is not an Enum
+                parent,
+                textvariable,
+                str,  # str is not an Enum
             )
 
     def test_negative_max_visible_items(self, mocker):
         """Test with negative max_visible_items parameter"""
         parent = mocker.Mock()
         textvariable = mocker.Mock()
-        values = ['A', 'B']
+        values = ["A", "B"]
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
         # Should accept negative values (tkinter might handle this gracefully)
         result = ScrollableComboboxFactory.create_list_combobox(
-            parent,         textvariable, values, max_visible_items=-1
+            parent, textvariable, values, max_visible_items=-1
         )
 
         call_kwargs = mock_combobox_class.call_args[1]
-        assert call_kwargs['height'] == -1
+        assert call_kwargs["height"] == -1
         assert result == mock_combobox
 
     def test_none_values_in_list(self, mocker):
         """Test with None values in the list"""
         parent = mocker.Mock()
         textvariable = mocker.Mock()
-        values = ['Option1', None, 'Option3']
+        values = ["Option1", None, "Option3"]
 
-        mock_combobox_class = mocker.patch('view.util.widget_factories.ttk.Combobox')
+        mock_combobox_class = mocker.patch("view.util.widget_factories.ttk.Combobox")
         mock_combobox = mocker.Mock()
         mock_combobox_class.return_value = mock_combobox
 
@@ -406,5 +401,5 @@ class TestScrollableComboboxFactoryErrorHandling:
         )
 
         call_kwargs = mock_combobox_class.call_args[1]
-        assert call_kwargs['values'] == ['Option1', None, 'Option3']
+        assert call_kwargs["values"] == ["Option1", None, "Option3"]
         assert result == mock_combobox

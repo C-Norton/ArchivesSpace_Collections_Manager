@@ -10,6 +10,7 @@ class UiEvent(Enum):
     changes, allowing consistent interaction and processing of these events throughout
     the system.
     """
+
     REPOSITORY_SELECTION_CHANGED = "repository_selection_changed"
     CONNECTION_CHANGED = "connection_changed"
     REPOSITORIES_LOADED = "repositories_loaded"

@@ -16,7 +16,6 @@ class RepoFrame(ttk.Frame):
     def refresh(self):
         repos = self.master_frame.connection_manager.get_repositories()
 
-
         for index, repo in enumerate(repos):
             checkvar = tkinter.IntVar()
             self.check_buttons.update(

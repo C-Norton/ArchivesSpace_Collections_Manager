@@ -1,10 +1,14 @@
 from __future__ import annotations
 from tkinter import *
 from tkinter import ttk
+from typing import TYPE_CHECKING
 
 from controller.connection_manager import ConnectionManager
-from view import MasterFrame
+from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl
 from view.util.FrameUtils import FrameUtils
+
+if TYPE_CHECKING:
+    from view.MasterFrame import MasterFrame
 
 
 class ConnectionDialog:
@@ -20,7 +24,7 @@ class ConnectionDialog:
     frame = {}
 
     def __init__(
-        self, master_frame: MasterFrame, connection_manager: ConnectionManager
+        self, master_frame: 'MasterFrame', connection_manager: ConnectionManager
     ):
         self.master_frame = master_frame
         self.connection_manager = connection_manager
@@ -62,3 +66,23 @@ class ConnectionDialog:
             self.server.get(), self.username.get(), self.password.get()
         )
         self.frame.destroy()
+def create_configure_connection_button(parent, connection_manager, **kwargs) -> MenuButtonWidget:
+    """Factory function to create Configure Connection button"""
+    impl = ConfigureConnectionButtonImpl(parent, connection_manager)
+    return MenuButtonWidget(parent, impl, **kwargs)
+class ConfigureConnectionButtonImpl(BaseMenuButtonImpl):
+    """Implementation for Configure Connection button"""
+
+    def __init__(self, parent, connection_manager):
+        super().__init__(parent, "Configure Connection")
+        self.connection_manager = connection_manager
+        self._dialog = None
+
+    def on_click(self) -> None:
+        """Show connection configuration dialog"""
+        if self._dialog and self._dialog.winfo_exists():
+            self._dialog.lift()
+            self._dialog.focus_force()
+        else:
+            self._dialog = ConnectionDialog(self.parent, self.connection_manager)
+

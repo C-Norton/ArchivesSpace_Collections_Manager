@@ -1,6 +1,7 @@
 from tkinter import ttk, Toplevel
 
 from view.util.FrameUtils import FrameUtils
+from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl
 
 
 class HelpDialog:
@@ -50,3 +51,26 @@ class HelpDialog:
     def close_window(self):
         self.destroy()
         ttk.Frame.destroy(self.frame)
+
+
+class HelpButtonImpl(BaseMenuButtonImpl):
+    """Implementation for Help button"""
+    
+    def __init__(self, parent):
+        super().__init__(parent, "Help")
+        self.parent = parent
+        self._dialog = None
+    
+    def on_click(self) -> None:
+        """Show help dialog"""
+        if self._dialog and hasattr(self._dialog, 'winfo_exists') and self._dialog.winfo_exists():
+            self._dialog.lift()
+            self._dialog.focus_force()
+        else:
+            self._dialog = HelpDialog(self.parent)
+
+
+def create_help_button(parent, **kwargs) -> MenuButtonWidget:
+    """Factory function to create Help button"""
+    impl = HelpButtonImpl(parent)
+    return MenuButtonWidget(parent, impl, **kwargs)

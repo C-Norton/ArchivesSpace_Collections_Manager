@@ -156,9 +156,7 @@ class TestRepositoryListRetrieval:
 
         # Mock the response to return JSON strings
         mock_response = Mock()
-        mock_response.content = (
-            '{"uri": "/repositories/2", "repo_code": "TEST1"}'
-        )
+        mock_response.content = '{"uri": "/repositories/2", "repo_code": "TEST1"}'
 
         mock_connection.query.return_value = mock_response
 

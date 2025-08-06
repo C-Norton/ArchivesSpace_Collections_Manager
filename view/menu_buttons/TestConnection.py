@@ -8,6 +8,7 @@ from controller.connection_exceptions import (
     ServerError,
 )
 from view.util.FrameUtils import FrameUtils
+from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl
 
 
 class TestConnection:
@@ -51,3 +52,32 @@ class TestConnection:
 
     def close_window(self):
         ttk.Frame.destroy(self.frame)
+
+class TestConnectionButtonImpl(BaseMenuButtonImpl):
+    """Implementation for Test Connection button"""
+    
+    def __init__(self, parent, connection_manager):
+        super().__init__(parent, "Test Connection")  
+        self.connection_manager = connection_manager
+    
+    @property
+    def clickable(self) -> bool:
+        """Only clickable when there's a connection to test"""
+        return (self._clickable and 
+                self.connection_manager.connection is not None)
+    
+    @clickable.setter
+    def clickable(self, value: bool) -> None:
+        """Set base clickability - actual clickability depends on connection state"""
+        self._clickable = value
+    
+    def on_click(self) -> None:
+        """Test the current connection"""
+        if self.connection_manager.connection:
+            TestConnection(self.connection_manager.connection)
+
+
+def create_test_connection_button(parent, connection_manager, **kwargs) -> MenuButtonWidget:
+    """Factory function to create Test Connection button"""
+    impl = TestConnectionButtonImpl(parent, connection_manager)
+    return MenuButtonWidget(parent, impl, **kwargs)

@@ -7,7 +7,7 @@ decisions rather than GUI implementation details.
 """
 
 import pytest
-from unittest.mock import Mock
+
 from typing import Dict, Any
 
 # Import the classes we're testing
@@ -18,17 +18,17 @@ from observer.observer import Observer
 from view.ui_event_manager import UiEventManager
 
 
-class TestMenuFrameInterface:
+class TestMenuFrame:
     """Test MenuFrame interface compliance without GUI instantiation"""
 
     def test_has_required_methods(self):
         """Test that MenuFrame has all expected public methods"""
         required_methods = [
-            'connectionDialog',
-            'saveConnection',
-            'testConnection',
-            'helpButton',
-            'manageConnections'
+            "connectionDialog",
+            "saveConnection",
+            "testConnection",
+            "helpButton",
+            "manageConnections",
         ]
 
         for method_name in required_methods:
@@ -38,6 +38,7 @@ class TestMenuFrameInterface:
     def test_inherits_from_correct_base_class(self):
         """Test MenuFrame inheritance without instantiating"""
         from tkinter import ttk
+
         assert issubclass(MenuFrame, ttk.Frame)
 
     def test_menuframe_button_layout_constants(self):
@@ -45,91 +46,42 @@ class TestMenuFrameInterface:
         # These represent the architectural decisions about button layout
         expected_button_count = 8
         expected_buttons = [
-            "Configure Connection", "Save Connection", "Manage Saved Connections",
-            "Test Connection", "Save Query", "Load Query", "Refresh Repositories", "Help"
+            "Configure Connection",
+            "Save Connection",
+            "Manage Saved Connections",
+            "Test Connection",
+            "Save Query",
+            "Load Query",
+            "Refresh Repositories",
+            "Help",
         ]
 
         # Test that our expectations match the class design
         # This will help catch changes during refactoring
         assert len(expected_buttons) == expected_button_count
 
-
-class TestMenuFrameObserverPatternCompatibility:
-    """Test compatibility with future Observer pattern implementation"""
-
     @pytest.fixture
-    def observer_menuframe_mock(self, mocker):
-        """Create a mock that demonstrates future Observer pattern compatibility"""
+    def method_setup(self, mocker):
+        print(f"Setting up method: {request.function.__name__}")
+        self.mock_parent = mocker.Mock()
+        self.mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        self.mock_event_manager = mocker.Mock(spec=UiEventManager)
+        self.menu_frame = MenuFrame(
+            self.mock_parent, self.mock_connection_manager, self.mock_event_manager
+        )
+        yield
+        print(f"Tearing down method: {request.function.__name__}")
 
-        class FutureObserverMenuFrame(Observer):
-            """Mock of what MenuFrame might look like with Observer pattern"""
-
-            def __init__(self, parent, connection_manager):
-                self.master_frame = parent
-                self.connection_manager = connection_manager
-                self.event_manager = mocker.Mock(spec=UiEventManager)
-                self._button_states = {}
-                self._subscribe_to_events()
-
-            def _subscribe_to_events(self):
-                """Subscribe to UI events"""
-                self.event_manager.attach(self)
-
-            def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
-                """Handle observed events"""
-                if event == UiEvent.CONNECTION_CHANGED:
-                    self._handle_connection_changed(data)
-                elif event == UiEvent.REPOSITORY_LOADED:
-                    self._handle_repository_loaded(data)
-
-            def _handle_connection_changed(self, data: Dict[str, Any]) -> None:
-                """Handle connection state changes"""
-                is_valid = data.get('is_valid', False) if data else False
-                self._button_states['connection_valid'] = is_valid
-
-            def _handle_repository_loaded(self, data: Dict[str, Any]) -> None:
-                """Handle repository loading events"""
-                repositories = data.get('repositories', {}) if data else {}
-                self._button_states['repositories_loaded'] = len(repositories) > 0
-
-            # Current MenuFrame methods for backward compatibility
-            def connectionDialog(self):
-                from view.menu_buttons.ConfigureConnection import ConnectionDialog
-                return ConnectionDialog(self.master_frame, self.connection_manager)
-
-            def saveConnection(self):
-                from view.menu_buttons.SaveConnection import save_connection
-                return save_connection(self.connection_manager.connection)
-
-        return FutureObserverMenuFrame
-
-
-
-    def test_repository_loaded_event_handling(self, mocker, observer_menuframe_mock):
-        """Test handling of REPOSITORY_LOADED events"""
-        mock_parent = Mock()
-        mock_connection_manager = Mock(spec=ConnectionManager)
-
-        future_menuframe = observer_menuframe_mock(mock_parent, mock_connection_manager)
-
-        # Test with repositories
-        repository_data = {
-            'repositories': {'repo1': {}, 'repo2': {}},
-            'error': None
-        }
-
-        future_menuframe.update(UiEvent.REPOSITORY_LOADED, repository_data)
-        assert future_menuframe._button_states.get('repositories_loaded') is True
-
-        # Test without repositories
-        empty_repository_data = {
-            'repositories': {},
-            'error': 'No repositories found'
-        }
-
-        future_menuframe.update(UiEvent.REPOSITORY_LOADED, empty_repository_data)
-        assert future_menuframe._button_states.get('repositories_loaded') is False
-
+    def test_menuframe_event_handling_connection_changed(self, method_setup):
+        """Test that MenuFrame handles events correctly, specifically connection"""
+        assert not self.menu_frame.save_connection_button.clickable
+        assert not self.menu_frame.refresh_repositories_button.clickable
+        self.menu_frame.handle_event(
+            UiEvent.CONNECTION_CHANGED,
+            {"connection": "mock_connection", "is_valid": True, "error_message": None},
+        )
+        assert self.menu_frame.save_connection_button.clickable
+        assert self.menu_frame.refresh_repositories_button.clickable
 
 
 class TestMenuFrameIntegration:
@@ -137,14 +89,14 @@ class TestMenuFrameIntegration:
 
     def test_integration_with_real_connection_manager(self, mocker):
         """Test MenuFrame logic with real ConnectionManager"""
-        mock_parent = Mock()
-        mock_main = Mock()
+        mock_parent = mocker.Mock()
+        mock_main = mocker.Mock()
 
         # Create real ConnectionManager instance
         connection_manager = ConnectionManager(mock_main)
 
         # Test the business logic components
-        menu_frame = MenuFrame.__new__(MenuFrame)
+        menu_frame = MenuFrame(mock_parent, connection_manager)
         menu_frame.master_frame = mock_parent
         menu_frame.connection_manager = connection_manager
 
@@ -165,23 +117,23 @@ class TestMenuFrameIntegration:
 
             def refresh_repositories_requested(self):
                 """Publish event instead of direct method call"""
-                event_data = {'timestamp': 'mock_time', 'source': 'menu_frame'}
+                event_data = {"timestamp": "mock_time", "source": "menu_frame"}
                 self.event_manager.publish_event(
                     UiEvent.REPOSITORY_LOADED,  # Using existing event for test
-                    event_data
+                    event_data,
                 )
-                self.published_events.append('refresh_requested')
+                self.published_events.append("refresh_requested")
 
             def update(self, event: UiEvent, data: Dict[str, Any]) -> None:
                 """Handle incoming events"""
                 if event == UiEvent.CONNECTION_CHANGED:
                     # Could trigger repository refresh if connection becomes valid
-                    if data and data.get('is_valid'):
+                    if data and data.get("is_valid"):
                         self.refresh_repositories_requested()
 
-        mock_parent = Mock()
-        mock_connection_manager = Mock(spec=ConnectionManager)
-        mock_event_manager = Mock(spec=UiEventManager)
+        mock_parent = mocker.Mock()
+        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        mock_event_manager = mocker.Mock(spec=UiEventManager)
 
         coordinating_frame = EventCoordinatingMenuFrame(
             mock_parent, mock_connection_manager, mock_event_manager
@@ -227,9 +179,9 @@ class TestMenuFrameIntegration:
                 """Handle events"""
                 pass
 
-        mock_parent = Mock()
-        mock_connection_manager = Mock(spec=ConnectionManager)
-        mock_event_manager = Mock(spec=UiEventManager)
+        mock_parent = mocker.Mock()
+        mock_connection_manager = mocker.Mock(spec=ConnectionManager)
+        mock_event_manager = mocker.Mock(spec=UiEventManager)
 
         managed_frame = LifecycleManagedMenuFrame(
             mock_parent, mock_connection_manager, mock_event_manager
@@ -801,6 +753,7 @@ class TestMenuFrameRequirements:
                 f"These attributes need to be added to MenuFrame.__init__() or class definition."
             )
 
+
 @pytest.mark.gui
 @pytest.mark.slow
 class TestMenuFrameGUIIntegration:
@@ -810,7 +763,7 @@ class TestMenuFrameGUIIntegration:
     Skip in CI environments.
     """
 
-    def test_menuframe_gui_creation_smoke_test(self):
+    def test_menuframe_gui_creation_smoke_test(self, mocker):
         """Smoke test for actual GUI creation"""
         import tkinter as tk
         from controller.connection_manager import ConnectionManager
@@ -819,20 +772,21 @@ class TestMenuFrameGUIIntegration:
         root.withdraw()  # Hide window during test
 
         try:
-            mock_main = Mock()
+            mock_main = mocker.Mock()
             connection_manager = ConnectionManager(mock_main)
 
             # This tests actual GUI creation
             menu_frame = MenuFrame(root, connection_manager)
 
             # Basic smoke tests
-            assert hasattr(menu_frame, 'master_frame')
-            assert hasattr(menu_frame, 'connection_manager')
+            assert hasattr(menu_frame, "master_frame")
+            assert hasattr(menu_frame, "connection_manager")
             assert menu_frame.connection_manager == connection_manager
 
         finally:
             root.destroy()
-    def test_button_accessibility_features(self):
+
+    def test_button_accessibility_features(self, mocker):
         """Test button accessibility in real GUI"""
         import tkinter as tk
         from controller.connection_manager import ConnectionManager
@@ -841,7 +795,7 @@ class TestMenuFrameGUIIntegration:
         root.withdraw()
 
         try:
-            mock_main = Mock()
+            mock_main = mocker.Mock()
             connection_manager = ConnectionManager(mock_main)
             menu_frame = MenuFrame(root, connection_manager)
 

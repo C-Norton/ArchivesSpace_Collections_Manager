@@ -9,6 +9,7 @@ from controller.connection_exceptions import (
 )
 from view.util.FrameUtils import FrameUtils
 from model.credential_index_manager import credential_manager
+from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl, PopupButton
 
 
 def save_connection(connection: Connection):
@@ -62,3 +63,37 @@ def save_connection(connection: Connection):
         child.grid_configure(padx=5, pady=5)
     frame.focus_set()
     frame.grab_set()
+
+class SaveConnectionButtonImpl(BaseMenuButtonImpl, PopupButton):
+    """Implementation for Save Connection button - also implements PopupButton"""
+    
+    def __init__(self, parent, connection_manager):
+        super().__init__(parent, "Save Connection")
+        self.connection_manager = connection_manager
+    
+    @property
+    def clickable(self) -> bool:
+        """Only clickable when there's a connection to save"""
+        return (self._clickable and 
+                self.connection_manager.connection is not None and
+                self.connection_manager.connection.validated)
+    
+    @clickable.setter
+    def clickable(self, value: bool) -> None:
+        """Set base clickability - actual clickability depends on connection state"""
+        self._clickable = value
+    
+    def on_click(self) -> None:
+        """Save the current connection"""
+        if self.connection_manager.connection:
+            save_connection(self.connection_manager.connection)
+    
+    def on_close(self) -> None:
+        """Handle any cleanup when popup closes"""
+        pass  # No specific cleanup needed for this button
+
+
+def create_save_connection_button(parent, connection_manager, **kwargs) -> MenuButtonWidget:
+    """Factory function to create Save Connection button"""
+    impl = SaveConnectionButtonImpl(parent, connection_manager)  
+    return MenuButtonWidget(parent, impl, **kwargs)

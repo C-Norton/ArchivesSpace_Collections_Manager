@@ -355,7 +355,6 @@ class TestFrameUtilsSetIconMethodFallbacks:
         mock_pil_photo = mocker.Mock()
         mock_imagetk.return_value = mock_pil_photo
 
-
         # We expect iconphoto to be called only once, in the PIL fallback
         mock_root.iconphoto.return_value = None
 
@@ -582,9 +581,9 @@ class TestFrameUtilsSetIconRootObjectTypes:
 
         debug_calls = [call.args[0] for call in mock_debug.call_args_list]
 
-
         root_type_logged = any(
-            f"Root object type: <class 'unittest.mock.Mock'>" in call for call in debug_calls
+            f"Root object type: <class 'unittest.mock.Mock'>" in call
+            for call in debug_calls
         )
         assert root_type_logged
 
@@ -1366,6 +1365,8 @@ class TestFrameUtilsComprehensiveParameterizedTests:
 
         # Should call iconphoto twice
         assert mock_root.iconphoto.call_count == 2
+
+
 class TestFrameUtilsLoggingBehavior:
     """Test comprehensive logging behavior across both methods"""
 
@@ -2022,6 +2023,7 @@ class TestFrameUtilsDocumentationAndContractCompliance:
         # Optional parameters should have defaults
         assert popup_sig.parameters["title"].default == "Warning"
         assert popup_sig.parameters["button_text"].default == "OK"
+
     def test_path_construction_error_handling(self, mocker):
         """Test graceful handling when path construction fails"""
         mock_root = mocker.Mock()
@@ -2166,6 +2168,7 @@ class TestFrameUtilsDocumentationAndContractCompliance:
 
             # Reset for next scenario
             mocker.resetall()
+
     def test_utility_class_design_principles(self):
         """Test that FrameUtils follows good utility class design principles"""
         import inspect

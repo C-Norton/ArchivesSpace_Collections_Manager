@@ -7,6 +7,7 @@ from tkinter import ttk, Toplevel
 from controller.connection_manager import ConnectionManager
 from view.util.FrameUtils import FrameUtils
 from model.credential_index_manager import credential_manager
+from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class ManageConnections:
 
     def _create_dialog(self):
         """Create and display the manage connections dialog."""
-        self.dialog = Toplevel(self.master_frame.root)
+        self.dialog = Toplevel(self.master_frame)
         self.dialog.title("Manage Connections")
         self.dialog.geometry("600x400")
         FrameUtils.set_icon(self.dialog)
@@ -342,9 +343,26 @@ class ManageConnections:
             )
 
 
+class ManageConnectionsButtonImpl(BaseMenuButtonImpl):
+    """Implementation for Manage Connections button"""
+    
+    def __init__(self, parent, connection_manager):
+        super().__init__(parent, "Manage Saved Connections")
+        self.parent = parent
+        self.connection_manager = connection_manager
+        self._manage_connections = None
+    
+    def on_click(self) -> None:
+        """Show manage connections dialog"""
+        if not self._manage_connections:
+            self._manage_connections = ManageConnections(self.parent, self.connection_manager)
+        self._manage_connections.on_click()
+
+
 # Factory function for easier integration
 def create_manage_connections_button(
-    master_frame, connection_manager: ConnectionManager
-) -> ManageConnectionsButton:
-    """Factory function to create a ManageConnectionsButton instance."""
-    return ManageConnectionsButton(master_frame, connection_manager)
+    parent, connection_manager: ConnectionManager, **kwargs
+) -> MenuButtonWidget:
+    """Factory function to create a Manage Connections button."""
+    impl = ManageConnectionsButtonImpl(parent, connection_manager)
+    return MenuButtonWidget(parent, impl, **kwargs)

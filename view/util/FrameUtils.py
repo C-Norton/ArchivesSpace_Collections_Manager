@@ -61,7 +61,15 @@ class FrameUtils:
             root.iconbitmap(icon_path)
             logging.debug("Icon set successfully using iconbitmap")
 
-        except (TclError, AttributeError, OSError, IOError, RuntimeError, TypeError, Exception) as e:
+        except (
+            TclError,
+            AttributeError,
+            OSError,
+            IOError,
+            RuntimeError,
+            TypeError,
+            Exception,
+        ) as e:
             logging.warning(f"Failed to set icon using iconbitmap: {e}")
 
             try:
@@ -69,7 +77,15 @@ class FrameUtils:
                 icon = tkinter.PhotoImage(file=icon_path)
                 root.iconphoto(False, icon)
                 logging.debug("Icon set successfully using PhotoImage")
-            except (TclError, OSError, ValueError, MemoryError, TypeError, RuntimeError, Exception) as e:
+            except (
+                TclError,
+                OSError,
+                ValueError,
+                MemoryError,
+                TypeError,
+                RuntimeError,
+                Exception,
+            ) as e:
                 logging.warning(f"Failed to set icon using PhotoImage: {e}")
 
                 try:
@@ -78,7 +94,16 @@ class FrameUtils:
                     photo = ImageTk.PhotoImage(icon)
                     root.iconphoto(False, photo)
                     logging.debug("Icon set successfully using PIL")
-                except (IOError, OSError, ValueError, MemoryError, AttributeError, TypeError, RuntimeError, Exception) as e:
+                except (
+                    IOError,
+                    OSError,
+                    ValueError,
+                    MemoryError,
+                    AttributeError,
+                    TypeError,
+                    RuntimeError,
+                    Exception,
+                ) as e:
                     logging.error(f"Failed to set icon using all methods: {e}")
         finally:
             logging.debug("Exiting set_icon method")
@@ -90,7 +115,7 @@ class FrameUtils:
             FrameUtils.set_icon(popup)
         except (AttributeError, Exception) as e:
             logging.error(f"Failed to set icon for modal message popup: {e}")
-            
+
         popup.title(title)
         ttk.Label(popup, text=message, wraplength=220).grid(row=0, column=0)
         ttk.Button(popup, text=button_text, command=popup.destroy).grid(row=1, column=0)
