@@ -1,10 +1,12 @@
 from __future__ import annotations
 from tkinter import *
 from tkinter import ttk
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from controller.connection_manager import ConnectionManager
+from observer.ui_event import UiEvent
 from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl
+from view.ui_event_manager import UiEventManager
 from view.util.FrameUtils import FrameUtils
 
 if TYPE_CHECKING:
@@ -24,8 +26,11 @@ class ConnectionDialog:
     frame = {}
 
     def __init__(
-        self, master_frame: 'MasterFrame', connection_manager: ConnectionManager
+        self, master_frame: 'MasterFrame', connection_manager: ConnectionManager,event_manager :Optional[UiEventManager] = None
     ):
+        if event_manager is None:
+            event_manager = UiEventManager()
+        self.event_manager = event_manager
         self.master_frame = master_frame
         self.connection_manager = connection_manager
         self.server = StringVar()
@@ -52,6 +57,7 @@ class ConnectionDialog:
         ttk.Entry(main_frame, width=35, textvariable=self.password, show="*").grid(
             column=2, row=3
         )
+        # Use the close_window method as the button's command
         ttk.Button(
             main_frame, width=70, text="Save and Close", command=self.close_window
         ).grid(column=1, row=4, columnspan=2)
@@ -64,6 +70,9 @@ class ConnectionDialog:
     def close_window(self):
         self.connection_manager.set_connection(
             self.server.get(), self.username.get(), self.password.get()
+        )
+        self.event_manager.publish_event(
+            UiEvent.CONNECTION_CHANGED, {"server": self.server.get()}
         )
         self.frame.destroy()
 def create_configure_connection_button(parent, connection_manager, **kwargs) -> MenuButtonWidget:
@@ -80,9 +89,9 @@ class ConfigureConnectionButtonImpl(BaseMenuButtonImpl):
 
     def on_click(self) -> None:
         """Show connection configuration dialog"""
-        if self._dialog and self._dialog.winfo_exists():
-            self._dialog.lift()
-            self._dialog.focus_force()
+        if self._dialog and hasattr(self._dialog, 'frame') and self._dialog.frame.winfo_exists():
+            self._dialog.frame.lift()
+            self._dialog.frame.focus_force()
         else:
             self._dialog = ConnectionDialog(self.parent, self.connection_manager)
 
