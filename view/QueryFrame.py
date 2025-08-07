@@ -1,6 +1,10 @@
+from __future__ import annotations
 import tkinter
 from tkinter import ttk
-from view import MasterFrame
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from view.MasterFrame import MasterFrame
 
 
 class QueryFrame(ttk.Frame):
@@ -12,7 +16,6 @@ class QueryFrame(ttk.Frame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         self.frame = ttk.Frame(master=self.master_frame)
-        self.pack(side="bottom", fill="x")
         self.width = 1
         self.height = 1
         self.operator = tkinter.StringVar()

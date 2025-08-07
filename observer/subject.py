@@ -47,4 +47,4 @@ class SubjectMixin:
         if data is None:
             data = {}
         for observer in self._observers:
-            observer.update(event, data)
+            observer.handle_event(event, data)

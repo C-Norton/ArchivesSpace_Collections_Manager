@@ -1,8 +1,10 @@
+from __future__ import annotations
 import logging
 from tkinter import ttk, Grid
-from typing import Any, Dict
+from typing import Any, Dict, TYPE_CHECKING
 
-import view.MasterFrame as MasterFrame
+if TYPE_CHECKING:
+    from view.MasterFrame import MasterFrame
 from controller.connection_manager import ConnectionManager
 from observer import ui_event
 from observer.observer import Observer
@@ -36,7 +38,6 @@ class MenuFrame(ttk.Frame, SubjectMixin, Observer):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         self.connection_manager = connection_manager
-        self.pack(side="top", fill="x")
         logging.debug("Initial frame setup complete")
 
         # Create buttons using the new factory functions
@@ -90,7 +91,6 @@ class MenuFrame(ttk.Frame, SubjectMixin, Observer):
 
         # Set up dynamic button resizing
         Grid.rowconfigure(self, index=0, weight=1)
-        self.pack(side="top", fill="x")
         for i in range(len(self.buttons)):
             Grid.columnconfigure(self, index=i, weight=1)
 

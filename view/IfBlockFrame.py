@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import tkinter
-
 from tkinter import ttk
+from typing import TYPE_CHECKING
 
-import model.action_type
 import model.query_type
 import model.resource_field
+import model.operator_node
 from controller.QueryManager import QueryManager
 
-import model.action_type
-import model.query_type
-import model.resource_field
-from view import MasterFrame
-import model.operator_node
-from view.note_construction_modal_popup import NoteConstructionModalPopup
+if TYPE_CHECKING:
+    from view.MasterFrame import MasterFrame
 from view.util.widget_factories import ScrollableComboboxFactory
 
 
@@ -28,7 +24,6 @@ class IfBlockFrame(ttk.Frame):
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
-        self.pack(side="bottom", fill="x")
         self.width = 1
         self.height = 1
 
@@ -37,9 +32,6 @@ class IfBlockFrame(ttk.Frame):
         self.query_type = tkinter.StringVar()
         self.query_type.set("Equals")
         self.input = tkinter.StringVar()
-        self.action = tkinter.StringVar()
-        self.action.set("Log")
-        self.note_layout = False
         self.draw_if_block()
 
     def draw_if_block(self):
@@ -65,34 +57,6 @@ class IfBlockFrame(ttk.Frame):
 
         ttk.Entry(self, textvariable=self.input, width=35).grid(row=0, column=3)
         ttk.Button(self, text="Add", command=self.query_add).grid(row=0, column=4)
-        ttk.Label(self, text="Action").grid(row=1, column=0)
-
-        ScrollableComboboxFactory.create_enum_combobox(
-            self, self.action, model.action_type.ActionType
-        ).grid(row=1, column=1)
-        ttk.Button(self, text="Submit", command=self.submit_query).grid(
-            row=1, column=4, columnspan=3 if not self.note_layout else 1
-        )
-        if self.note_layout:
-            ttk.Button(self, text="Define Note", command=self.define_note).grid(
-                row=1, column=2, columnspan=2
-            )
-
-        def on_action_change(*args):
-            if (
-                self.action.get() == "Create_Note"
-                or self.action.get() == "Replace_Note"
-            ):
-                self.note_layout = True
-                self.redraw_layout()
-            else:
-                self.note_layout = False
-                self.redraw_layout()
-
-        self.action.trace("w", on_action_change)
-
-    def submit_query(self):
-        pass
 
     def query_add(self):
         """
@@ -111,9 +75,6 @@ class IfBlockFrame(ttk.Frame):
 
         # Redraw the entire layout
         self.draw_if_block()
-
-    def define_note(self):
-        NoteConstructionModalPopup(self.master_frame)
 
     """
     drawline needs a few items to be drawn

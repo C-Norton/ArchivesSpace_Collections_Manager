@@ -1,7 +1,10 @@
+from __future__ import annotations
 import tkinter
 from tkinter import ttk
+from typing import TYPE_CHECKING
 
-import view.MasterFrame as MasterFrame
+if TYPE_CHECKING:
+    from view.MasterFrame import MasterFrame
 
 
 class RepoFrame(ttk.Frame):
@@ -10,7 +13,6 @@ class RepoFrame(ttk.Frame):
     def __init__(self, parent: MasterFrame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
-        self.pack(side="bottom", fill="x")
         self.check_buttons = dict()
 
     def refresh(self):
