@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 import logging
 from tkinter import ttk, Grid
 from typing import Any, Dict, TYPE_CHECKING
@@ -31,7 +31,7 @@ class MenuFrame(ttk.Frame, SubjectMixin, Observer):
 
     def __init__(
         self,
-        parent: MasterFrame,
+        parent: ttk.Frame,
         connection_manager: ConnectionManager,
         event_manager: UiEventManager = None,
     ):

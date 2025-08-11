@@ -2,6 +2,7 @@ from controller.connection import Connection
 from view.menu_buttons import TestConnection
 from controller.HttpRequestType import HttpRequestType
 from view.menu_buttons.MenuButton import MenuButtonWidget, BaseMenuButtonImpl
+from view.ui_event_manager import UiEventManager
 
 
 def refresh_repositories(connection):
@@ -17,6 +18,7 @@ def refresh_repositories(connection):
             http_request_type=HttpRequestType.GET, endpoint="repositories"
         )
 
+
     else:
         TestConnection.TestConnection(connection)
         return False
@@ -24,8 +26,12 @@ def refresh_repositories(connection):
 class RefreshRepositoriesButtonImpl(BaseMenuButtonImpl):
     """Implementation for Refresh Repositories button"""
     
-    def __init__(self, parent, repo_frame):
+    def __init__(self, parent, repo_frame, ui_event_manager:UiEventManager=None):
         super().__init__(parent, "Refresh Repositories")
+        if ui_event_manager is None:
+            ui_event_manager = UiEventManager()
+        self.ui_event_manager = ui_event_manager
+        self.ui_event_manager.attach(self)
         self.parent = parent
         self.repo_frame = repo_frame
     

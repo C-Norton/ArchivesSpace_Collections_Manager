@@ -1,4 +1,3 @@
-from __future__ import annotations
 from tkinter import *
 from tkinter import ttk
 from typing import TYPE_CHECKING, Optional

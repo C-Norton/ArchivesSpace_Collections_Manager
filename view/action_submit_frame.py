@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 
 import tkinter
 from tkinter import ttk
@@ -19,7 +19,7 @@ class ActionSubmitFrame(ttk.Frame):
     This frame allows these components to be independently positioned in the UI.
     """
 
-    def __init__(self, parent: MasterFrame):
+    def __init__(self, parent: ttk.Frame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
 

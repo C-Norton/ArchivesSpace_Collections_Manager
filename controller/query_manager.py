@@ -1,9 +1,12 @@
 from requests import Response
 
+from model.data_model import DataModel
 from model.node import Node
 from model.note import Note
 from model.note_type import NoteType
 from model.query_node import QueryNode
+from model.query_type import QueryType
+from model.resource_field import ResourceField
 
 
 def singleton(cls):
@@ -58,5 +61,9 @@ class QueryManager:
     def get_loaded_query(self) -> QueryNode:
         return self.loaded_query
 
-    def construct_from_string(self, query: str):
-        pass
+
+
+
+    def construct_query_segment(self,resource_field:ResourceField,query_type:QueryType, data:str):
+        dm = DataModel()
+        dm.add_node(QueryNode(dm, resource_field, query_type, data))

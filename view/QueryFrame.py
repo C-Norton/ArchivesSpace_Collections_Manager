@@ -1,10 +1,9 @@
-from __future__ import annotations
+
 import tkinter
 from tkinter import ttk
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from view.MasterFrame import MasterFrame
+
 
 
 class QueryFrame(ttk.Frame):
@@ -12,7 +11,7 @@ class QueryFrame(ttk.Frame):
     This is a breakout of individual query segments. It's still a work in progress
     """
 
-    def __init__(self, parent: MasterFrame):
+    def __init__(self, parent: ttk.Frame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         self.frame = ttk.Frame(master=self.master_frame)

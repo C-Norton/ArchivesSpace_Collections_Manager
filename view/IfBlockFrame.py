@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 
 import tkinter
 from tkinter import ttk
@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import model.query_type
 import model.resource_field
 import model.operator_node
-from controller.QueryManager import QueryManager
+from controller.query_manager import QueryManager
 
 if TYPE_CHECKING:
     from view.MasterFrame import MasterFrame
@@ -21,7 +21,7 @@ class IfBlockFrame(ttk.Frame):
     user. we may need to split drawline into its own class to represent each line of a query statement.
     """
 
-    def __init__(self, parent: MasterFrame):
+    def __init__(self, parent: ttk.Frame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         self.width = 1

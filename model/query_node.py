@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 
 from typing import Optional, Any
 from model.node import Node
@@ -17,13 +17,13 @@ class QueryNode(Node):
 
     def __init__(
         self,
-        data_model: DataModel,
+        data_model: DataModel,compare_field: Field,
         query_type: QueryType,
-        compare_field: Field,
-        data_to_compare_to: Optional[str] = None,
+
+        compare_data: Optional[str] = None,
     ):
         self.query_type = query_type
-        self.data_to_compare_to = data_to_compare_to
+        self.compare_data = compare_data
         self.compare_field = compare_field
         self.data_model = data_model
 
@@ -32,10 +32,10 @@ class QueryNode(Node):
         # Check if data_to_compare_to is required for this query type
         requires_data = self.query_type not in [QueryType.Empty, QueryType.Not_Empty]
 
-        if requires_data and not self.data_to_compare_to:
+        if requires_data and not self.compare_data:
             return False
 
-        if not requires_data and self.data_to_compare_to:
+        if not requires_data and self.compare_data:
             return False
 
         return True
@@ -86,54 +86,54 @@ class QueryNode(Node):
 
         match self.query_type:
             case QueryType.Equals:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Equals query requires comparison data")
-                return field_str == self.data_to_compare_to
+                return field_str == self.compare_data
 
             case QueryType.Not_Equals:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Not_Equals query requires comparison data")
-                return field_str != self.data_to_compare_to
+                return field_str != self.compare_data
 
             case QueryType.Empty:
-                if self.data_to_compare_to:
+                if self.compare_data:
                     raise ValueError("Empty query should not have comparison data")
                 return field_str == "" or field_value is None
 
             case QueryType.Not_Empty:
-                if self.data_to_compare_to:
+                if self.compare_data:
                     raise ValueError("Not_Empty query should not have comparison data")
                 return field_str != "" and field_value is not None
 
             case QueryType.Starts_With:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Starts_With query requires comparison data")
-                return field_str.startswith(self.data_to_compare_to)
+                return field_str.startswith(self.compare_data)
 
             case QueryType.Not_Starts_With:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Not_Starts_With query requires comparison data")
-                return not field_str.startswith(self.data_to_compare_to)
+                return not field_str.startswith(self.compare_data)
 
             case QueryType.Ends_With:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Ends_With query requires comparison data")
-                return field_str.endswith(self.data_to_compare_to)
+                return field_str.endswith(self.compare_data)
 
             case QueryType.Not_Ends_With:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Not_Ends_With query requires comparison data")
-                return not field_str.endswith(self.data_to_compare_to)
+                return not field_str.endswith(self.compare_data)
 
             case QueryType.Contains:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Contains query requires comparison data")
-                return self.data_to_compare_to in field_str
+                return self.compare_data in field_str
 
             case QueryType.Not_Contains:
-                if not self.data_to_compare_to:
+                if not self.compare_data:
                     raise ValueError("Not_Contains query requires comparison data")
-                return self.data_to_compare_to not in field_str
+                return self.compare_data not in field_str
 
             case _:
                 raise ValueError(f"Unsupported query type: {self.query_type}")
@@ -171,7 +171,7 @@ class QueryNode(Node):
             else str(self.query_type)
         )
 
-        if self.data_to_compare_to:
-            return f'%{field_name} &{query_name} "{self.data_to_compare_to}"'
+        if self.compare_data:
+            return f'%{field_name} &{query_name} "{self.compare_data}"'
         else:
             return f"%{field_name} &{query_name}"

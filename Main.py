@@ -14,6 +14,7 @@ class Main:
     def __init__(self):
         from controller.connection_manager import ConnectionManager
 
+        # Get the singleton instance of DataModel and initialize it with self
         Main.data_model = DM.DataModel(self)
         Main.connection_manager = ConnectionManager(self)
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 import tkinter
 from tkinter import ttk
 from typing import TYPE_CHECKING
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class RepoFrame(ttk.Frame):
     """This frame adds checkboxes for each repository other than the base system repository."""
 
-    def __init__(self, parent: MasterFrame):
+    def __init__(self, parent: ttk.Frame):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         self.check_buttons = dict()

@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 from tkinter import ttk
 from typing import TYPE_CHECKING, Dict, Any
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class ConnectionFrame(ttk.Frame):
 
-    def __init__(self, parent: MasterFrame, event_manager: UiEventManager = None):
+    def __init__(self, parent: ttk.Frame, event_manager: UiEventManager = None):
         super().__init__(master=parent, padding="3 3 12 12")
         self.master_frame = parent
         if event_manager is None:
@@ -24,7 +24,7 @@ class ConnectionFrame(ttk.Frame):
     def handle_event(self, event, data: Dict[str, Any]):
         if event == UiEvent.CONNECTION_CHANGED:
             if data["server"] is None:
-                self.connection_label.configure(text="No server connection")
+                self.connection_label.configure(text="gNo server connection")
                 return
             self.connection_label.configure(text=f"Connected to {data["server"]}")
 
